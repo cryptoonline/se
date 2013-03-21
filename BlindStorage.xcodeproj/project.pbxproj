@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D00FA8016F6E03000BDE9AA /* AES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D00FA7E16F6E03000BDE9AA /* AES.cpp */; };
+		1D00FA8316FAE96F00BDE9AA /* D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D00FA8116FAE96F00BDE9AA /* D.cpp */; };
+		1D00FA8616FAE98500BDE9AA /* T.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D00FA8416FAE98500BDE9AA /* T.cpp */; };
+		1D00FA8916FAE99000BDE9AA /* FFX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D00FA8716FAE99000BDE9AA /* FFX.cpp */; };
+		1D00FA8C16FAE9B800BDE9AA /* BlindStorage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D00FA8A16FAE9B800BDE9AA /* BlindStorage.cpp */; };
+		1D00FA8F16FB084D00BDE9AA /* parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D00FA8D16FB084D00BDE9AA /* parameters.cpp */; };
+		1D15494116F2BAB1005B8CD5 /* DataBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D15493F16F2BAB1005B8CD5 /* DataBlock.cpp */; };
 		1D3577A316F225610040B3FB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D3577A216F225610040B3FB /* main.cpp */; };
 		1D3577A516F225610040B3FB /* BlindStorage.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1D3577A416F225610040B3FB /* BlindStorage.1 */; };
 /* End PBXBuildFile section */
@@ -25,6 +32,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1D00FA7E16F6E03000BDE9AA /* AES.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AES.cpp; sourceTree = "<group>"; };
+		1D00FA7F16F6E03000BDE9AA /* AES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AES.h; sourceTree = "<group>"; };
+		1D00FA8116FAE96F00BDE9AA /* D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = D.cpp; sourceTree = "<group>"; };
+		1D00FA8216FAE96F00BDE9AA /* D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = D.h; sourceTree = "<group>"; };
+		1D00FA8416FAE98500BDE9AA /* T.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = T.cpp; sourceTree = "<group>"; };
+		1D00FA8516FAE98500BDE9AA /* T.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = T.h; sourceTree = "<group>"; };
+		1D00FA8716FAE99000BDE9AA /* FFX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFX.cpp; sourceTree = "<group>"; };
+		1D00FA8816FAE99000BDE9AA /* FFX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFX.h; sourceTree = "<group>"; };
+		1D00FA8A16FAE9B800BDE9AA /* BlindStorage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlindStorage.cpp; sourceTree = "<group>"; };
+		1D00FA8B16FAE9B800BDE9AA /* BlindStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlindStorage.h; sourceTree = "<group>"; };
+		1D00FA8D16FB084D00BDE9AA /* parameters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parameters.cpp; sourceTree = "<group>"; };
+		1D00FA8E16FB084D00BDE9AA /* parameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parameters.h; sourceTree = "<group>"; };
+		1D15493F16F2BAB1005B8CD5 /* DataBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataBlock.cpp; sourceTree = "<group>"; };
+		1D15494016F2BAB1005B8CD5 /* DataBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBlock.h; sourceTree = "<group>"; };
 		1D35779F16F225610040B3FB /* BlindStorage */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BlindStorage; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D3577A216F225610040B3FB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1D3577A416F225610040B3FB /* BlindStorage.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = BlindStorage.1; sourceTree = "<group>"; };
@@ -60,8 +81,22 @@
 		1D3577A116F225610040B3FB /* BlindStorage */ = {
 			isa = PBXGroup;
 			children = (
-				1D3577A216F225610040B3FB /* main.cpp */,
 				1D3577A416F225610040B3FB /* BlindStorage.1 */,
+				1D00FA7E16F6E03000BDE9AA /* AES.cpp */,
+				1D15493F16F2BAB1005B8CD5 /* DataBlock.cpp */,
+				1D3577A216F225610040B3FB /* main.cpp */,
+				1D00FA7F16F6E03000BDE9AA /* AES.h */,
+				1D15494016F2BAB1005B8CD5 /* DataBlock.h */,
+				1D00FA8116FAE96F00BDE9AA /* D.cpp */,
+				1D00FA8216FAE96F00BDE9AA /* D.h */,
+				1D00FA8416FAE98500BDE9AA /* T.cpp */,
+				1D00FA8516FAE98500BDE9AA /* T.h */,
+				1D00FA8716FAE99000BDE9AA /* FFX.cpp */,
+				1D00FA8816FAE99000BDE9AA /* FFX.h */,
+				1D00FA8A16FAE9B800BDE9AA /* BlindStorage.cpp */,
+				1D00FA8B16FAE9B800BDE9AA /* BlindStorage.h */,
+				1D00FA8D16FB084D00BDE9AA /* parameters.cpp */,
+				1D00FA8E16FB084D00BDE9AA /* parameters.h */,
 			);
 			path = BlindStorage;
 			sourceTree = "<group>";
@@ -118,6 +153,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D3577A316F225610040B3FB /* main.cpp in Sources */,
+				1D15494116F2BAB1005B8CD5 /* DataBlock.cpp in Sources */,
+				1D00FA8016F6E03000BDE9AA /* AES.cpp in Sources */,
+				1D00FA8316FAE96F00BDE9AA /* D.cpp in Sources */,
+				1D00FA8616FAE98500BDE9AA /* T.cpp in Sources */,
+				1D00FA8916FAE99000BDE9AA /* FFX.cpp in Sources */,
+				1D00FA8C16FAE9B800BDE9AA /* BlindStorage.cpp in Sources */,
+				1D00FA8F16FB084D00BDE9AA /* parameters.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,12 +189,14 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
+				"PRELINK_LIBS[arch=*]" = "-lcryptopp -Lcryptopp562";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -174,6 +218,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -216,6 +261,7 @@
 				1D3577AA16F225610040B3FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

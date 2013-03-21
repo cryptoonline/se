@@ -27,7 +27,7 @@ AES::~AES(){
 byte* AES::keyGen(){
     CryptoPP::AutoSeededRandomPool prng;
     prng.GenerateBlock(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
-    //::memset( key, 0x01, CryptoPP::AES::DEFAULT_KEYLENGTH );
+//    ::memset( key, 0x01, CryptoPP::AES::DEFAULT_KEYLENGTH );
     return key;
 }
     

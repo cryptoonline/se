@@ -8,6 +8,7 @@
 
 #include "DataBlock.h"
 #include "AES.h"
+#include "FFX.h"
 
 void print(string tag, unsigned char* value){
     cout << "<" << tag << ">" << value << "</" << tag << ">" << endl;
@@ -25,23 +26,31 @@ int main(int argc, const char * argv[])
     // insert code here...
     //DataBlock* block = new DataBlock();
     //DataBlock block;
-    DataBlock** blocks = new DataBlock*[5];
-    for(int i = 0; i < 5; i++){
+    int num = 2;
+    DataBlock** blocks = new DataBlock*[num];
+    for(int i = 0; i < num; i++){
         blocks[i] = new DataBlock();
+        
     }
     
     int chartoget = 32;
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < num; i++){
         blocks[i]->set(1025, data[i], chartoget);
         unsigned char* d = blocks[i]->get();
         print("decrypted", d);
     }
     
-    for(int i = 0; i < 5; i++){
-        blocks[i]->set(1025, data[i], chartoget);
-        unsigned char* d = blocks[i]->get();
-        print("decrypted", d);
-    }
+//    for(int i = 0; i < num; i++){
+//        blocks[i]->set(1025, data[i], chartoget);
+//        unsigned char* d = blocks[i]->get();
+//        print("decrypted", d);
+//    }
+    
+//    Botan::LibraryInitializer init;
+
+//    FFX ffx;
+//    ffx.keyGen("hello");
+//    cout << "FFX encryption is " + ffx.ENC(1,1);
     
     
     
