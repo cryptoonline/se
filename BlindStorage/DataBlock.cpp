@@ -21,13 +21,24 @@ unsigned char* DataBlock::key = new unsigned char[16];
  DataBlock constructor.
  */
 DataBlock::DataBlock(){
-    blockIndex = counter++;
     version = -1; /*!< Initialized to -1 as it is incremented before its first use */
     size = BLOCKSIZE + 1 + 2 * sizeof(uint32_t);
-    block = new unsigned char[size];
+    block = new unsigned char[size]();
     iv = new unsigned char[16];
     keyFilename = "secret.txt";
     setupKey();
+}
+
+/*!
+ Constructor for the online phase, will return decrypted block
+ */
+DataBlock::DataBlock(uint64_t blockIndex){
+    return block;
+    
+}
+
+DataBlock::DataBlock(uint64_t blockIndex, fileID_t fid, unsigned char* rawData, uint32_t size){
+    update(blockIndex, fid, rawData, size);
 }
 
 /*!
@@ -42,22 +53,26 @@ DataBlock::~DataBlock(){
 /*!
  This function can be used to retrieve the decrypted
  */
-unsigned char* DataBlock::get(){
-    return DEC(block, size-(uint32_t)sizeof(version));
+unsigned char* DataBlock::getEncrypted(){
+    return DEC();
+}
+
+unsigned char* DataBlock::getDecrypted(){
+    return block;
 }
     
 /*!
  This functions accepts data size as input to handle the case when the data is less than the BLOCKSIZE.
  */
-void DataBlock::set(fileID_t fid, unsigned char* rawData, uint32_t size){
+void DataBlock::update(uint64_t blockIndex, fileID_t fid, unsigned char* rawData, uint32_t size){
     this->rawData = rawData;
+    this->blockIndex = blockIndex;
     if(size < BLOCKSIZE){
         this->rawDataSize = size;
         this->fid = fid;
         padded = 0; /// 0 means that block will be padded and pad bit will be added followed by zeros
         ++version;
         makeBlock();
-        isUsed = true;
     }
     else if (size == BLOCKSIZE){
         this->rawDataSize = BLOCKSIZE;
@@ -65,11 +80,31 @@ void DataBlock::set(fileID_t fid, unsigned char* rawData, uint32_t size){
         this->fid = fid;
         ++version;
         makeBlock();
-        isUsed = true;
     }
     else{
         cout << "Size of the block is large than acceptable block size.";
     }
+}
+
+void DataBlock::add(uint64_t blockIndex, fileID_t fid, unsigned char* rawData, uint32_t size){
+    this->rawData = rawData;
+    this->blockIndex = blockIndex;
+    if(size < BLOCKSIZE){
+        this->rawDataSize = size;
+        this->fid = fid;
+        padded = 0;
+        makeBlock();
+    }
+    else if (size == BLOCKSIZE){
+        this->rawDataSize = BLOCKSIZE;
+        padded = 1;
+        this->fid = fid;
+        makeBlock();
+    }
+    else{
+        cout << "Size of the block is large than the acceptable size.";
+    }
+    
 }
 
 /*! Create complete block of the following format ENC(rawData||paddedbit||fid)||version */
@@ -88,7 +123,7 @@ void DataBlock::makeBlock(){
     
 //    printBytes("Unencrypted", block, size);
     
-    byte* encryptedBlock = ENC(block,size- (uint32_t)sizeof(version));
+    byte* encryptedBlock = ENC();
     memcpy(block, encryptedBlock,size-(uint32_t)sizeof(version));
     delete[] encryptedBlock;
     
@@ -103,23 +138,19 @@ void DataBlock::makeBlock(){
 void DataBlock::padBlock(){
     if(!padded){
         block[rawDataSize] = 1;
-        for(int i = rawDataSize + 1; i < BLOCKSIZE; i++)
-            block[i] = 0;
+//        for(int i = rawDataSize + 1; i < BLOCKSIZE; i++)
+//            block[i] = 0;
     }
 }
 
 /*! 
  This function encrypts the block. It uses makeIV() function to create IV and AES.ENC to encrypt the block 
  */
-unsigned char* DataBlock::ENC(unsigned char* plaintext, uint32_t size){
+unsigned char* DataBlock::ENC(){
     AES* cipher = new AES();
     makeIV(); //It will populate the iv parameter of the object
     unsigned char * ciphertext = NULL;
-    ciphertext = cipher->ENC(plaintext, size, DataBlock::key, DataBlock::iv);
-    printBytes("ENCKey", DataBlock::key, 16);
-    print("ENCkey", DataBlock::key);
-    print("ENCplaintext", plaintext);
-    print("ENCciphertext", ciphertext);
+    ciphertext = cipher->ENC(block, size-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
     delete cipher;
     return ciphertext;
 }
@@ -127,15 +158,11 @@ unsigned char* DataBlock::ENC(unsigned char* plaintext, uint32_t size){
 /*! 
  This function decrypts the block. It uses makeIV() function to create IV and AES.DEC to encrypt the block 
  */
-unsigned char* DataBlock::DEC(unsigned char* ciphertext, uint32_t size){
+unsigned char* DataBlock::DEC(){
     AES* cipher = new AES();
     makeIV(); //It will populate the iv parameter of the object
-    unsigned char * plaintext = cipher->DEC(ciphertext, size, DataBlock::key, DataBlock::iv);
+    unsigned char * plaintext = cipher->DEC(block, size-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
     delete cipher;
-    printBytes("DECKey", DataBlock::key, 16);
-    print("DECkey", DataBlock::key);
-    print("DECplaintext", plaintext);
-    print("DECciphertext", ciphertext);
     return plaintext;
 }
 
@@ -222,12 +249,12 @@ void DataBlock::loadKeyfromFile(){
     file.open(keyFilename);
     char key[16];
     file.read(key,16);
-    printBytes("ReadFile1", key, 16);
+//    printBytes("ReadFile1", key, 16);
 //    DataBlock::key = (unsigned char*) key;
     memcpy(DataBlock::key, key, 16); ///key doesn't need to be changed to unsigned char* because values can be just read as unsigned char
-    printBytes("ReadFile2", (unsigned char*) key, 16);
-    printBytes("DataBlockReadkey", DataBlock::key, 16);
-    cout << endl << "Key read!" << endl;
+//    printBytes("ReadFile2", (unsigned char*) key, 16);
+//    printBytes("DataBlockReadkey", DataBlock::key, 16);
+//    cout << endl << "Key read!" << endl;
 }
 
 /*!
@@ -236,7 +263,6 @@ void DataBlock::loadKeyfromFile(){
 bool DataBlock::isKeyFileStored(){
     std::ifstream file;
     file.open(keyFilename);
-    cout << endl << "File checked!" << endl;
     if(file.good())
         return true;
     else
@@ -263,5 +289,5 @@ void DataBlock::setupKey(){
  This function can be used to check if the block is occupied or not.
  */
 bool DataBlock::isOccupied(){
-    return isUsed;
+    return fid ? false : true;
 }
