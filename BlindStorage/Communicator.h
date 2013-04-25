@@ -10,5 +10,13 @@
 #define __BlindStorage__Communicator__
 
 #include <iostream>
+#include "DataBlock.h"
+
+class Communicator{
+    
+public:
+    void upload(uint32_t* blockLocations, unsigned char* data, string filename);
+    void download(uint32_t* blockLocations, unsigned char* data, string filename);
+};
 
 #endif /* defined(__BlindStorage__Communicator__) */
