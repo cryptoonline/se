@@ -11,4 +11,12 @@
 
 #include <iostream>
 
+class CRHash {
+private:
+    
+public:
+    unsigned char* doFinal(unsigned char* input);
+    uint32_t doFinal(uint32_t input);
+};
+
 #endif /* defined(__BlindStorage__CRHash__) */

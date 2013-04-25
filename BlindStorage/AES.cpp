@@ -31,7 +31,7 @@ byte* AES::keyGen(){
     return key;
 }
     
-byte* AES::ENC(byte* plaintext, int size, byte* key, byte* iv){
+byte* AES::ENC(byte* plaintext, uint32_t size, byte* key, byte* iv){
     ciphertext = new byte[size];
     CryptoPP::CTR_Mode<CryptoPP::AES>::Encryption Encryptor;
     Encryptor.SetKeyWithIV(key, 16, iv);
@@ -39,8 +39,10 @@ byte* AES::ENC(byte* plaintext, int size, byte* key, byte* iv){
     return ciphertext;
 }
 
-byte* AES::DEC(byte* ciphertext, int size, byte* key, byte* iv){
+byte* AES::DEC(byte* ciphertext, uint32_t size, byte* key, byte* iv){
     plaintext = new byte[size];
+    if(ciphertext == NULL)
+        cerr << "Ciphertext is NULL in " << __PRETTY_FUNCTION__ << " in file " << __FILE__ << " at line " << __LINE__;
     CryptoPP::CTR_Mode<CryptoPP::AES>::Decryption Decryptor;
     Decryptor.SetKeyWithIV(key, 16, iv);
     Decryptor.ProcessData(plaintext, ciphertext, size);

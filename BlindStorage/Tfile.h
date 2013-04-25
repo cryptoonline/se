@@ -10,5 +10,13 @@
 #define __BlindStorage__Tfile__
 
 #include <iostream>
+using namespace std;
+
+class Tfile {
+private:
+    
+public:
+    Tfile(string filename);
+};
 
 #endif /* defined(__BlindStorage__Tfile__) */

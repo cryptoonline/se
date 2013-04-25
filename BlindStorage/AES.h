@@ -62,11 +62,10 @@ public:
     AES();
     ~AES();
     byte* keyGen();
-    byte* ENC(byte* plaintext, int size, byte* key, byte* iv);
-    byte* DEC(byte* ciphertext, int size, byte* key, byte* iv);
+    byte* ENC(byte* plaintext, uint32_t size, byte* key, byte* iv);
+    byte* DEC(byte* ciphertext, uint32_t size, byte* key, byte* iv);
     void print(string tag, string value);
     void print(string tag, byte* value);
-    
   };
 
 
