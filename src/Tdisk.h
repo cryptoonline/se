@@ -9,6 +9,7 @@
 #ifndef __BlindStorage__Tdisk__
 #define __BlindStorage__Tdisk__
 
+#include <stdint.h>
 #include <iostream>
 #include "TBlock.h"
 #include "parameters.h"
@@ -16,7 +17,6 @@
 #include "PRSubset.h"
 #include "FFX.h"
 #include <ext/hash_map>
-#include "CRHash.h"
 #include <vector>
 #include "Ddisk.h"
 

@@ -9,6 +9,7 @@
 #ifndef __BlindStorage__PRSubset__
 #define __BlindStorage__PRSubset__
 
+#include <stdint.h>
 #include <iostream>
 #include "parameters.h"
 //#include "/Users/naveed/crypto/BlindCloudStorage/paper/Code/BlindStorage/BlindStorage/lib/librdrand-1.1/rdrand.h"

@@ -9,6 +9,8 @@
 #ifndef __BlindStorage__DataBlock__
 #define __BlindStorage__DataBlock__
 
+#include <stdint.h>
+
 #include <iostream>
 using std::cout;
 using std::cerr;

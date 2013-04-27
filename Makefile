@@ -1,7 +1,7 @@
 CC=g++
 RM=rm
 
-CFLAGS=-c -Wall -g
+CFLAGS=-c -Wall -ggdb
 LDFLAGS=-lcryptopp -Lsrc/cryptopp562
 SOURCES=AES.cpp Communicator.cpp DataBlock.cpp Ddisk.cpp FFX.cpp OnlineSession.cpp PRSubset.cpp SHA256bit.cpp TBlock.cpp Tdisk.cpp Tfile.cpp fileID.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)

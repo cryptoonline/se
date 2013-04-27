@@ -9,6 +9,7 @@
 #ifndef __BlindStorage__parameters__
 #define __BlindStorage__parameters__
 
+#include <stdint.h>
 #include <iostream>
 
 const uint32_t TOTAL_BLOCKS = 1024;//1048576; ///2^20

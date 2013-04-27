@@ -9,6 +9,7 @@
 #ifndef __BlindStorage__fileID__
 #define __BlindStorage__fileID__
 
+#include <stdint.h>
 #include <iostream>
 
 #include "SHA256bit.h"

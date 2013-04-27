@@ -9,6 +9,7 @@
 #ifndef __BlindStorage__Ddisk__
 #define __BlindStorage__Ddisk__
 
+#include <stdint.h>
 #include <iostream>
 #include "Communicator.h"
 #include "PRSubset.h"

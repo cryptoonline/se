@@ -9,6 +9,7 @@
 #ifndef __BlindStorage__TBlock__
 #define __BlindStorage__TBlock__
 
+#include <stdint.h>
 #include <iostream>
 
 class TBlock {

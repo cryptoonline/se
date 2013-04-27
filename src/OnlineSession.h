@@ -9,11 +9,11 @@
 #ifndef __BlindStorage__Dfile__
 #define __BlindStorage__Dfile__
 
+#include <stdint.h>
 #include <iostream>
 #include "Communicator.h"
 #include "PRSubset.h"
 #include "Ddisk.h"
-#include "CRHash.h"
 #include "FFX.h"
 #include "TBlock.h"
 

@@ -9,6 +9,7 @@
 #ifndef __BlindStorage__Communicator__
 #define __BlindStorage__Communicator__
 
+#include <stdint.h>
 #include <iostream>
 #include "DataBlock.h"
 

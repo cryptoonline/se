@@ -9,6 +9,7 @@
 //#ifndef BlindStorage_Debug_h
 //#define BlindStorage_Debug_h
 //
+//#include<stdint.h>
 //void print(string tag, int integer){
 //    unsigned char bytes[sizeof integer];
 //    std::copy(static_cast<const unsigned char*>(static_cast<const void*>(&integer)),

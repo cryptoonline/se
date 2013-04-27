@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
 //
 
+#include <stdint.h>
 #include "DataBlock.h"
 #include "AES.h"
 #include "Ddisk.h"
