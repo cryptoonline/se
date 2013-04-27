@@ -20,18 +20,44 @@ unsigned char* OnlineSession::get(){
     getCRI();
     parseCRI();
     getFile();
-    return fileData;
+    return fileDataRead;
 }
 
-void OnlineSession::put(istream iStream){
+void OnlineSession::put(unsigned char* input, uint32_t size, string filename, fileID &fid, PRSubset &prSubset){
+//    uint32_t numBlocks = (uint32_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
+
+
+    filePrSubset = &prSubset;
+    fileFid = fid;
+    get();
     
+    Ddisk D(filePrSubset->getSize());
+    D.addFile(input, size, fid, prSubset);
+    
+    fileBlockstoBeWritten = D.get();
+    for(int i = 0; i < filePrSubset->getSize(); i++)
+        encryptedfileBlockstoBeWritten[i] = fileBlockstoBeWritten[i]->getEncrypted();
+    TBlock tblock;
+    tblock.set(prSubset.getSize(), prSubset.getSeed());
+    writeT(fid.getPRPofHigherID(), tblock.get());
+    writeD(prSubset.get(), encryptedfileBlockstoBeWritten);
 }
 
-void OnlineSession::update(istream updatedStream){
-    
-}
+//void OnlineSession::update(istream updatedStream){
+//    
+//    
+//}
 
 void OnlineSession::remove(){
+    get();
+    for(int i = 0; filePrSubset->getSize() / BLOW_UP; i++){
+        fileID zeroFid;
+        extractedFileBlocks[i]->update(zeroFid, NULL, 0);
+    }
+//    Update other blocks also, just have to update their version and encrypt
+    
+//    writeT();
+//    writeD(prSubset.get(),
     
 }
 
@@ -69,11 +95,7 @@ bool OnlineSession::parseCRI(){
 
     int32_t match = search(criEntries, fileCompleteID, criPrSubset.getSize() / BLOW_UP, 40, 8, 0);
     if(match != -1){
-//        unsigned char ID[32];
-//        memcpy(ID,&decryptedCriFile[match][8], 40);
         filePrSubset = new PRSubset(*(uint32_t*)(criEntries[match]), *(uint32_t*)(criEntries[match]+4));
-//        fileID fileFid(criEntries[match]+8);
-//        this->fileFid = fileFid;
         return true;
     }
     
@@ -89,16 +111,21 @@ void OnlineSession::getFile(){
     uint32_t* blockLocations = filePrSubset->get();
     unsigned char** encryptedBlocksData = readD(blockLocations, fileFid);
     int32_t prSubsetSize = filePrSubset->getSize();
-    decryptedBlocks = new unsigned char*[prSubsetSize];
-    fileData = new unsigned char[prSubsetSize/BLOW_UP];
+    decryptedFileBlocksRead = new unsigned char*[prSubsetSize];
+    fileDataRead = new unsigned char[prSubsetSize/BLOW_UP];
 
-    fileBlocks = new DataBlock*[prSubsetSize];
+    fileBlocksRead = new DataBlock*[prSubsetSize];
+    extractedFileBlocks = new DataBlock*[prSubsetSize/BLOW_UP];
+    int j = 0;
     for(int i = 0; i < prSubsetSize; i++){
-        fileBlocks[i] = new DataBlock(blockLocations[i], encryptedBlocksData[i]);
-        decryptedBlocks[i] = new unsigned char[BLOCK_SIZE]();
-        memcpy(decryptedBlocks[i], fileBlocks[i]->getDecrypted(), BLOCK_SIZE);
-        if(fileBlocks[i]->checkFileID(fileFid))
-            memcpy(&fileData[i*MAX_BLOCK_DATA_SIZE], decryptedBlocks[i], MAX_BLOCK_DATA_SIZE);
+        fileBlocksRead[i] = new DataBlock(blockLocations[i], encryptedBlocksData[i]);
+        decryptedFileBlocksRead[i] = new unsigned char[BLOCK_SIZE]();
+        memcpy(decryptedFileBlocksRead[i], fileBlocksRead[i]->getDecrypted(), BLOCK_SIZE);
+        if(fileBlocksRead[i]->checkFileID(fileFid)){
+            extractedFileBlocks[j] = fileBlocksRead[i];
+            memcpy(&fileDataRead[j*MAX_BLOCK_DATA_SIZE], decryptedFileBlocksRead[i], MAX_BLOCK_DATA_SIZE);
+            j++;
+        }
     }
 }
 

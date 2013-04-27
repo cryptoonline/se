@@ -10,8 +10,16 @@
 
 Ddisk::Ddisk(Communicator communicator){
     this->communicator = communicator;
-    D = new DataBlock*[TOTAL_BLOCKS];
-    for(int i = 0; i < TOTAL_BLOCKS; i++)
+    numBlocks = TOTAL_BLOCKS;
+    D = new DataBlock*[numBlocks];
+    for(int i = 0; i < numBlocks; i++)
+        D[i] = new DataBlock();
+}
+
+Ddisk::Ddisk(uint32_t numBlocks){
+    this->numBlocks = numBlocks;
+    D = new DataBlock*[numBlocks];
+    for(int i = 0; i < numBlocks; i++)
         D[i] = new DataBlock();
 }
 
@@ -39,6 +47,10 @@ void Ddisk::addFile(std::ifstream& istream, fileID &fid, PRSubset &prSubset){
     addBlocks(fileBytes, filesize, fid, prSubset);
 }
 
+void Ddisk::addFile(unsigned char* fileBytes, uint32_t fileSize, fileID &fid, PRSubset &prSubset){
+    addBlocks(fileBytes, fileSize, fid, prSubset);
+}
+
 void Ddisk::addBlocks(unsigned char* fileBytes, size_t filesize, fileID &fid, PRSubset &prSubset){
     vector<uint32_t> emptyBlocks = getEmptyBlocks(prSubset);
     if(emptyBlocks.size()*MAX_BLOCK_DATA_SIZE < filesize){
@@ -53,7 +65,7 @@ void Ddisk::addBlocks(unsigned char* fileBytes, size_t filesize, fileID &fid, PR
 void Ddisk::makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid, size_t filesize){
     int counter = 0;
     uint32_t numBlocks = (uint32_t)ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE);
-    unsigned char* blocks = new unsigned char[numBlocks * TOTAL_BLOCKS]();
+    unsigned char* blocks = new unsigned char[numBlocks]();
     
     for(; counter < numBlocks - 1; counter++){
         memcpy(&blocks[counter * BLOCK_SIZE], &fileBytes[counter*MAX_BLOCK_DATA_SIZE] , MAX_BLOCK_DATA_SIZE);
@@ -110,7 +122,7 @@ vector<uint32_t> Ddisk::getEmptyBlocks(PRSubset &prSubset){
 }
 
 void Ddisk::finalize(){
-    for(int i = 0; i < TOTAL_BLOCKS; i++)
+    for(int i = 0; i < numBlocks; i++)
         if(!D[i]->isOccupied()){
             D[i]->encryptIfEmpty();
         }
@@ -124,6 +136,10 @@ void Ddisk::print(string tag, uint32_t* subset, uint32_t size){
     for(int i = 0; i < size; i++){
         print(tag, D[subset[i]]->getDecrypted(), BLOCK_SIZE);
     }
+}
+
+DataBlock** Ddisk::get(){
+    return D;
 }
 
 void Ddisk::print(string tag, unsigned char* value, uint32_t size){

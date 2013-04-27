@@ -87,9 +87,10 @@ unsigned char* DataBlock::getDecrypted(){
 /*!
  This functions accepts data size as input to handle the case when the data is less than the BLOCKSIZE.
  */
-void DataBlock::update(uint32_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size){
+void DataBlock::update(fileID &fid, unsigned char* rawData, uint32_t size){
     ++version; ///version should be incremented before adding the block
-    add(blockIndex, fid, rawData, size);
+    if(rawData)
+        add(blockIndex, fid, rawData, size);
     makeBlock();
 }
 
@@ -142,6 +143,17 @@ void DataBlock::parseBlock(){
     if(!padded)
         removePadding();
 }
+
+//void DataBlock::deleteBlock(){
+//    version++;
+//    uint32_t zeros[32] = {0};
+//    uint32_t pointer = MAX_BLOCK_DATA_SIZE + 1;
+//    memcpy(&block[pointer], zeros, 32);
+//    const byte* encryptedBlock = ENC();
+//    memcpy(block, encryptedBlock, BLOCK_SIZE-(uint32_t)sizeof(version));
+//    delete[] encryptedBlock;
+//    memcpy(&block[pointer], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(uint32_t));
+//}
 
 /*! 
  Use the pad the block when its less than required number of bytes 

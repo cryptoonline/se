@@ -21,6 +21,7 @@ class Ddisk {
 private:
     Communicator communicator;
     DataBlock** D; /*!< Array of DataBlocks i.e. D */
+    uint32_t numBlocks;
     
     char* readFileBytes(std::ifstream& file);
     void makeBlocks(unsigned char* fileBytes, uint32_t* prSusbset, fileID &fid, size_t filesize);
@@ -29,11 +30,14 @@ private:
     
 public:
     Ddisk(Communicator communicator);
+    Ddisk(uint32_t numBlocks);
     void addFile(std::ifstream& istream, fileID &fid, PRSubset &prSubset);
+    void addFile(unsigned char* fileBytes, uint32_t fileSize, fileID &fid, PRSubset &prSubset);
     void addBlocks(unsigned char* bytes, size_t size, fileID &fid, PRSubset &prSubset);
     void addBlock(uint64_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size);
     void finalize();
     void upload();
+    DataBlock** get();
     void print(string tag, unsigned char* value, uint32_t size);
     void print(string tag, char* value, uint32_t size);
     void print(string tag, uint32_t* subset, uint32_t size);

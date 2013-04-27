@@ -35,7 +35,8 @@ public:
     
     unsigned char* getDecrypted();
     unsigned char* getEncrypted();
-    void update(uint32_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size);
+    void update(fileID &fid, unsigned char* rawData, uint32_t size);
+    void deleteBlock();
     void generateKey();
     void setKey(unsigned char* key);
     const bool isOccupied();

@@ -32,9 +32,14 @@ class OnlineSession {
     unsigned char** decryptedCriFile;
     DataBlock** criFileBlocks;
     unsigned char** criEntries;
-    DataBlock** fileBlocks;
-    unsigned char** decryptedBlocks;
-    unsigned char* fileData;
+    DataBlock** fileBlocksRead;
+    DataBlock** extractedFileBlocks;
+    unsigned char** decryptedFileBlocksRead;
+    unsigned char* fileDataRead;
+    
+    DataBlock** fileBlockstoBeWritten;
+    unsigned char** encryptedfileBlockstoBeWritten;
+    
     
     
     
@@ -62,8 +67,8 @@ public:
     OnlineSession(Communicator &communicator, PRSubset &criPrSubset, fileID &criFid, string filename);
     ~OnlineSession();
     unsigned char* get();
-    void put(std::istream iStream);
-    void update(std::istream updatediStream);
+    void put(unsigned char* input, uint32_t size, string filename, fileID &fid, PRSubset &prSubset);
+    void update(unsigned char* updatedInput, uint32_t size);
     void remove();
     /*! Use homorphic encryption to support this */
     void rename();
