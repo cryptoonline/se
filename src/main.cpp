@@ -92,7 +92,7 @@ int main(int argc, const char * argv[])
     Communicator comm;
     Ddisk* D = new Ddisk(comm);
     
-    std::ifstream file("/Users/naveed/Desktop/test");
+    string filename = "/Users/naveed/Desktop/test";
 
     uint32_t* subset = new uint32_t[2048];
     
@@ -108,7 +108,7 @@ int main(int argc, const char * argv[])
         cout << prSubset.get()[i] << "\t";
     fileID fid("test");
 //
-    D->addFile(file, fid, prSubset);
+    D->addFile(filename.c_str());
     D->print("Blocks", prSubset.get(), prSubset.getSize());
     D->finalize();
 

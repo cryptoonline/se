@@ -12,8 +12,6 @@
 #include <stdint.h>
 #include <iostream>
 #include "parameters.h"
-//#include "/Users/naveed/crypto/BlindCloudStorage/paper/Code/BlindStorage/BlindStorage/lib/librdrand-1.1/rdrand.h"
-//#include "/Users/naveed/crypto/BlindCloudStorage/paper/Code/BlindStorage/BlindStorage/lib/librdrand-1.1/config.h"
 
 class PRSubset {
 private:

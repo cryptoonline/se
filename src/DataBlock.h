@@ -9,8 +9,6 @@
 #ifndef __BlindStorage__DataBlock__
 #define __BlindStorage__DataBlock__
 
-#include <stdint.h>
-
 #include <iostream>
 using std::cout;
 using std::cerr;
@@ -24,8 +22,6 @@ using std::string;
 #include "AES.h"
 #include "parameters.h"
 #include "fileID.h"
-
-typedef uint32_t fileID_t; /*!< \typedef File ID type can be specified here */
 
 class DataBlock{
 public:

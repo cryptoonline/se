@@ -16,15 +16,16 @@
 #include "fileID.h"
 #include "math.h"
 #include <fstream>
+#include "DataBlock.h"
 
-using namespace std;
 class Ddisk {
 private:
     Communicator communicator;
     DataBlock** D; /*!< Array of DataBlocks i.e. D */
     uint32_t numBlocks;
     
-    char* readFileBytes(std::ifstream& file);
+    char* readFileBytes(string filename, size_t size);
+	size_t readFileSize(string filename);
     void makeBlocks(unsigned char* fileBytes, uint32_t* prSusbset, fileID &fid, size_t filesize);
     vector<uint32_t> getEmptyBlocks(PRSubset &prSubset);
     
@@ -32,7 +33,8 @@ private:
 public:
     Ddisk(Communicator communicator);
     Ddisk(uint32_t numBlocks);
-    void addFile(std::ifstream& istream, fileID &fid, PRSubset &prSubset);
+    void addFile(string filename);
+	void addFile(string filename, PRSubset& prSubset);
     void addFile(unsigned char* fileBytes, uint32_t fileSize, fileID &fid, PRSubset &prSubset);
     void addBlocks(unsigned char* bytes, size_t size, fileID &fid, PRSubset &prSubset);
     void addBlock(uint64_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size);

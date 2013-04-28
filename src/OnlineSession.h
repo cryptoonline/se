@@ -1,5 +1,5 @@
 //
-//  Dfile.h
+//  OnlineSession.h
 //  BlindStorage
 //
 //  Created by Muhammad Naveed on 4/1/13.

@@ -27,25 +27,20 @@ Ddisk::Ddisk(uint32_t numBlocks){
 //    D[blockIndex] = new DataBlock(blockIndex, fid, rawData, size);
 //}
 
-void Ddisk::addFile(std::ifstream& istream, fileID &fid, PRSubset &prSubset){
-    istream.seekg(0, std::ios::end);
-    size_t filesize = istream.tellg();
-    cout << filesize << endl;
-    unsigned char* fileBytes = reinterpret_cast<unsigned char*>(readFileBytes(istream));
-
-//    uint32_t prSubsetSeed = rand(); //TODO Change it to get truly random numbers, change unsigned to signed integers where not needed
-//    uint32_t prSubsetSize = (uint32_t)ceil(filesize/MAX_BLOCK_DATA_SIZE) * (uint32_t)BLOW_UP;
-//    PRSubset prSubset(prSubsetSize, prSubsetSeed);
-//    vector<uint32_t> emptyBlocks = getEmptyBlocks(prSubset);
-//    if(emptyBlocks.size()*MAX_BLOCK_DATA_SIZE < filesize){
-//        cerr << "Not enough empty blocks";
-//        exit(1);
-//    }
-//    makeBlocks(fileBytes, emptyBlocks.data(), fid, filesize);
-    
-    
-    addBlocks(fileBytes, filesize, fid, prSubset);
+void Ddisk::addFile(string filename){
+	size_t size = readFileSize(filename);
+	PRSubset prSubset(size);
+	addFile(filename, prSubset);
 }
+
+void Ddisk::addFile(string filename, PRSubset& prSubset){
+	fileID fid(filename);
+	size_t size = readFileSize(filename);
+
+	unsigned char* fileBytes = reinterpret_cast<unsigned char*>(readFileBytes(filename, size));
+
+	addBlocks(fileBytes, size, fid, prSubset);
+} 
 
 void Ddisk::addFile(unsigned char* fileBytes, uint32_t fileSize, fileID &fid, PRSubset &prSubset){
     addBlocks(fileBytes, fileSize, fid, prSubset);
@@ -81,27 +76,20 @@ void Ddisk::makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid
     D[prSubset[counter]] = new DataBlock(prSubset[counter], fid, &blocks[counter * BLOCK_SIZE], sizeOfLastBlock);
 }
 
-char* Ddisk::readFileBytes(std::ifstream& file)
-{
-    file.seekg( 0, std::ios::end );
-    size_t length = file.tellg();
-    char* bytes = new char[length];
+char* Ddisk::readFileBytes(string filename, size_t size){
+	ifstream file(filename.c_str());
+    char* bytes = new char[size];
     file.seekg(0, std::ios::beg);
-    file.read(bytes, length);
-    
-    //    for(int i = 0; i < length; i++)
-//        std::cout << bytes[i];
-////
-//    string tag = "File Bytes";
-//    
-//    cout << endl << "*********************" << tag << " (start)*********************" << endl;
-//    for( int i = 0; i < length; i++)
-//        cout << i << " --> " << (int)bytes[i] << '\t';
-//    cout << endl << "**********************" << tag << " (end)**********************" << endl;
-//
-    
+    file.read(bytes, size);
     file.close();
     return bytes;
+}
+
+size_t Ddisk::readFileSize(string filename){	
+    ifstream file(filename.c_str());
+	file.seekg(0, std::ios::end);
+    size_t filesize = file.tellg();
+	return filesize;
 }
 
 vector<uint32_t> Ddisk::getEmptyBlocks(PRSubset &prSubset){

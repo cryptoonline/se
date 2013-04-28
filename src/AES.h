@@ -11,14 +11,6 @@
 
 #include <iostream>
 
-//
-//  AES.cpp
-//  BlindStorage
-//
-//  Created by Muhammad Naveed on 3/18/13.
-//  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
-//
-
 #include "cryptopp562/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
 
@@ -51,6 +43,13 @@ using CryptoPP::StreamTransformationFilter;
 using CryptoPP::CTR_Mode;
 
 #include "assert.h"
+//
+//  AES.cpp
+//  BlindStorage
+//
+//  Created by Muhammad Naveed on 3/18/13.
+//  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
+//
 
 class AES {
 private:
