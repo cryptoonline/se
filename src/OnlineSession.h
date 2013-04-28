@@ -22,11 +22,10 @@ using namespace std;
 class OnlineSession {
     Communicator communicator;
     DataBlock** blocks;
-    PRSubset criPrSubset;
     PRSubset* filePrSubset;
-    fileID criFid;
+	PRSubset* criPrSubset;
     unsigned char* fileCompleteID;
-    fileID fileFid;
+    fileID fid;
     string filename;
     
     unsigned char** decryptedCriFile;
@@ -60,15 +59,14 @@ class OnlineSession {
     unsigned char* readT(uint32_t TRecordIndex);
     void writeT(uint32_t TRecordIndex, unsigned char* block);
     
-    unsigned char** readD(uint32_t* blockLocations, fileID &fid);
+    unsigned char** readD(uint32_t* blockLocations);
     void writeD(uint32_t* blockLocations, unsigned char** blocks);
     
 public:
-    OnlineSession(Communicator &communicator, PRSubset &criPrSubset, fileID &criFid, string filename);
+    OnlineSession(Communicator &communicator);
     ~OnlineSession();
-    unsigned char* get();
-    void put(unsigned char* input, uint32_t size, string filename, fileID &fid, PRSubset &prSubset);
-    void update(unsigned char* updatedInput, uint32_t size);
+    unsigned char* get(string filename, PRSubset* prSubset = NULL);
+    void update(unsigned char* input, uint32_t size, string filename);
     void remove();
     /*! Use homorphic encryption to support this */
     void rename();

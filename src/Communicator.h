@@ -16,8 +16,10 @@
 class Communicator{
     
 public:
-    void upload(uint32_t* blockLocations, unsigned char* data, string filename);
-    void download(uint32_t* blockLocations, unsigned char* data, string filename);
+    void send(unsigned char* data);
+	void send(unsigned char** data);
+    unsigned char* receive();
+	unsigned char** receive(bool getIn2D);
 };
 
 #endif /* defined(__BlindStorage__Communicator__) */

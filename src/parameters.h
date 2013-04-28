@@ -22,5 +22,5 @@ const uint16_t MAX_NO_OF_COLLISIONS = 1024;
 
 const uint16_t BLOW_UP = 4;
 
-
+const int16_t CRI_ENTRY_SIZE = 40;
 #endif /* defined(__BlindStorage__parameters__) */

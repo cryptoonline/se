@@ -7,3 +7,15 @@
 //
 
 #include "Communicator.h"
+
+void Communicator::send(unsigned char*){
+}
+
+void Communicator::send(unsigned char**){
+}
+
+unsigned char* Communicator::receive(){
+}
+
+unsigned char** Communicator::receive(bool getIn2D){
+}

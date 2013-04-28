@@ -23,9 +23,9 @@ Ddisk::Ddisk(uint32_t numBlocks){
         D[i] = new DataBlock();
 }
 
-void Ddisk::addBlock(uint64_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size){
-    D[blockIndex] = new DataBlock(blockIndex, fid, rawData, size);
-}
+//void Ddisk::addBlock(uint64_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size){
+//    D[blockIndex] = new DataBlock(blockIndex, fid, rawData, size);
+//}
 
 void Ddisk::addFile(std::ifstream& istream, fileID &fid, PRSubset &prSubset){
     istream.seekg(0, std::ios::end);
