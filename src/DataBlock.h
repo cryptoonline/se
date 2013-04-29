@@ -54,7 +54,7 @@ public:
 private:
     static unsigned char* key;      /*!< The key is used for encrypting the block. Single key is used to encrypt all the blocks */
     static bool wasKeyGenerated;    /*!< Flag to see if key is already generated */
-    unsigned char* iv;              /*!< The iv is used as initialization vector to encrypt blocks. makeIV method generates unique IV for every block. */
+    unsigned char iv[16];              /*!< The iv is used as initialization vector to encrypt blocks. makeIV method generates unique IV for every block. */
     uint32_t version;               /*!< Version of the block, version is updated every time block is created. Maximum number of time block can be updates is 2^32  */
     uint32_t blockIndex;            /*!< Index of the block, it's incremented each time new datablock object is created. Maximum number of blocks can be 2^64*/
     unsigned char* rawData;         /*!< File data block, rawData in this class is pointer and will modify the data that is used in set()*/

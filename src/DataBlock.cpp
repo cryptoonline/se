@@ -32,20 +32,21 @@ const char* DataBlock::keyFilename = "secret.txt";
  */
 
 void DataBlock::initialize(){
-    iv = new unsigned char[16]();
+    //iv = new unsigned char[16]();
+	//cout << "IV address is " << iv;
     setupKey();
-    fid = new fileID();
-    
+//    fid = new fileID();    
 }
 
 DataBlock::DataBlock(){
-    initialize();
-    this->block = new unsigned char[BLOCK_SIZE]();
+	this->block = new unsigned char[BLOCK_SIZE]();
     version = 0;
 }
 
 DataBlock::DataBlock(uint32_t blockIndex, unsigned char* block){
-    initialize();
+//    initialize();
+//	iv[16] = {0};
+	setupKey();
     if(this->block == NULL)
         delete[] this->block;
     this->block = block;
@@ -54,7 +55,10 @@ DataBlock::DataBlock(uint32_t blockIndex, unsigned char* block){
 }
 
 DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size = MAX_BLOCK_DATA_SIZE){
-    initialize();
+    //cout << "Processing block " << blockIndex << endl;
+	//initialize();
+//	iv[16] = {0};
+	setupKey();
     version = 0;
     higherFid = fid.getPRPofHigherID();
     block = new unsigned char[size]();
@@ -67,8 +71,8 @@ DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, u
  */
 DataBlock::~DataBlock(){
     delete[] rawData;
-    delete[] key;
-    delete[] iv;
+   // delete[] key;
+    //delete[] iv;
 }
     
 /*!
@@ -182,10 +186,9 @@ bool DataBlock::checkFileID(fileID &fid){
  This function encrypts the block. It uses makeIV() function to create IV and AES.ENC to encrypt the block 
  */
 unsigned char* DataBlock::ENC(){
-    AES* cipher = new AES();
+    AES cipher;
     makeIV(); //It will populate the iv parameter of the object
-    unsigned char * ciphertext = cipher->ENC(block, BLOCK_SIZE-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
-    delete cipher;
+    unsigned char * ciphertext = cipher.ENC(block, BLOCK_SIZE-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
     return ciphertext;
 }
 
@@ -193,10 +196,9 @@ unsigned char* DataBlock::ENC(){
  This function decrypts the block. It uses makeIV() function to create IV and AES.DEC to encrypt the block 
  */
 unsigned char* DataBlock::DEC(){
-    AES* cipher = new AES();
+    AES cipher;
     makeIV(); //It will populate the iv parameter of the object
-    unsigned char * plaintext = cipher->DEC(block, BLOCK_SIZE-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
-    delete cipher;
+    unsigned char * plaintext = cipher.DEC(block, BLOCK_SIZE-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
     return plaintext;
 }
 
@@ -204,9 +206,8 @@ unsigned char* DataBlock::DEC(){
  This function is used to generate a random key using AES.keygen.
  */
 void DataBlock::generateKey(){
-    AES* cipher = new AES();
-    DataBlock::key = cipher->keyGen();
-    delete cipher;
+    AES cipher;
+    DataBlock::key = cipher.keyGen();
 }
 
 ///*!
@@ -266,7 +267,9 @@ void DataBlock::printBytes(string tag, char* value, uint32_t size){
  */
 void DataBlock::saveKeytoFile(){
     std::ofstream file;
-    file.open(keyFilename);
+//    file.open(keyFilename);
+	file.open("secret.txt");
+	file.close();
     printBytes("SavedFile1", key, 16);
     file.write((char*)key, 16);
     printBytes("SavedFile2", (char*)key, 16);
@@ -279,9 +282,11 @@ void DataBlock::saveKeytoFile(){
  */
 void DataBlock::loadKeyfromFile(){
     std::ifstream file;
-    file.open(keyFilename);
+//    file.open(keyFilename);
+	file.open("secret.txt");
     char key[16];
     file.read(key,16);
+	file.close();
 //    printBytes("ReadFile1", key, 16);
 //    DataBlock::key = (unsigned char*) key;
     memcpy(DataBlock::key, key, 16); ///key doesn't need to be changed to unsigned char* because values can be just read as unsigned char
@@ -295,35 +300,38 @@ void DataBlock::loadKeyfromFile(){
  */
 const bool DataBlock::isKeyFileStored(){
     std::ifstream file;
-    file.open(keyFilename);
-    if(file.good())
-        return true;
-    else
+//    file.open(keyFilename);
+	file.open("secret.txt");
+    if(file.good()){
+        file.close();
+		return true;
+	}
+    else{
+		file.close();
         return false;
+	}
 }
 
 void DataBlock::setupKey(){
-    if(!isKeyFileStored()){
+//    if(!isKeyFileStored()){
         if(!wasKeyGenerated){
             generateKey();
-            saveKeytoFile();
+        //    saveKeytoFile();
             wasKeyGenerated = true;
         }
-    }
-    else{
-        if(!wasKeyGenerated){
-            loadKeyfromFile();
-            wasKeyGenerated = true;
-        }
-    }
+  //  }
+    //else{
+       // if(!wasKeyGenerated){
+          //  loadKeyfromFile();
+      //      wasKeyGenerated = true;
+       // }
+   // }
 }
 
 /*!
  This function can be used to check if the block is occupied or not.
  */
 const bool DataBlock::isOccupied(){
-    if(higherFid)
-    cout << "Is Occupied";
     return higherFid ? true : false;
 }
 

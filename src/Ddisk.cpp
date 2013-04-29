@@ -59,12 +59,12 @@ void Ddisk::addBlocks(unsigned char* fileBytes, size_t filesize, fileID &fid, PR
 
 void Ddisk::makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid, size_t filesize){
     int counter = 0;
-    uint32_t numBlocks = (uint32_t)ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE);
-    unsigned char* blocks = new unsigned char[numBlocks]();
+    int32_t numBlocks = (int32_t)ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE);
+    unsigned char* blocks = new unsigned char[numBlocks*BLOCK_SIZE]();
     
-    for(; counter < numBlocks - 1; counter++){
+    for(; counter < numBlocks - 2; counter++){
         memcpy(&blocks[counter * BLOCK_SIZE], &fileBytes[counter*MAX_BLOCK_DATA_SIZE] , MAX_BLOCK_DATA_SIZE);
-        cout << "Processing Block " << counter << endl;
+        //cout << "Processing Block " << counter << endl;
 //        print("Blocks", &fileBytes[counter*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
         D[prSubset[counter]] = new DataBlock(prSubset[counter], fid, &blocks[counter * BLOCK_SIZE], MAX_BLOCK_DATA_SIZE);
 //        print("Decrypted Blocks", D[prSubset[counter]]->getDecrypted(), BLOCK_SIZE);

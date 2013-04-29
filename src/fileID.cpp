@@ -32,6 +32,7 @@ fileID::fileID(string filename){
 
 fileID::fileID(unsigned char* ID){
     initialize();
+	delete[] ID;
     this->ID = ID;
     parse();
 }
@@ -76,19 +77,11 @@ void fileID::compute(){
     for(int i = 0; i < 32; i++)
         cout << (int)hashedID[i];
     
-//    lowerID = &hashedID[4];
-//    higherID = PRP(hashedID, 4);
-    for(int i = 0; i < 4; i++)
-        cout << ID[i];
-    for(int i = 0; i < 28; i++)
-        cout << lowerID[i];
+    //lowerID = &hashedID[4];
+    //higherID = PRP(hashedID, 4);
     memcpy(lowerID, hashedID+4, 28);
     memcpy(higherID, PRP(hashedID, 4), 4);
     
-    for(int i = 0; i < 4; i ++)
-        cout << (int)higherID[i] << "\t";
-    for(int i = 0; i < 28; i++)
-        cout << (int) lowerID[i] << "\t";
     memcpy(ID, higherID, 4);
     memcpy(ID+4, lowerID, 28);
 }
