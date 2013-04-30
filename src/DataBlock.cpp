@@ -313,19 +313,19 @@ const bool DataBlock::isKeyFileStored(){
 }
 
 void DataBlock::setupKey(){
-//    if(!isKeyFileStored()){
+    if(!isKeyFileStored()){
         if(!wasKeyGenerated){
             generateKey();
-        //    saveKeytoFile();
+            saveKeytoFile();
             wasKeyGenerated = true;
         }
-  //  }
-    //else{
-       // if(!wasKeyGenerated){
-          //  loadKeyfromFile();
-      //      wasKeyGenerated = true;
-       // }
-   // }
+    }
+    else{
+        if(!wasKeyGenerated){
+            loadKeyfromFile();
+            wasKeyGenerated = true;
+        }
+    }
 }
 
 /*!

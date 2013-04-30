@@ -46,11 +46,11 @@ uint32_t* PRSubset::get(){ //modify it to uint32_t in other places
 }
 
 void PRSubset::generateSeed(){
-    uint32_t seed[1];
-    if(1)//rdrand_32(seed, 0))
-        this->seed = seed[0];
-    else
-        std::cerr << "RDRAND failed. It can be solved by changing the second parameter of rdrand_64 function to the number of required retries.";
+    //uint32_t seed[1];
+    //if(1)//rdrand_32(seed, 0))
+    this->seed = rand();
+    //else
+    //    std::cerr << "RDRAND failed. It can be solved by changing the second parameter of rdrand_64 function to the number of required retries.";
 }
 
 

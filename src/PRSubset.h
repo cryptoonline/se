@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <iostream>
 #include "parameters.h"
+#include <fstream>
 
 class PRSubset {
 private:

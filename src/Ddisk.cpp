@@ -29,7 +29,7 @@ Ddisk::Ddisk(uint32_t numBlocks){
 
 void Ddisk::addFile(string filename){
 	size_t size = readFileSize(filename);
-	PRSubset prSubset(size);
+	PRSubset prSubset(ceil((double)size/MAX_BLOCK_DATA_SIZE) * BLOW_UP);
 	addFile(filename, prSubset);
 }
 
@@ -48,8 +48,9 @@ void Ddisk::addFile(unsigned char* fileBytes, uint32_t fileSize, fileID &fid, PR
 
 void Ddisk::addBlocks(unsigned char* fileBytes, size_t filesize, fileID &fid, PRSubset &prSubset){
     vector<uint32_t> emptyBlocks = getEmptyBlocks(prSubset);
-    if(emptyBlocks.size()*MAX_BLOCK_DATA_SIZE < filesize){
-        cerr << "Not enough empty blocks";
+//	cout << "Required block: " << ceil((double)filesize/MAX_BLOCK_DATA_SIZE) << "\tAvailable blocks: " << emptyBlocks.size() << endl;
+	if(emptyBlocks.size()*MAX_BLOCK_DATA_SIZE < filesize){
+		cerr << "Not enough empty blocks" << endl;
         exit(1);
     }
     makeBlocks(fileBytes, emptyBlocks.data(), fid, filesize);

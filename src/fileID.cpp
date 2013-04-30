@@ -74,8 +74,6 @@ unsigned char* fileID::PRP(unsigned char* bytes, int32_t size){
 
 void fileID::compute(){
     unsigned char* hashedID = hmac(filename);
-    for(int i = 0; i < 32; i++)
-        cout << (int)hashedID[i];
     
     //lowerID = &hashedID[4];
     //higherID = PRP(hashedID, 4);
