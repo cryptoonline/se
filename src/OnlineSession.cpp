@@ -47,7 +47,7 @@ void OnlineSession::update(unsigned char* input, uint32_t size, string filename)
     TBlock tblock;
     tblock.set(filePrSubset->getSize(), filePrSubset->getSeed());
     writeT(fid.getPRPofHigherID(), tblock.get());
-    writeD(filePrSubset->get(), encryptedfileBlockstoBeWritten);
+    writeD(filePrSubset->get(), filePrSubset->getSize(), encryptedfileBlockstoBeWritten);
 }
 
 void OnlineSession::remove(){
@@ -75,8 +75,8 @@ void OnlineSession::getCRI(){
     criPrSubset = new PRSubset(tblock.getPrSubsetSize(), tblock.getPrSubsetSeed());
     uint32_t* blockLocations = criPrSubset->get();
     
-    unsigned char** criFile = readD(blockLocations);
     int32_t criNumBlocks = criPrSubset->getSize();
+    unsigned char** criFile = readD(blockLocations, criNumBlocks);
     
     criFileBlocks = new DataBlock*[criNumBlocks];
     for(int i = 0; i < criNumBlocks; i++){
@@ -87,15 +87,15 @@ void OnlineSession::getCRI(){
 
 bool OnlineSession::parseCRI(){
     int criFileBytes = criPrSubset->getSize() / BLOW_UP * MAX_BLOCK_DATA_SIZE;
-    criEntries = new unsigned char*[criFileBytes / 40]; //make 40 a parameter in parameters.h
-    for(int i = 0; i < criFileBytes / 40; i++){
-        criEntries[i] = new unsigned char[40];
+    criEntries = new unsigned char*[criFileBytes / CRI_ENTRY_SIZE]; //make 40 a parameter in parameters.h
+    for(int i = 0; i < criFileBytes / CRI_ENTRY_SIZE; i++){
+        criEntries[i] = new unsigned char[CRI_ENTRY_SIZE];
         if(i % MAX_BLOCK_DATA_SIZE == 0)
             i += BLOCK_SIZE - MAX_BLOCK_DATA_SIZE;
-        memcpy(criEntries[i], decryptedCriFile[i*40], 40);
+        memcpy(criEntries[i], decryptedCriFile[i*CRI_ENTRY_SIZE], CRI_ENTRY_SIZE);
     }
-
-    int32_t match = search(criEntries, fileCompleteID, criPrSubset->getSize() / BLOW_UP, 40, 8, 0);
+//make it use checkFileID
+    int32_t match = search(criEntries, fileCompleteID, criPrSubset->getSize() / BLOW_UP, CRI_ENTRY_SIZE, 8, 0);
     if(match != -1){
         filePrSubset = new PRSubset(*(uint32_t*)(criEntries[match]), *(uint32_t*)(criEntries[match]+4));
         return true;
@@ -111,8 +111,8 @@ bool OnlineSession::parseCRI(){
 
 void OnlineSession::getFile(){
     uint32_t* blockLocations = filePrSubset->get();
-    unsigned char** encryptedBlocksData = readD(blockLocations);
     int32_t prSubsetSize = filePrSubset->getSize();
+    unsigned char** encryptedBlocksData = readD(blockLocations, prSubsetSize);
     decryptedFileBlocksRead = new unsigned char*[prSubsetSize];
     fileDataRead = new unsigned char[prSubsetSize/BLOW_UP];
 
@@ -132,31 +132,27 @@ void OnlineSession::getFile(){
 }
 
 unsigned char* OnlineSession::readT(uint32_t TRecordIndex){
-	unsigned char command[] = "readT";
-	communicator.send(command);
-	communicator.send(static_cast<unsigned char*>(static_cast<void*>(&TRecordIndex)));
-	return communicator.receive();
+	unsigned char* TEntry = new unsigned char[T_BLOCK_SIZE];
+	communicator.tGet(TRecordIndex, reinterpret_cast<char*>(TEntry));
+	return TEntry;
 }
 
 void OnlineSession::writeT(uint32_t TRecordIndex, unsigned char* block){
-	unsigned char command[] = "writeT";
-	communicator.send(command);
-	communicator.send(static_cast<unsigned char*>(static_cast<void*>(&TRecordIndex)));
-	communicator.send(block);
+	communicator.tPut(TRecordIndex, reinterpret_cast<char*>(block));
 }
 
-unsigned char** OnlineSession::readD(uint32_t* blockLocations){
-	unsigned char command[] = "readD";
-	communicator.send(command);
-	communicator.send(static_cast<unsigned char*>(static_cast<void*>(blockLocations)));
-	return communicator.receive(true);
+unsigned char** OnlineSession::readD(uint32_t* blockLocations, uint32_t numBlocks){
+	unsigned char** blocks = new unsigned char*[numBlocks];
+	for(int i = 0; i < numBlocks; i++){
+		communicator.dGet(blockLocations[i], reinterpret_cast<char*>(blocks[i]));
+	}
+	return blocks;
 }
 
-void OnlineSession::writeD(uint32_t* blockLocations, unsigned char** blocks){
-	unsigned char command[] = "writeD";
-	communicator.send(command);
-	communicator.send(static_cast<unsigned char*>(static_cast<void*>(blockLocations)));
-	communicator.send(blocks);
+void OnlineSession::writeD(uint32_t* blockLocations, uint32_t numBlocks, unsigned char** blocks){
+	for(int i = 0; i < numBlocks; i++){
+		communicator.dPut(blockLocations[i], reinterpret_cast<char*>(blocks[i]));
+	}
 }
            
            

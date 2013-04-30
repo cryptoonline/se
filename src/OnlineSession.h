@@ -57,10 +57,10 @@ class OnlineSession {
     void addBlockLocation();
     
     unsigned char* readT(uint32_t TRecordIndex);
-    void writeT(uint32_t TRecordIndex, unsigned char* block);
+    void writeT(uint32_t TRecordIndex,  unsigned char* block);
     
-    unsigned char** readD(uint32_t* blockLocations);
-    void writeD(uint32_t* blockLocations, unsigned char** blocks);
+    unsigned char** readD(uint32_t* blockLocations, uint32_t numBlocks);
+    void writeD(uint32_t* blockLocations, uint32_t numBlocks, unsigned char** blocks);
     
 public:
     OnlineSession(Communicator &communicator);

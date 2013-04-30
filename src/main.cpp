@@ -59,8 +59,8 @@ int main(int argc, const char * argv[]){
 	BStore store(comm, "/Users/naveed/Desktop/Projects/Code/enron_mail_20110402_withoutheaders");
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	unsigned char* data = store.read("/Users/naveed/Desktop/Projects/Code/enron_mail_20110402_withoutheaders/maildir/zufferli-j/sent_items/8.");
-	for(int i = 0; i < 32; i++)
-		cout << (char)data[i];	
+//	for(int i = 0; i < 32; i++)
+//		cout << (char)data[i];	
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	return 0;
 }
