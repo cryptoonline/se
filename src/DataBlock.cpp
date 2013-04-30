@@ -269,12 +269,12 @@ void DataBlock::saveKeytoFile(){
     std::ofstream file;
 //    file.open(keyFilename);
 	file.open("secret.txt");
-	file.close();
     printBytes("SavedFile1", key, 16);
     file.write((char*)key, 16);
     printBytes("SavedFile2", (char*)key, 16);
 
     cout << endl << "Key stored!" << endl;
+	file.close();
 }
 
 /*!

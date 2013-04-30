@@ -120,6 +120,12 @@ void Ddisk::upload(){
     
 }
 
+void Ddisk::writeToDisk(){
+	ofstream file("data/D");
+	for(int i = 0; i < numBlocks; i++)
+		file.write(reinterpret_cast<char*>(D[i]->getEncrypted()), BLOCK_SIZE);
+}
+
 void Ddisk::print(string tag, uint32_t* subset, uint32_t size){
     for(int i = 0; i < size; i++){
         print(tag, D[subset[i]]->getDecrypted(), BLOCK_SIZE);

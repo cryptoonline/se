@@ -56,7 +56,7 @@ void print(string tag, char* value, uint32_t size){
 
 int main(int argc, const char * argv[]){
 	Communicator comm;
-	BStore store(comm, "/Users/naveed/Desktop/Projects/Code/enron_mail_20110402_withoutheaders");
+	BStore store(comm, "/Users/naveed/Desktop/Projects/Code/enron_mail_20110402_withoutheaders/maildir/allen-p");
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	unsigned char* data = store.read("/Users/naveed/Desktop/Projects/Code/enron_mail_20110402_withoutheaders/maildir/zufferli-j/sent_items/8.");
 //	for(int i = 0; i < 32; i++)

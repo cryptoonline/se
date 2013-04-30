@@ -40,6 +40,7 @@ public:
     void addBlock(uint64_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size);
     void finalize();
     void upload();
+	void writeToDisk();
     DataBlock** get();
     void print(string tag, unsigned char* value, uint32_t size);
     void print(string tag, char* value, uint32_t size);
