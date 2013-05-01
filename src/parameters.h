@@ -25,8 +25,12 @@ const uint16_t BLOW_UP = 4;
 
 const int16_t CRI_ENTRY_SIZE = 40;
 
+const int16_t KEY_SIZE = 16;
 
 /****************************************FileNames****************************************/ 
 //const char* D_file = "D";
 //const char* T_file = "T";
+const char D_KEYFILE[] = "/data/keys/D.KEY";
+const char T_KEYFILE[] = "/data/keys/T.KEY";
+
 #endif /* defined(__BlindStorage__parameters__) */

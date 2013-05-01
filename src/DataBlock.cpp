@@ -287,7 +287,6 @@ void DataBlock::loadKeyfromFile(){
     char key[16];
     file.read(key,16);
 	file.close();
-//    printBytes("ReadFile1", key, 16);
 //    DataBlock::key = (unsigned char*) key;
     memcpy(DataBlock::key, key, 16); ///key doesn't need to be changed to unsigned char* because values can be just read as unsigned char
 //    printBytes("ReadFile2", (unsigned char*) key, 16);
@@ -332,7 +331,8 @@ void DataBlock::setupKey(){
  This function can be used to check if the block is occupied or not.
  */
 const bool DataBlock::isOccupied(){
-    return higherFid ? true : false;
+    return higherFid;
+	//return higherFid ? true : false;
 }
 
 void DataBlock::encryptIfEmpty(){
