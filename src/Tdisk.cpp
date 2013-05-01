@@ -34,6 +34,6 @@ void Tdisk::finalize(Ddisk &D){
         PRSubset prSubset(prSubsetSize);
         
         D.addBlocks(static_cast<unsigned char*>(static_cast<void*>(cri.data())), cri.size()*sizeof(CRI), fid, prSubset);
-        T[*(uint32_t*)TRecordIndex]->set(prSubset.getSeed(), prSubset.getSize());
+        T[*(uint32_t*)TRecordIndex]->set(prSubset.getSeed(), prSubset.getSize(), *(uint32_t*)TRecordIndex);
     }
 }

@@ -16,7 +16,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <fstream.h>
+#include <fstream>
 
 // 4 byte size, 4 byte iv
 #define T_ENTRY_LENGTH 8

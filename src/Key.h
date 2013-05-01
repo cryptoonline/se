@@ -20,14 +20,14 @@ private:
 	
 	void generate();
 	bool isKeyPresentOnDisk();
+	void save();
+	void load();
+	void setup();
 	
 public:
 	Key(const char filename[]);
 	~Key();
 	char* get();
-	void save();
-	void load();
-	void setup();
 };
 
 #endif /* defined(__BlindStorage__Key__) */

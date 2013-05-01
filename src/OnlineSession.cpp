@@ -44,9 +44,11 @@ void OnlineSession::update(unsigned char* input, uint32_t size, string filename)
 	fileBlockstoBeWritten = D.get();
     for(int i = 0; i < filePrSubset->getSize(); i++)
         encryptedfileBlockstoBeWritten[i] = fileBlockstoBeWritten[i]->getEncrypted();
-    TBlock tblock;
-    tblock.set(filePrSubset->getSize(), filePrSubset->getSeed());
-    writeT(fid.getPRPofHigherID(), tblock.get());
+    if(tblock != NULL)
+		tblock->update(filePrSubset->getSize(), filePrSubset->getSeed());
+	else
+		cerr << "Access NULL pointer  at line " << __LINE__ << " in " << __PRETTY_FUNCTION__; 
+    writeT(fid.getPRPofHigherID(), tblock->getEncrypted());
     writeD(filePrSubset->get(), filePrSubset->getSize(), encryptedfileBlockstoBeWritten);
 }
 
@@ -70,9 +72,9 @@ void OnlineSession::rename(){
 void OnlineSession::getCRI(){
     uint32_t TRecordIndex = fid.getPRPofHigherID();
     unsigned char* block = readT(TRecordIndex);
-    TBlock tblock(block);
+    tblock = new TBlock(block, TRecordIndex);
 
-    criPrSubset = new PRSubset(tblock.getPrSubsetSize(), tblock.getPrSubsetSeed());
+    criPrSubset = new PRSubset(tblock->getPrSubsetSize(), tblock->getPrSubsetSeed());
     uint32_t* blockLocations = criPrSubset->get();
     
     int32_t criNumBlocks = criPrSubset->getSize();

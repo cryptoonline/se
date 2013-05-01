@@ -8,6 +8,7 @@
 Key::Key(const char filename[]){
 	key = new char[KEY_SIZE];
 	keyfile.open(filename);
+	setup();
 }
 
 Key::~Key(){

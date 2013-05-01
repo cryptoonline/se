@@ -38,7 +38,8 @@ class OnlineSession {
     
     DataBlock** fileBlockstoBeWritten;
     unsigned char** encryptedfileBlockstoBeWritten;
-    
+ 
+	TBlock* tblock;   
     
     
     
