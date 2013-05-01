@@ -9,9 +9,13 @@
 #include "Tdisk.h"
 
 Tdisk::Tdisk(){
-//    T = new TBlock*[MAX_T_SIZE];
+    T = new TBlock*[MAX_T_SIZE];
+	cout << endl << "In " << __FUNCTION__ << endl;
     for(int i = 0; i < MAX_T_SIZE; i++)
         T[i] = new TBlock();
+}
+
+Tdisk::~Tdisk(){
 }
 
 void Tdisk::addFile(fileID fid, PRSubset &prSubset){
@@ -36,4 +40,17 @@ void Tdisk::finalize(Ddisk &D){
         D.addBlocks(static_cast<unsigned char*>(static_cast<void*>(cri.data())), cri.size()*sizeof(CRI), fid, prSubset);
         T[*(uint32_t*)TRecordIndex]->set(prSubset.getSeed(), prSubset.getSize(), *(uint32_t*)TRecordIndex);
     }
+}
+
+void Tdisk::writeToDisk(){
+	ofstream file("data/T");
+	
+	for(int i = 0; i < MAX_T_SIZE; i++){
+		cout << i*100/MAX_T_SIZE << "\% blocks processed";
+		cout.flush();
+		cout << "\r";
+		cout << endl << T[i]->getEncrypted() << endl;
+		file.write(reinterpret_cast<char*>(T[i]->getEncrypted()), T_BLOCK_SIZE);
+	}
+	cout << endl;
 }

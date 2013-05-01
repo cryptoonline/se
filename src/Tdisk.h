@@ -22,7 +22,7 @@
 
 using namespace std;
 
-class Tdisk {
+class Tdisk{
 private:
     struct CRI{
         uint32_t prSubsetSeed;
@@ -30,7 +30,7 @@ private:
         unsigned char fid[32];
     };
     
-    TBlock* T[MAX_T_SIZE];
+    TBlock** T;
     __gnu_cxx::hash_map<uint32_t, vector<struct CRI> > map; //Higher 32 bits of value is storing seed and lower 32 bits are storing size
     uint32_t crHash(uint32_t input);
     uint32_t PRP(uint32_t input);
@@ -41,6 +41,7 @@ public:
     void addFile(fileID fid, PRSubset &prSubset);
     void finalize(Ddisk &D);
     void upload();
+	void writeToDisk();
     
 };
 

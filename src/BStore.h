@@ -13,6 +13,7 @@
 #include "Ddisk.h"
 #include "Communicator.h"
 #include "OnlineSession.h"
+#include "TDisk.h"
 
 using namespace std;
 
@@ -26,12 +27,14 @@ public:
 	unsigned char* update(string filename, unsigned char* updateFiledata);
 	void del(string filename);
 	void rename(string filename);
+	size_t readFileSize(string filename);
 
 private:
 	Communicator communicator;
 	vector<string> filesList;
 	void readFilesFromDirectory(string directoryPath);
 	Ddisk D;
+	Tdisk T;
 };
 
 #endif /* defined(__BlindStorge__BStore__) */

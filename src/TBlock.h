@@ -21,7 +21,7 @@ private:
     uint32_t index;
 	uint32_t prSubsetSize;
     uint32_t prSubsetSeed;
-    unsigned char* block; /// Format: seed(4 bytes) || size(4 bytes)
+    unsigned char* block; /// Format: seed(4 bytes) || size(4 bytes) || version(4 bytes))
 	unsigned char* encryptedBlock;
     static char* key;
 	char* iv;

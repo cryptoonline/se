@@ -123,8 +123,13 @@ void Ddisk::upload(){
 
 void Ddisk::writeToDisk(){
 	ofstream file("data/D");
-	for(int i = 0; i < numBlocks; i++)
-		file.write(reinterpret_cast<char*>(D[i]->getEncrypted()), BLOCK_SIZE);
+	for(int i = 0; i < numBlocks; i++){
+		cout << i*100/numBlocks << "\% blocks processed";
+		cout.flush();
+		cout << "\r";
+		file.write(reinterpret_cast<char*>(D[i]->getEncrypted()), BLOCK_SIZE);	
+	}
+	cout << endl;
 }
 
 void Ddisk::print(string tag, uint32_t* subset, uint32_t size){

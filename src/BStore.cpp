@@ -8,13 +8,22 @@
 BStore::BStore(Communicator &communicator, string directoryPath): D(TOTAL_BLOCKS){
 	this->communicator = communicator;
 	readFilesFromDirectory(directoryPath);
+	cout << "Processing files" << endl;
 	for(int i = 0; i < filesList.size(); i++){
 		//cout << __PRETTY_FUNCTION__ << "Processing file " << filesList[i] << endl;
-		if(i % 1000 == 0)
-			cout << (i*100)/filesList.size() << "\% i.e. " << i << "/" << filesList.size() << " processed" << endl;
-		D.addFile(filesList[i]);
+		cout << (i*100)/filesList.size() << "\% i.e. " << i << "/" << filesList.size() << " processed";
+		cout.flush();
+		cout << "\r";
+		PRSubset prSubset(readFileSize(filesList[i]));
+		D.addFile(filesList[i], prSubset);	
+		T.addFile(filesList[i], prSubset);
 	}
-	cout << "Writing files to disk";
+	T.finalize(D);
+	cout << "Writing T to disk" << endl;
+	T.writeToDisk();
+	
+	D.finalize();
+	cout << "Writing D to disk" << endl;
 	D.writeToDisk();
 }
 
@@ -70,4 +79,11 @@ void BStore::readFilesFromDirectory(string directory){
 		filesList.push_back(full_file_name);
     }
     closedir(dir);
+}
+
+size_t BStore::readFileSize(string filename){
+	ifstream file(filename.c_str());
+	file.seekg(0, std::ios::end);
+	size_t filesize = file.tellg();
+	return filesize;
 }
