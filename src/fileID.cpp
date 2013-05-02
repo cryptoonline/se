@@ -23,7 +23,7 @@ fileID::fileID(){
 
 fileID::fileID(string filename){
     initialize();
-        this->filename = filename;
+    this->filename = filename;
     compute();
     if(getPRPofHigherID() == 0){
         cerr << "Invalid higher fileID, 0 file id is reserved for empty file." << endl;
@@ -65,11 +65,12 @@ const unsigned char* fileID::getLowerID(){
 }
 
 unsigned char* fileID::hmac(string filename){
+	cout << endl << filename << endl;
     return sha.doFinal(filename);
 }
 
 uint32_t fileID::prf(unsigned char* bytes, int32_t size){
-	return prfunction.encrypt(bytes, size, 0x00FFFFFF);
+	return prfunction.encrypt(bytes, size, 0x000FFFFF);
 }
 
 void fileID::compute(){

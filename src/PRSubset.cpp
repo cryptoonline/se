@@ -29,8 +29,12 @@ void PRSubset::make(){
 //    std::random::mt19937 generator(seed);
 //    std::random::uniform_int_distribution<uint32_t> rand(0, TOTAL_BLOCKS);
     srand(seed);
-    for(int i = 0; i < size; i++)
+	std::cout << size << std::endl;
+	std::cout << TOTAL_BLOCKS << std::endl;
+    for(int i = 0; i < size; i++){
         subset[i] = rand() % TOTAL_BLOCKS;
+		//std::cout << subset[i];
+	}
 }
 
 uint32_t PRSubset::getSeed(){

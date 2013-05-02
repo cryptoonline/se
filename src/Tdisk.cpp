@@ -16,12 +16,14 @@ Tdisk::Tdisk(){
 		cout << '\r';
 		T[i] = new TBlock();
 	}
+	cout << endl;
 }
 
 Tdisk::~Tdisk(){
 }
 
-void Tdisk::addFile(fileID fid, PRSubset &prSubset){
+void Tdisk::addFile(string filename, PRSubset &prSubset){
+	fileID fid(filename);
     uint32_t TRecordIndex = fid.getPRPofHigherID();
     struct CRI cri;
     memcpy(cri.fid, fid.get(), 32);

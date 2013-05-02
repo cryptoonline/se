@@ -27,7 +27,7 @@ public:
 	unsigned char* update(string filename, unsigned char* updateFiledata);
 	void del(string filename);
 	void rename(string filename);
-	size_t readFileSize(string filename);
+	ifstream::pos_type readFileSize(string filename);
 
 private:
 	Communicator communicator;

@@ -32,13 +32,14 @@ const char* DataBlock::keyFilename = "secret.txt";
  */
 
 void DataBlock::initialize(){
-    //iv = new unsigned char[16]();
+    //iv = new unsigned char[16];
 	//cout << "IV address is " << iv;
     setupKey();
 //    fid = new fileID();    
 }
 
 DataBlock::DataBlock(uint32_t blockIndex){
+	//iv = new unsigned char[16];
 	this->block = new unsigned char[BLOCK_SIZE]();
     version = 0;
 	setupKey();
@@ -226,6 +227,7 @@ void DataBlock::generateKey(){
  MSB --- LSBofblockIndex - MSBofblockIndex, LSBofversion-MSBofversion, 
  */
 void DataBlock::makeIV(){
+	iv = new unsigned char[16];
     memcpy(iv, static_cast<unsigned char*>(static_cast<void*>(&blockIndex)), sizeof(blockIndex));
     memcpy(iv+8, static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(uint32_t));
 //    unsigned char zeros[8] = {0};

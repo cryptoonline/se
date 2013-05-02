@@ -14,10 +14,11 @@ BStore::BStore(Communicator &communicator, string directoryPath): D(TOTAL_BLOCKS
 		cout << ((double)i*100)/(double)filesList.size() << "\% i.e. " << i << "/" << filesList.size() << " processed";
 		cout.flush();
 		cout << "\r";
-		PRSubset prSubset(readFileSize(filesList[i]));
-		string name = filesList[i];
+		int32_t fileSize = readFileSize(filesList[i]);
+		uint32_t numBlocks =(uint32_t) ceil((double)fileSize/MAX_BLOCK_DATA_SIZE) * BLOW_UP;
+		PRSubset prSubset(numBlocks);
+		T.addFile(filesList[i], prSubset);
 		D.addFile(filesList[i], prSubset);	
-		T.addFile(name, prSubset);
 	}
 	cout << endl;
 	T.finalize(D);
@@ -74,18 +75,15 @@ void BStore::readFilesFromDirectory(string directory){
 
 		const bool is_directory = (st.st_mode & S_IFDIR) != 0;
 
-    	if (is_directory){
+    	if (is_directory)
 			readFilesFromDirectory(full_file_name);
-		}
-    	
-		filesList.push_back(full_file_name);
+		else
+			filesList.push_back(full_file_name);
     }
     closedir(dir);
 }
 
-size_t BStore::readFileSize(string filename){
-	ifstream file(filename.c_str());
-	file.seekg(0, std::ios::end);
-	size_t filesize = file.tellg();
-	return filesize;
+ifstream::pos_type BStore::readFileSize(string filename){
+	ifstream file(filename.c_str(), std::ios_base::in | std::ios_base::binary | std::ios_base::ate);
+	return file.tellg();
 }

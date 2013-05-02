@@ -36,7 +36,7 @@ private:
 public:
     Tdisk();
     ~Tdisk();
-    void addFile(fileID fid, PRSubset &prSubset);
+    void addFile(string filename, PRSubset &prSubset);
     void finalize(Ddisk &D);
     void upload();
 	void writeToDisk();
