@@ -65,7 +65,6 @@ const unsigned char* fileID::getLowerID(){
 }
 
 unsigned char* fileID::hmac(string filename){
-	cout << endl << filename << endl;
     return sha.doFinal(filename);
 }
 
@@ -106,6 +105,5 @@ void fileID::generateKeys(){
 //    prpKey.reset(ffx.keyGen());
     
     hashKey = sha.keyGen();
-//    cout << hashKey;
     prpKey = prfunction.keyGen();
 }

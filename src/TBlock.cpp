@@ -41,10 +41,6 @@ void TBlock::set(uint32_t prSubsetSize, uint32_t prSubsetSeed, uint32_t index){
 	setupKey();
    // block = new unsigned char[sizeof(this->prSubsetSize) + sizeof(this->prSubsetSeed) + sizeof(version)];
     make();
-	for(int i = 0; i < 12; i++){
-		cout <<(int) block[i] << '\t';
-	}
-	cout << endl;
 }
 
 void TBlock::update(uint32_t prSubsetSize, uint32_t prSubsetSeed){

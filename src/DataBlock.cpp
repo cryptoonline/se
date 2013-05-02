@@ -33,7 +33,6 @@ const char* DataBlock::keyFilename = "secret.txt";
 
 void DataBlock::initialize(){
     //iv = new unsigned char[16];
-	//cout << "IV address is " << iv;
     setupKey();
 //    fid = new fileID();    
 }
@@ -59,7 +58,6 @@ DataBlock::DataBlock(uint32_t blockIndex, unsigned char* block){
 }
 
 DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size = MAX_BLOCK_DATA_SIZE){
-    //cout << "Processing block " << blockIndex << endl;
 	//initialize();
 //	iv[16] = {0};
 	this->blockIndex = blockIndex;

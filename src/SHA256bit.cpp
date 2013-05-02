@@ -24,15 +24,8 @@ unsigned char* SHA256bit::doFinal(string filename){
     unsigned char* hash = new unsigned char[CryptoPP::SHA256::DIGESTSIZE]();
     
 //    CryptoPP::SHA().CalculateDigest(hash, (unsigned char*)filename.c_str(), 4);
-    
-   
-        
     CryptoPP::HMAC<CryptoPP::SHA256>(key,keyLength).
     CalculateDigest(hmac, (unsigned char*)filename.c_str(), filename.length());
-    
-//    for(int i = 0; i < 32; i++)
-//        cout << (int)hmac[i];
-    
     return hmac;
 }
 
