@@ -27,7 +27,7 @@ using std::string;
 class DataBlock{
 public:
     void initialize();
-    DataBlock();
+    DataBlock(uint32_t blockIndex);
     DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size);
     DataBlock(uint32_t blockIndex, unsigned char* block);
     ~DataBlock();

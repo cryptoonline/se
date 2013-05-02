@@ -13,7 +13,8 @@
 #include <iostream>
 
 #include "SHA256bit.h"
-#include "FFX.h"
+#include "PRF.h"
+#include "parameters.h"
 
 using namespace std;
 
@@ -32,8 +33,8 @@ private:
     void compute();
     void parse();
     
-    FFX ffx;
-    unsigned char* PRP(unsigned char* bytes, int32_t size);
+    PRF prfunction;
+    uint32_t prf(unsigned char* bytes, int32_t size);
     
     SHA256bit sha;
     unsigned char* hmac(string filename);

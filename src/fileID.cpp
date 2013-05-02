@@ -68,8 +68,8 @@ unsigned char* fileID::hmac(string filename){
     return sha.doFinal(filename);
 }
 
-unsigned char* fileID::PRP(unsigned char* bytes, int32_t size){
-    return ffx.encrypt(bytes);
+uint32_t fileID::prf(unsigned char* bytes, int32_t size){
+	return prfunction.encrypt(bytes, size, 0x00FFFFFF);
 }
 
 void fileID::compute(){
@@ -78,7 +78,9 @@ void fileID::compute(){
     //lowerID = &hashedID[4];
     //higherID = PRP(hashedID, 4);
     memcpy(lowerID, hashedID+4, 28);
-    memcpy(higherID, PRP(hashedID, 4), 4);
+
+	uint32_t TRecordIndex = prf(hashedID, 32);
+    memcpy(higherID, static_cast<unsigned char*>(static_cast<void*>(&TRecordIndex)), 4);
     
     memcpy(ID, higherID, 4);
     memcpy(ID+4, lowerID, 28);
@@ -104,5 +106,5 @@ void fileID::generateKeys(){
     
     hashKey = sha.keyGen();
 //    cout << hashKey;
-    prpKey = ffx.keyGen();
+    prpKey = prfunction.keyGen();
 }

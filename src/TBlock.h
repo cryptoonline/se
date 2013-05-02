@@ -21,10 +21,10 @@ private:
     uint32_t index;
 	uint32_t prSubsetSize;
     uint32_t prSubsetSeed;
-    unsigned char* block; /// Format: seed(4 bytes) || size(4 bytes) || version(4 bytes))
-	unsigned char* encryptedBlock;
+    unsigned char block[12]; /// Format: seed(4 bytes) || size(4 bytes) || version(4 bytes))
+	unsigned char encryptedBlock[12];
     static char* key;
-	char* iv;
+	char iv[16];
 	static bool wasKeyGenerated;
 		
 	void make();

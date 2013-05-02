@@ -11,13 +11,15 @@ BStore::BStore(Communicator &communicator, string directoryPath): D(TOTAL_BLOCKS
 	cout << "Processing files" << endl;
 	for(int i = 0; i < filesList.size(); i++){
 		//cout << __PRETTY_FUNCTION__ << "Processing file " << filesList[i] << endl;
-		cout << (i*100)/filesList.size() << "\% i.e. " << i << "/" << filesList.size() << " processed";
+		cout << ((double)i*100)/(double)filesList.size() << "\% i.e. " << i << "/" << filesList.size() << " processed";
 		cout.flush();
 		cout << "\r";
 		PRSubset prSubset(readFileSize(filesList[i]));
+		string name = filesList[i];
 		D.addFile(filesList[i], prSubset);	
-		T.addFile(filesList[i], prSubset);
+		T.addFile(name, prSubset);
 	}
+	cout << endl;
 	T.finalize(D);
 	cout << "Writing T to disk" << endl;
 	T.writeToDisk();

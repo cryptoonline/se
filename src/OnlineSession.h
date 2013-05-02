@@ -14,7 +14,7 @@
 #include "Communicator.h"
 #include "PRSubset.h"
 #include "Ddisk.h"
-#include "FFX.h"
+#include "PRF.h"
 #include "TBlock.h"
 
 using namespace std;

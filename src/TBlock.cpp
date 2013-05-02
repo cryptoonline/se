@@ -21,9 +21,10 @@ TBlock::~TBlock(){
 }
 
 TBlock::TBlock(unsigned char* encryptedBlock, uint32_t index){
-	iv = new char[16]();
-	block = new unsigned char[12];
-	this->encryptedBlock = encryptedBlock;
+	//iv = new char[16]();
+	//block = new unsigned char[12];
+	//this->encryptedBlock = encryptedBlock;
+	memcpy(this->encryptedBlock, encryptedBlock, 12);
 	this->index = index;
 	DEC();
 	setupKey();
@@ -31,14 +32,14 @@ TBlock::TBlock(unsigned char* encryptedBlock, uint32_t index){
 }
 
 void TBlock::set(uint32_t prSubsetSize, uint32_t prSubsetSeed, uint32_t index){
-	iv = new char[16];
-	encryptedBlock = new unsigned char[12];
+	//iv = new char[16];
+	//encryptedBlock = new unsigned char[12];
     this->prSubsetSize = prSubsetSize;
     this->prSubsetSeed = prSubsetSeed;
 	this->index = index;
 	version = 0;
 	setupKey();
-    block = new unsigned char[sizeof(this->prSubsetSize) + sizeof(this->prSubsetSeed) + sizeof(version)];
+   // block = new unsigned char[sizeof(this->prSubsetSize) + sizeof(this->prSubsetSeed) + sizeof(version)];
     make();
 	for(int i = 0; i < 12; i++){
 		cout <<(int) block[i] << '\t';

@@ -10,6 +10,8 @@
 #define __BlindStorage__AES__
 
 #include <iostream>
+#include <stdint.h>
+#include <math.h>
 
 #include "cryptopp562/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
@@ -63,7 +65,9 @@ public:
     byte* keyGen();
     byte* ENC(byte* plaintext, uint32_t size, byte* key, byte* iv);
     byte* DEC(byte* ciphertext, uint32_t size, byte* key, byte* iv);
-    void print(string tag, string value);
+    byte* ENC(byte* plaintext, uint32_t size, byte* key);
+	byte* DEC(byte* ciphertext, uint32_t size, byte* key);
+	void print(string tag, string value);
     void print(string tag, byte* value);
   };
 

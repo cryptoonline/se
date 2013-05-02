@@ -16,6 +16,7 @@
 //  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
 //
 
+
 AES::AES(){
     key = new byte[CryptoPP::AES::DEFAULT_KEYLENGTH];
 }
@@ -33,10 +34,10 @@ byte* AES::keyGen(){
     
 byte* AES::ENC(byte* plaintext, uint32_t size, byte* key, byte* iv){
     ciphertext = new byte[size];
-    CryptoPP::CTR_Mode<CryptoPP::AES>::Encryption Encryptor;
+	CryptoPP::CTR_Mode<CryptoPP::AES>::Encryption Encryptor;
     Encryptor.SetKeyWithIV(key, 16, iv);
     Encryptor.ProcessData(ciphertext, plaintext, size);
-    return ciphertext;
+	return ciphertext;
 }
 
 byte* AES::DEC(byte* ciphertext, uint32_t size, byte* key, byte* iv){
@@ -49,6 +50,24 @@ byte* AES::DEC(byte* ciphertext, uint32_t size, byte* key, byte* iv){
     return plaintext;
 }
 
+byte* AES::ENC(byte* plaintext, uint32_t size, byte* key){
+	byte iv[16];	memset(iv, 0, 16);
+	//ciphertext = new byte[(uint32_t)ceil((double)size/16) * size];
+	ciphertext = new byte[32];
+	CryptoPP::CBC_CTS_Mode<CryptoPP::AES>::Encryption Encryptor;
+	Encryptor.SetKeyWithIV(key, 16, iv);
+	Encryptor.ProcessData(ciphertext, plaintext, size);
+	return ciphertext;	
+}
+
+byte* AES::DEC(byte* ciphertext, uint32_t size, byte* key){
+	byte iv[16];	memset(iv, 0, 16);
+	plaintext = new byte[size];
+	CryptoPP::CBC_Mode<CryptoPP::AES>::Decryption Decryptor;
+	Decryptor.SetKeyWithIV(key, 16, iv);
+	Decryptor.ProcessData(plaintext, ciphertext, size);
+	return plaintext;
+}
 void AES::print(string tag, string value){
     cout << endl << "<" << tag << ">" << value << "</" << tag << ">" << endl;
 }

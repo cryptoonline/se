@@ -10,6 +10,7 @@
 #define __BlindStorage__PRSubset__
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <iostream>
 #include "parameters.h"
 #include <fstream>

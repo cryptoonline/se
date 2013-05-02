@@ -10,9 +10,12 @@
 
 Tdisk::Tdisk(){
     T = new TBlock*[MAX_T_SIZE];
-	cout << endl << "In " << __FUNCTION__ << endl;
-    for(int i = 0; i < MAX_T_SIZE; i++)
-        T[i] = new TBlock();
+    for(int i = 0; i < MAX_T_SIZE; i++){
+        cout << (double)i*100/(double)MAX_T_SIZE << "\% T blocks initialized";
+		cout.flush();
+		cout << '\r';
+		T[i] = new TBlock();
+	}
 }
 
 Tdisk::~Tdisk(){
@@ -49,7 +52,6 @@ void Tdisk::writeToDisk(){
 		cout << i*100/MAX_T_SIZE << "\% blocks processed";
 		cout.flush();
 		cout << "\r";
-		cout << endl << T[i]->getEncrypted() << endl;
 		file.write(reinterpret_cast<char*>(T[i]->getEncrypted()), T_BLOCK_SIZE);
 	}
 	cout << endl;

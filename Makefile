@@ -2,8 +2,8 @@ CC=g++
 RM=rm
 
 CFLAGS=-c -Wall -ggdb
-LDFLAGS=-lcryptopp -Lsrc/cryptopp562
-SOURCES=AES.cpp Communicator.cpp DataBlock.cpp Ddisk.cpp FFX.cpp OnlineSession.cpp PRSubset.cpp SHA256bit.cpp TBlock.cpp Tdisk.cpp Tfile.cpp fileID.cpp BStore.cpp Key.cpp main.cpp
+LDFLAGS=-lcryptopp
+SOURCES=AES.cpp Communicator.cpp DataBlock.cpp Ddisk.cpp PRF.cpp OnlineSession.cpp PRSubset.cpp SHA256bit.cpp TBlock.cpp Tdisk.cpp Tfile.cpp fileID.cpp BStore.cpp Key.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=main
 

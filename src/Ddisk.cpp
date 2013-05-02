@@ -13,14 +13,14 @@ Ddisk::Ddisk(Communicator communicator){
     numBlocks = TOTAL_BLOCKS;
     D = new DataBlock*[numBlocks];
     for(int i = 0; i < numBlocks; i++)
-        D[i] = new DataBlock();
+        D[i] = new DataBlock(i);
 }
 
 Ddisk::Ddisk(uint32_t numBlocks){
     this->numBlocks = numBlocks;
     D = new DataBlock*[numBlocks];
     for(int i = 0; i < numBlocks; i++)
-        D[i] = new DataBlock();
+        D[i] = new DataBlock(i);
 }
 
 //void Ddisk::addBlock(uint64_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size){

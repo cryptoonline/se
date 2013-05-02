@@ -13,7 +13,7 @@
 #include "Ddisk.h"
 #include "Communicator.h"
 #include "OnlineSession.h"
-#include "TDisk.h"
+#include "Tdisk.h"
 
 using namespace std;
 

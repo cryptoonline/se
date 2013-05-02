@@ -38,15 +38,17 @@ void DataBlock::initialize(){
 //    fid = new fileID();    
 }
 
-DataBlock::DataBlock(){
+DataBlock::DataBlock(uint32_t blockIndex){
 	this->block = new unsigned char[BLOCK_SIZE]();
     version = 0;
+	setupKey();
+	this->blockIndex = blockIndex;
 }
 
 DataBlock::DataBlock(uint32_t blockIndex, unsigned char* block){
 //    initialize();
 //	iv[16] = {0};
-	iv = new unsigned char[16]();
+	this->blockIndex = blockIndex;
 	setupKey();
     if(this->block == NULL)
         delete[] this->block;
@@ -59,7 +61,7 @@ DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, u
     //cout << "Processing block " << blockIndex << endl;
 	//initialize();
 //	iv[16] = {0};
-	iv = new unsigned char[16]();
+	this->blockIndex = blockIndex;
 	setupKey();
     version = 0;
     higherFid = fid.getPRPofHigherID();
@@ -73,9 +75,8 @@ DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, u
  */
 DataBlock::~DataBlock(){
     delete[] rawData;
-    //delete[] key;
-    delete[] iv;
-	delete[] block;
+   // delete[] key;
+    //delete[] iv;
 }
     
 /*!
@@ -265,11 +266,69 @@ void DataBlock::printBytes(string tag, char* value, uint32_t size){
     cout << endl << "**********************" << tag << " (end)**********************" << endl;
 }
 
+/*!
+ This function saves the key to the disk.
+ */
+void DataBlock::saveKeytoFile(){
+    std::ofstream file;
+//    file.open(keyFilename);
+	file.open("secret.txt");
+    printBytes("SavedFile1", key, 16);
+    file.write((char*)key, 16);
+    printBytes("SavedFile2", (char*)key, 16);
+
+    cout << endl << "Key stored!" << endl;
+	file.close();
+}
+
+/*!
+ This function loads the key from the disk. DataBlock::key = (unsigned char*) key; messes up the key (I don't know the reason), but memcpy works fine. I keep note of this to learn why the above statement doesn't work.
+ */
+void DataBlock::loadKeyfromFile(){
+    std::ifstream file;
+//    file.open(keyFilename);
+	file.open("secret.txt");
+    char key[16];
+    file.read(key,16);
+	file.close();
+//    printBytes("ReadFile1", key, 16);
+//    DataBlock::key = (unsigned char*) key;
+    memcpy(DataBlock::key, key, 16); ///key doesn't need to be changed to unsigned char* because values can be just read as unsigned char
+//    printBytes("ReadFile2", (unsigned char*) key, 16);
+//    printBytes("DataBlockReadkey", DataBlock::key, 16);
+//    cout << endl << "Key read!" << endl;
+}
+
+/*!
+ This function checks if the key file is present on disk. It's used to check that if the key is present on the disk, the object will not try to generate a new key.
+ */
+const bool DataBlock::isKeyFileStored(){
+    std::ifstream file;
+//    file.open(keyFilename);
+	file.open("secret.txt");
+    if(file.good()){
+        file.close();
+		return true;
+	}
+    else{
+		file.close();
+        return false;
+	}
+}
+
 void DataBlock::setupKey(){
-    if(!wasKeyGenerated){
-		Key key(D_KEYFILE);
-		DataBlock::key = reinterpret_cast<unsigned char*>(key.get());
-    	wasKeyGenerated = true;
+    if(!isKeyFileStored()){
+        if(!wasKeyGenerated){
+            generateKey();
+            saveKeytoFile();
+            wasKeyGenerated = true;
+        }
+    }
+    else{
+        if(!wasKeyGenerated){
+            loadKeyfromFile();
+            wasKeyGenerated = true;
+        }
     }
 }
 
@@ -277,8 +336,7 @@ void DataBlock::setupKey(){
  This function can be used to check if the block is occupied or not.
  */
 const bool DataBlock::isOccupied(){
-    return higherFid;
-	//return higherFid ? true : false;
+    return higherFid ? true : false;
 }
 
 void DataBlock::encryptIfEmpty(){
