@@ -7,7 +7,7 @@
 //
 
 #include "PRF.h"
-unsigned char* PRF::key = new unsigned char[16];
+unsigned char* PRF::key = new unsigned char[16]();
 
 uint32_t PRF::encrypt(unsigned char* plaintext, uint16_t size, uint32_t bitMask){
     AES cipher;
@@ -19,6 +19,7 @@ uint32_t PRF::encrypt(unsigned char* plaintext, uint16_t size, uint32_t bitMask)
 
 unsigned char* PRF::keyGen(){
     AES cipher;
-	key = cipher.keyGen();
+	//key = cipher.keyGen();
+	memset(key, 0, 16);
 	return key;
 }

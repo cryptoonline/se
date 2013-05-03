@@ -12,12 +12,15 @@
 #include <fstream>
 
 using std::ifstream;
+using std::ofstream;
+using std::string;
 
 class Key{
 private:
 	char* key;
-	std::fstream keyfile;
-	
+	std::ifstream keyfileRead;
+	std::ofstream keyfileWrite;
+	string filename;	
 	void generate();
 	bool isKeyPresentOnDisk();
 	void save();
@@ -25,7 +28,7 @@ private:
 	void setup();
 	
 public:
-	Key(const char filename[]);
+	Key(string filename);
 	~Key();
 	char* get();
 };

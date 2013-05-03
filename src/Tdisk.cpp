@@ -24,11 +24,18 @@ Tdisk::~Tdisk(){
 
 void Tdisk::addFile(string filename, PRSubset &prSubset){
 	fileID fid(filename);
+	cout << "Filename is " << filename << endl;
     uint32_t TRecordIndex = fid.getPRPofHigherID();
-    struct CRI cri;
+    cout << "Index in " << __FUNCTION__ << " is " << TRecordIndex << endl;
+	struct CRI cri;
     memcpy(cri.fid, fid.get(), 32);
+	unsigned char* FID = fid.get();
+	//for( int i = 0; i < 32; i++)
+	//	printf("%02X ", FID[i]);
+	//cout << endl;
     cri.prSubsetSeed = prSubset.getSeed();
     cri.prSubsetSize = prSubset.getSize();
+
     map[TRecordIndex].push_back(cri);
 }
 
@@ -44,11 +51,29 @@ void Tdisk::finalize(Ddisk &D){
         
         D.addBlocks(static_cast<unsigned char*>(static_cast<void*>(cri.data())), cri.size()*sizeof(CRI), fid, prSubset);
         T[*(uint32_t*)TRecordIndex]->set(prSubset.getSeed(), prSubset.getSize(), *(uint32_t*)TRecordIndex);
-    }
+		
+		fileID fidcompare("/home/naveed2/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.");
+
+			cout << "************************************Unencrypted****************************************************************" << endl; 
+			cout << prSubset.getSeed() << endl;
+			cout << prSubset.getSize() << endl;
+			cout << *(uint32_t*)TRecordIndex <<endl;
+			unsigned char* blockencrypted = T[*(uint32_t*)TRecordIndex]->getEncrypted();
+			unsigned char* blockdecrypted = T[*(uint32_t*)TRecordIndex]->getDecrypted();
+			for(int i = 0; i < 12; i++)
+				printf("%02X ", blockencrypted[i]);
+			cout << endl;
+			for(int i = 0; i < 12; i++)
+				printf("%02X ", blockdecrypted[i]);
+			cout << endl;
+			cout << "******************************************************************************************************" << endl; 
+		}			 
+	for(int i = 0; i < MAX_T_SIZE; i++)
+		T[i]->encryptIfEmpty();
 }
 
 void Tdisk::writeToDisk(){
-	ofstream file("data/T");
+	ofstream file("data/T", std::ios_base::binary);
 	
 	for(int i = 0; i < MAX_T_SIZE; i++){
 		cout << i*100/MAX_T_SIZE << "\% blocks processed";

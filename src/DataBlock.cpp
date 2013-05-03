@@ -340,5 +340,7 @@ const bool DataBlock::isOccupied(){
 }
 
 void DataBlock::encryptIfEmpty(){
-    ENC();
+    unsigned char* ciphertext = ENC();
+	memcpy(block, ciphertext, BLOCK_SIZE-(uint32_t)sizeof(version));
+	delete ciphertext;
 }

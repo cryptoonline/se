@@ -1,18 +1,19 @@
-#ifndef BCLIENT_H_
-#define BCLIENT_H_
+#ifndef __BlindStorage__Communicator__
+#define __BlindStorage__Communicator__
 
 #include <cstdlib>
+#include "parameters.h"
 
 using std::string;
 
-#define D_BLOCK_SIZE 1024
+#define D_BLOCK_SIZE BLOCK_SIZE
 // 4 byte size, 4 byte iv
-#define T_ENTRY_LENGTH 8
+#define T_ENTRY_LENGTH T_BLOCK_SIZE
 // // D_BLOCK_SIZE, 1 byte pad, 1 byte fid, 4 byte version
 #define D_ENTRY_LENGTH (D_BLOCK_SIZE + 6)
 
-#define T_LENGTH 65536
-#define D_LENGTH 65536
+#define T_LENGTH MAX_T_SIZE 
+#define D_LENGTH BLOCK_SIZE
 
 #define REQ_T_GET		(uint8_t)0
 #define REQ_T_PUT		(uint8_t)1
@@ -83,4 +84,4 @@ private:
 	int verbose;
 };
 
-#endif /* BCLIENT_H_ */
+#endif /* defined(__BlindStorage__Communicator__) */

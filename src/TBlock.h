@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <iostream>
 #include "parameters.h"
-#include "AES.h"
+#include "Blowfish.h"
 #include "Key.h"
 
 class TBlock {
@@ -24,7 +24,7 @@ private:
     unsigned char block[12]; /// Format: seed(4 bytes) || size(4 bytes) || version(4 bytes))
 	unsigned char encryptedBlock[12];
     static char* key;
-	char iv[16];
+	char iv[8];
 	static bool wasKeyGenerated;
 		
 	void make();
@@ -42,9 +42,12 @@ public:
     void set(uint32_t prSubsetSize, uint32_t prSubsetSeed, uint32_t index);
     uint32_t getPrSubsetSize();
     uint32_t getPrSubsetSeed();
-
 	void update(uint32_t prSubsetSize, uint32_t prSubsetSeed);
-    unsigned char* getEncrypted();
+    
+	bool isOccupied();
+	void encryptIfEmpty();
+
+	unsigned char* getEncrypted();
 	unsigned char* getDecrypted();
 };
 

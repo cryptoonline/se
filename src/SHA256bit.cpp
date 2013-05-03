@@ -13,8 +13,9 @@ SHA256bit::SHA256bit(){
 }
 
 const unsigned char * SHA256bit::keyGen(){
-    AutoSeededRandomPool prng;
-    prng.GenerateBlock(key, keyLength);
+   // AutoSeededRandomPool prng;
+    //prng.GenerateBlock(key, keyLength);
+    memset(key, 0, 16);
     return key;
 }
 

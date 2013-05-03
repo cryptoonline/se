@@ -22,6 +22,7 @@ fileID::fileID(){
 }
 
 fileID::fileID(string filename){
+	cout << "Filename is " << filename << endl;
     initialize();
     this->filename = filename;
     compute();
@@ -69,7 +70,7 @@ unsigned char* fileID::hmac(string filename){
 }
 
 uint32_t fileID::prf(unsigned char* bytes, int32_t size){
-	return prfunction.encrypt(bytes, size, 0x000FFFFF);
+	return prfunction.encrypt(bytes, size, 0x00001FFF);
 }
 
 void fileID::compute(){

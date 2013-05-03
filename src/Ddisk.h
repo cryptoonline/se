@@ -31,6 +31,7 @@ private:
     
     
 public:
+	Ddisk();
     Ddisk(Communicator communicator);
     Ddisk(uint32_t numBlocks);
     void addFile(string filename);

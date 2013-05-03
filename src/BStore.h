@@ -3,8 +3,8 @@
 // BlindStorage
 //
 
-#ifndef __BlindStorage__BStore.h__
-#define __BlindStorage__BStore.h__
+#ifndef __BlindStorage__BStore__
+#define __BlindStorage__BStore__
 
 #include <iostream>
 #include <dirent.h>
@@ -19,12 +19,13 @@ using namespace std;
 
 class BStore{
 public:
+	BStore(Communicator &communicator);
 	BStore(Communicator &communicator, string path);
 	~BStore();
 	void upload();
 	unsigned char* read(string filename);
-	void write(string filename, unsigned char* filedata);
-	unsigned char* update(string filename, unsigned char* updateFiledata);
+	void write(string filename, unsigned char* filedata, uint32_t size);
+	unsigned char* update(string filename, unsigned char* updateFiledata, uint32_t size);
 	void del(string filename);
 	void rename(string filename);
 	ifstream::pos_type readFileSize(string filename);

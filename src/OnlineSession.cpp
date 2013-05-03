@@ -10,10 +10,14 @@
 
 OnlineSession::OnlineSession(Communicator &communicator){
     this->communicator = communicator;
+	this->communicator.connect();
 //    this->criPrSubset = criPrSubset;
 //    this->criFid = criFid;
 //    this->filename = filename;
 //    this->fileCompleteID = fileFid.get();
+}
+
+OnlineSession::~OnlineSession(){
 }
 
 unsigned char* OnlineSession::get(string filename, PRSubset* prSubset){
@@ -71,9 +75,12 @@ void OnlineSession::rename(){
 
 void OnlineSession::getCRI(){
     uint32_t TRecordIndex = fid.getPRPofHigherID();
-    unsigned char* block = readT(TRecordIndex);
+	cout << "Index in " << __FUNCTION__ << " is " << TRecordIndex << endl;
+    //communicator.connect();
+	unsigned char* block = readT(TRecordIndex);
     tblock = new TBlock(block, TRecordIndex);
 
+	cout << __FUNCTION__ << " Size is " << tblock->getPrSubsetSize() << " Seed is " << tblock->getPrSubsetSeed() << endl;
     criPrSubset = new PRSubset(tblock->getPrSubsetSize(), tblock->getPrSubsetSeed());
     uint32_t* blockLocations = criPrSubset->get();
     
@@ -144,11 +151,12 @@ void OnlineSession::writeT(uint32_t TRecordIndex, unsigned char* block){
 }
 
 unsigned char** OnlineSession::readD(uint32_t* blockLocations, uint32_t numBlocks){
-	unsigned char** blocks = new unsigned char*[numBlocks];
-	for(int i = 0; i < numBlocks; i++){
-		communicator.dGet(blockLocations[i], reinterpret_cast<char*>(blocks[i]));
-	}
-	return blocks;
+	char** blocks = new char*[numBlocks];
+	//for(int i = 0; i < numBlocks; i++){
+	//	communicator.dGet(blockLocations[i], reinterpret_cast<char*>(blocks[i]));
+	//}
+	communicator.dGet(blockLocations, blocks, numBlocks);
+	return reinterpret_cast<unsigned char**>(blocks);
 }
 
 void OnlineSession::writeD(uint32_t* blockLocations, uint32_t numBlocks, unsigned char** blocks){

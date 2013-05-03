@@ -45,6 +45,13 @@ void Communicator::tGet(t_index_t index, char * tEntry)
 	writeReq(req);
 
 	n = read(sockfd, tEntry, T_ENTRY_LENGTH);
+	cout << "TEntry in tGet " << endl;
+	for(int i = 0; i < 12; i++)
+		printf("%02X ", (unsigned char)tEntry[i]);
+	cout << endl;
+
+	cout << "Index in tGet is " << index << endl;
+
 	sktError(n, T_ENTRY_LENGTH);
 	if(verbose)
 		cout << "[T_GET] received TEntry" << endl;
@@ -58,6 +65,13 @@ void Communicator::tPut(t_index_t index, const char * tEntry)
 	req.index.tIndex = index;
 
 	writeReq(req);
+
+	cout << "TEntry in tPut " << endl;
+	for(int i = 0; i < 12; i++)
+		printf("%02X ", tEntry[i]);
+	cout << endl;
+	cout << "Index in tPut is " << index << endl;
+
 	n = write(sockfd, tEntry, T_ENTRY_LENGTH);
 	sktError(n, T_ENTRY_LENGTH);
 	if(verbose)

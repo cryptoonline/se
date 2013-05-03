@@ -8,6 +8,9 @@
 
 #include "Ddisk.h"
 
+Ddisk::Ddisk(){
+}
+
 Ddisk::Ddisk(Communicator communicator){
     this->communicator = communicator;
     numBlocks = TOTAL_BLOCKS;
@@ -122,7 +125,7 @@ void Ddisk::upload(){
 }
 
 void Ddisk::writeToDisk(){
-	ofstream file("data/D");
+	ofstream file("data/D", std::ios_base::binary);
 	for(int i = 0; i < numBlocks; i++){
 		cout << i*100/numBlocks << "\% blocks processed";
 		cout.flush();

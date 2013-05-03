@@ -5,14 +5,13 @@
 
 #include "Key.h"
 
-Key::Key(const char filename[]){
+Key::Key(string filename){
+	this->filename = filename;
 	key = new char[KEY_SIZE];
-	keyfile.open(filename);
 	setup();
 }
 
 Key::~Key(){
-	keyfile.close();
 	delete[] key;
 }
 
@@ -21,12 +20,20 @@ char* Key::get(){
 }
 
 void Key::save(){
-	keyfile.write(key, KEY_SIZE);
+	keyfileWrite.open(filename.c_str());
+	keyfileWrite.write(key, KEY_SIZE);
+	if(!keyfileWrite.good())
+		cerr << "File is not good " << __LINE__;
 }
 
 
 void Key::load(){
-	keyfile.read(key, KEY_SIZE);	
+	if(!keyfileRead.good()){
+	keyfileRead.open(filename.c_str());
+		cerr << "File is not good " << __LINE__;
+		exit(1);
+	}
+	keyfileRead.read(key, KEY_SIZE);	
 }
 
 void Key::setup(){
@@ -46,7 +53,8 @@ void Key::generate(){
 }
 
 bool Key::isKeyPresentOnDisk(){
-	if(keyfile.good())
+	keyfileRead.open(filename.c_str());
+	if(keyfileRead.good())
 		return true;
 	else
 		return false;
