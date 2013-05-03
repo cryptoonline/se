@@ -38,7 +38,7 @@ int main(int argc, const char * argv[]){
 	Blowfish cipher;
 	cipher.keyGen();	
 //	BStore store(comm);	
-	BStore store(comm, "/home/naveed2/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/");
+	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/");
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 //	unsigned char plaintext[] = "8TR Mode Test";
 //	unsigned char key[] = {0xF5, 0x34, 0xFC, 0x7F, 0x05, 0x65, 0xA8, 0xCF, 0x16, 0x29, 0xF0, 0x1D, 0xB3, 0x1A, 0xE3, 0xCA};
@@ -49,20 +49,7 @@ int main(int argc, const char * argv[]){
 //		printf("%02X", ciphertext[i]);
 //	}
 
-	fileID fid1("/home/naveed2/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.");
-	fileID fid2("/home/naveed2/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.");
-	unsigned char* fid1Bytes = fid1.get();
-	unsigned char* fid2Bytes = fid2.get();
-	cout << "Index 1 " << fid1.getPRPofHigherID() << endl;
-	cout << "Index 2 " << fid2.getPRPofHigherID() << endl;
-	for(int i = 0; i < 32; i++)
-		printf("%02X ", fid1Bytes[i]);
-	cout << endl;
-
-	for(int i = 0; i < 32; i++)
-		printf("%02X ", fid2Bytes[i]);
-	cout << endl;
-	unsigned char* data = store.read("/home/naveed2/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.");
+	unsigned char* data = store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.");
 	for(int i = 0; i < 32; i++)
 		cout << (int) data[i];	
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
