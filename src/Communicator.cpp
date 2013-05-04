@@ -16,7 +16,7 @@ using std::endl;
 
 Communicator::Communicator()
 {
-	hostname = "seclab-central.cs.illinois.edu";
+	hostname = "localhost";//"seclab-central.cs.illinois.edu";
 	sockfd = 0;
 	port = 9999;
 	verbose = 0;

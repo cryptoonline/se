@@ -31,7 +31,7 @@ const int16_t T_RECORD_BITS = 24;
 /****************************************FileNames****************************************/ 
 //const char* D_file = "D";
 //const char* T_file = "T";
-#define  D_KEYFILE  "/home/naveed2/BStore/data/keys/D.KEY"
-#define  T_KEYFILE  "/home/naveed2/BStore/data/keys/T.KEY"
+#define  D_KEYFILE  "/Users/naveed/BStore/data/keys/D.KEY"
+#define  T_KEYFILE  "/Users/naveed/BStore/data/keys/T.KEY"
 
 #endif /* defined(__BlindStorage__parameters__) */
