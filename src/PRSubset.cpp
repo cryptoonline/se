@@ -48,6 +48,7 @@ void PRSubset::generateSeed(){
     //uint32_t seed[1];
     //if(1)//rdrand_32(seed, 0))
     this->seed = rand();
+	
     //else
     //    std::cerr << "RDRAND failed. It can be solved by changing the second parameter of rdrand_64 function to the number of required retries.";
 }

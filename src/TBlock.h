@@ -14,6 +14,7 @@
 #include "parameters.h"
 #include "Blowfish.h"
 #include "Key.h"
+#include "Debug.h"
 
 class TBlock {
 private:

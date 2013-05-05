@@ -23,6 +23,7 @@ using std::string;
 #include "parameters.h"
 #include "fileID.h"
 #include "Key.h"
+#include "Debug.h"
 
 class DataBlock{
 public:

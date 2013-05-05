@@ -17,6 +17,7 @@
 #include "math.h"
 #include <fstream>
 #include "DataBlock.h"
+#include "Debug.h"
 
 class Ddisk {
 private:

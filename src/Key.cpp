@@ -12,7 +12,6 @@ Key::Key(string filename){
 }
 
 Key::~Key(){
-	delete[] key;
 }
 
 char* Key::get(){

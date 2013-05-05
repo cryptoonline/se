@@ -33,21 +33,21 @@ Server::Server()
 	}
 	*/
 
-	int64_t TSize = readFileSize("/home/naveed2/BStore/data/T");
-	int64_t DSize = readFileSize("/home/naveed2/BStore/data/D");
+	int64_t TSize = readFileSize(T_FILE);
+	int64_t DSize = readFileSize(D_FILE);
 	tTable = new char[TSize];
 	dTable = new char[DSize];
 
 	cout << "Reading T: " << endl;
-	loadFile("/home/naveed2/BStore/data/T", tTable, TSize);
+	loadFile(T_FILE, tTable, TSize);
 	cout << "Reading T completed." << endl;
 
 	cout << "Reading D: " << endl;
-	loadFile("/home/naveed2/BStore/data/D", dTable, DSize);
+	loadFile(D_FILE, dTable, DSize);
 	cout << "Reading D completed." << endl;
 
 	cout << "Server T Record " << endl;
-	printHex(&tTable[3287*12], 12);
+	printHex(&tTable[7468*12], 12);
 	cout << endl;
 	port = defaultPort;
 	verbose = 1;

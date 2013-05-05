@@ -33,7 +33,6 @@ fileID::fileID(string filename){
 
 fileID::fileID(unsigned char* ID){
     initialize();
-	delete[] ID;
     this->ID = ID;
     parse();
 }
@@ -70,7 +69,7 @@ unsigned char* fileID::hmac(string filename){
 }
 
 uint32_t fileID::prf(unsigned char* bytes, int32_t size){
-	return prfunction.encrypt(bytes, size, 0x00001FFF);
+	return prfunction.encrypt(bytes, size, BIT_MASK);
 }
 
 void fileID::compute(){

@@ -16,6 +16,8 @@
 #include "Ddisk.h"
 #include "PRF.h"
 #include "TBlock.h"
+#include "Tdisk.h"
+#include "Debug.h"
 
 using namespace std;
 
@@ -35,14 +37,17 @@ class OnlineSession {
     DataBlock** extractedFileBlocks;
     unsigned char** decryptedFileBlocksRead;
     unsigned char* fileDataRead;
-    
+   	unsigned char** goodCriBlocks;
+ 
     DataBlock** fileBlockstoBeWritten;
     unsigned char** encryptedfileBlockstoBeWritten;
  
 	TBlock* tblock;   
     
-    
-    
+   	/* T and D when reading them from local memory. */
+   	char* T;
+	char* D;
+ 
     /*! Uses higher fid and prSubset to get get this */
     void getCRI();
     /*! Parses CRI to get lower fid and PRSubset for the actual file, PRSubset and all other required things are remembered */
@@ -62,7 +67,11 @@ class OnlineSession {
     
     unsigned char** readD(uint32_t* blockLocations, uint32_t numBlocks);
     void writeD(uint32_t* blockLocations, uint32_t numBlocks, unsigned char** blocks);
-    
+	
+	void loadDataStructures();
+	void loadFile(string filename, char* input, int64_t size); 
+	int64_t readFileSize(string filename);
+	   
 public:
     OnlineSession(Communicator &communicator);
     ~OnlineSession();

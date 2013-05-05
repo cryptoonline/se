@@ -78,6 +78,8 @@ void Ddisk::makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid
     uint32_t sizeOfLastBlock = (uint32_t)filesize - ((uint32_t)filesize/MAX_BLOCK_DATA_SIZE) * MAX_BLOCK_DATA_SIZE;
     memcpy(&blocks[counter * BLOCK_SIZE], &fileBytes[counter*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
     D[prSubset[counter]] = new DataBlock(prSubset[counter], fid, &blocks[counter * BLOCK_SIZE], sizeOfLastBlock);
+	printhex(D[prSubset[counter]]->getEncrypted(), BLOCK_SIZE, "Encrypted BLOCK in DataBlock");
+	printhex(D[prSubset[counter]]->getDecrypted(), BLOCK_SIZE, "Decrypted BLOCK in DataBlock");
 }
 
 char* Ddisk::readFileBytes(string filename, size_t size){

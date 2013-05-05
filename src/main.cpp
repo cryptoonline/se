@@ -5,6 +5,8 @@
 //  Created by Muhammad Naveed on 3/14/13.
 //  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
 //
+#define READ
+#define BUILD
 
 #include <stdint.h>
 #include "DataBlock.h"
@@ -15,6 +17,7 @@
 #include <ext/hash_map>
 #include "BStore.h"
 #include "Blowfish.h"
+#include "Debug.h"
 #include <string>
 using std::string;
 
@@ -35,8 +38,6 @@ void print(string tag, char* value, uint32_t size){
 int main(int argc, const char * argv[]){
 	Communicator comm;
 
-	Blowfish cipher;
-	cipher.keyGen();	
 //	BStore store(comm);	
 	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/");
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
@@ -50,8 +51,8 @@ int main(int argc, const char * argv[]){
 //	}
 
 	unsigned char* data = store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.");
-	for(int i = 0; i < 32; i++)
-		cout << (int) data[i];	
+	for(int i = 0; i < 1412; i++)
+		cout << (char) data[i];	
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	return 0;
 }

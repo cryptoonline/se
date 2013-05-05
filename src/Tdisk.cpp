@@ -33,6 +33,8 @@ void Tdisk::addFile(string filename, PRSubset &prSubset){
 	//for( int i = 0; i < 32; i++)
 	//	printf("%02X ", FID[i]);
 	//cout << endl;
+	cout << "File Seed is " << prSubset.getSeed() << endl;
+	cout << "File Size is " << prSubset.getSize() << endl;
     cri.prSubsetSeed = prSubset.getSeed();
     cri.prSubsetSize = prSubset.getSize();
 
@@ -48,11 +50,18 @@ void Tdisk::finalize(Ddisk &D){
         
         uint32_t prSubsetSize = (uint32_t)ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE) * (uint32_t)BLOW_UP;
         PRSubset prSubset(prSubsetSize);
-        
+		uint32_t seed = prSubset.getSeed();
+		cout << "CRI Seed is " << seed << endl;
+		cout << "CRI Size is " << prSubset.getSize() << endl;
+		printdec(prSubset.get(), prSubset.getSize(), "CRI Subset");
+		unsigned char* seedarray = static_cast<unsigned char*>(static_cast<void*>(&seed));
+		cout << "Seed from array is " << *(uint32_t *)seedarray << endl;
+		printhex(seedarray, 4, "Seed");
+       	printhex(static_cast<unsigned char*>(static_cast<void*>(cri.data())),  cri.size()*sizeof(CRI), "CRI in Tdisk");
         D.addBlocks(static_cast<unsigned char*>(static_cast<void*>(cri.data())), cri.size()*sizeof(CRI), fid, prSubset);
+		cout << "TRecord Index is " << *(uint32_t*) TRecordIndex << endl;
         T[*(uint32_t*)TRecordIndex]->set(prSubset.getSeed(), prSubset.getSize(), *(uint32_t*)TRecordIndex);
 		
-		fileID fidcompare("/home/naveed2/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.");
 
 			cout << "************************************Unencrypted****************************************************************" << endl; 
 			cout << prSubset.getSeed() << endl;

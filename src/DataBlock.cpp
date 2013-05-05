@@ -50,8 +50,9 @@ DataBlock::DataBlock(uint32_t blockIndex, unsigned char* block){
 //	iv[16] = {0};
 	this->blockIndex = blockIndex;
 	setupKey();
-    if(this->block == NULL)
-        delete[] this->block;
+//	printhex(DataBlock::key, 16, "KEY for get");
+   // if(this->block == NULL)
+     //   delete[] this->block;
     this->block = block;
     parseBlock();
     higherFid = fid->getPRPofHigherID(); /// This should be run after parsing the block
@@ -62,6 +63,7 @@ DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, u
 //	iv[16] = {0};
 	this->blockIndex = blockIndex;
 	setupKey();
+//	printhex(DataBlock::key, 16, "KEY for build");
     version = 0;
     higherFid = fid.getPRPofHigherID();
     block = new unsigned char[size]();
@@ -143,6 +145,7 @@ void DataBlock::makeBlock(){
 }
 
 void DataBlock::parseBlock(){
+//	printhex(block, BLOCK_SIZE, "block in parse block");
     version = *(uint32_t *)(&block[BLOCK_SIZE-sizeof(uint32_t)]);
     fileID fid(&block[MAX_BLOCK_DATA_SIZE+1]);
     this->fid = &fid;
@@ -201,6 +204,7 @@ unsigned char* DataBlock::ENC(){
 unsigned char* DataBlock::DEC(){
     AES cipher;
     makeIV(); //It will populate the iv parameter of the object
+//	printhex(iv, 16, "Decryption IV");
     unsigned char * plaintext = cipher.DEC(block, BLOCK_SIZE-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
     return plaintext;
 }
@@ -225,7 +229,7 @@ void DataBlock::generateKey(){
  MSB --- LSBofblockIndex - MSBofblockIndex, LSBofversion-MSBofversion, 
  */
 void DataBlock::makeIV(){
-	iv = new unsigned char[16];
+	iv = new unsigned char[16]();
     memcpy(iv, static_cast<unsigned char*>(static_cast<void*>(&blockIndex)), sizeof(blockIndex));
     memcpy(iv+8, static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(uint32_t));
 //    unsigned char zeros[8] = {0};
