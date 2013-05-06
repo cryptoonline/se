@@ -33,6 +33,7 @@ unsigned char* OnlineSession::get(string filename, PRSubset* prSubset){
 		cout << "File not found, this can happen during write." << endl;
 	}
     getFile();
+	printchars(fileDataRead, 3*MAX_BLOCK_DATA_SIZE, "WHOLE FILE");
     return fileDataRead;
 }
 
@@ -121,7 +122,7 @@ bool OnlineSession::parseCRI(){
        // if((i*CRI_ENTRY_SIZE) / MAX_BLOCK_DATA_SIZE >= 0)
          //   i += BLOCK_SIZE - MAX_BLOCK_DATA_SIZE;
 		//printhex(criEntries[i], CRI_ENTRY_SIZE, "CRI Entry");
-		cout << endl;
+	//	cout << endl;
     }
 //make it use checkFileID
     int32_t match = search(criEntries, fileCompleteID, criPrSubset->getSize(), CRI_ENTRY_SIZE, 8, 0);
@@ -148,17 +149,23 @@ void OnlineSession::getFile(){
     fileBlocksRead = new DataBlock*[prSubsetSize];
     extractedFileBlocks = new DataBlock*[prSubsetSize/BLOW_UP];
     int j = 0;
-    for(int i = 0; i < prSubsetSize; i++){
+    for(int i = 0; i < prSubsetSize; ++i){
         fileBlocksRead[i] = new DataBlock(blockLocations[i], encryptedBlocksData[i]);
         decryptedFileBlocksRead[i] = new unsigned char[BLOCK_SIZE]();
         memcpy(decryptedFileBlocksRead[i], fileBlocksRead[i]->getDecrypted(), BLOCK_SIZE);
-      if(fileBlocksRead[i]->checkFileID(fid)){
-           	cout << "FID CHECK WORKS" << endl;
+		printchars(decryptedFileBlocksRead[i], BLOCK_SIZE, "DECRYPTED BLOCKS IN GET FILE");
+        if(fileBlocksRead[i]->checkFileID(fid)){
 			extractedFileBlocks[j] = fileBlocksRead[i];
-            memcpy(&fileDataRead[j*MAX_BLOCK_DATA_SIZE], decryptedFileBlocksRead[i], MAX_BLOCK_DATA_SIZE);
+            memcpy(&fileDataRead[0]+j*MAX_BLOCK_DATA_SIZE, decryptedFileBlocksRead[i], MAX_BLOCK_DATA_SIZE);
+			cout << "Index" << j*MAX_BLOCK_DATA_SIZE << endl;
+			printchars(&fileDataRead[j*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE, "EXTRACTED FILE DATA");
             j++;
+			printchars(&fileDataRead[j*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE, "PREVIOUS EXTRACTED BLOCK");
       }
     }
+	for(int i = 0; i < 3; i++)
+		printchars(&fileDataRead[i*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE, "PARTS");
+	printchars(fileDataRead, 3*MAX_BLOCK_DATA_SIZE, "WHOLE FILE IN GET FILE");
 }
 
 unsigned char* OnlineSession::readT(uint32_t TRecordIndex){

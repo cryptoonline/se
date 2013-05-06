@@ -39,7 +39,7 @@ int main(int argc, const char * argv[]){
 	Communicator comm;
 
 //	BStore store(comm);	
-	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/");
+	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/holst-k/");
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 //	unsigned char plaintext[] = "8TR Mode Test";
 //	unsigned char key[] = {0xF5, 0x34, 0xFC, 0x7F, 0x05, 0x65, 0xA8, 0xCF, 0x16, 0x29, 0xF0, 0x1D, 0xB3, 0x1A, 0xE3, 0xCA};
@@ -50,10 +50,18 @@ int main(int argc, const char * argv[]){
 //		printf("%02X", ciphertext[i]);
 //	}
 
-	unsigned char* data = store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.");
-	for(int i = 0; i < 1500; i++)
+	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+	unsigned char* data = store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/holst-k/inbox/6.");
+	for(int i = 0; i < 3445; i++)
 		cout << (char) data[i];	
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+	unsigned char* data1 = store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/holst-k/inbox/8.");
+	for(int i = 0; i < 2045; i++)
+		cout <<(char) data1[i];
 	return 0;
 }
 

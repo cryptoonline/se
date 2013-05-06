@@ -164,6 +164,7 @@ void DataBlock::parseBlock(){
 	unsigned char* decryptedBlock = DEC();
 	memcpy(plaintextBlock, decryptedBlock, BLOCK_SIZE);
 	printhex(plaintextBlock, BLOCK_SIZE, "DECRYPTED BLOCK");
+	printchars(plaintextBlock, BLOCK_SIZE, "DECRYPTED BLOCK CONTENTS");
 //	delete[] plaintextBlock;
     fileID* fid = new fileID(&plaintextBlock[MAX_BLOCK_DATA_SIZE+1]);
     this->fid = fid;

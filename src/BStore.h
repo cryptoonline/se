@@ -33,7 +33,7 @@ public:
 private:
 	Communicator communicator;
 	vector<string> filesList;
-	void readFilesFromDirectory(string directoryPath);
+	void readFilesFromDirectory(string path);
 	Ddisk D;
 	Tdisk T;
 };

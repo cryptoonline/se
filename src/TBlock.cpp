@@ -101,6 +101,8 @@ void TBlock::parse(){
 unsigned char* TBlock::ENC(){
 	Blowfish cipher;
 	makeIV();
+	if(key == NULL)
+		cerr << "Key is NULL at line " << __LINE__ << " in " << __PRETTY_FUNCTION__ << endl;
 	return cipher.ENC(block, T_BLOCK_SIZE - sizeof(version), reinterpret_cast<unsigned char*>(key), reinterpret_cast<unsigned char*>(iv)); 
 }
 
@@ -113,9 +115,10 @@ unsigned char* TBlock::DEC(){
 void TBlock::setupKey(){
 	string keyFile = T_KEYFILE;
 	if(!wasKeyGenerated){
+		cout << "Key Generated" << endl;
 		Key key(keyFile);
 		TBlock::key = key.get();
-		//printhex(TBlock::key, 16, "TBlock key");
+		printhex(TBlock::key, 16, "TBlock key");
 		wasKeyGenerated = true;
 	}
 //	cout << "Key is ";

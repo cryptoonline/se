@@ -64,35 +64,46 @@ void BStore::rename(string filename){
 
 void BStore::readFilesFromDirectory(string directory){
 	/* Code for this function is taken from: http://stackoverflow.com/questions/306533/how-do-i-get-a-list-of-files-in-a-directory-in-c*/
-	DIR *dir;
-    class dirent *ent;
-    class stat st;
-	
-    dir = opendir(directory.c_str());
-
-    while ((ent = readdir(dir)) != NULL) {
-    	const string file_name = ent->d_name;
-    	const string full_file_name = directory + file_name;
-		
-		//cout << "Processing file " << full_file_name << endl;
-		
-    	if (file_name[0] == '.')
-    		continue;
-
-    	if (stat(full_file_name.c_str(), &st) == -1)
-    		continue;
-
-		const bool is_directory = (st.st_mode & S_IFDIR) != 0;
-
-    	if (is_directory)
-			readFilesFromDirectory(full_file_name);
-		else{
-			filesList.push_back(full_file_name);
-			cout << "Processing file " << full_file_name << endl;
+ 	DIR *dir;
+     class dirent *ent;
+     class stat st;
+ 	
+     dir = opendir(directory.c_str());
+ 
+     while ((ent = readdir(dir)) != NULL) {
+     	const string file_name = ent->d_name;
+     	string full_file_name = directory + '/' + file_name;
+ 		
+     	if (file_name[0] == '.')
+     		continue;
+ 
+     	if (stat(full_file_name.c_str(), &st) == -1)
+     		continue;
+ 		
+ 		
+ 		const bool is_directory = (st.st_mode & S_IFDIR) != 0;
+ 	
+ 		if(!is_directory){
+ 			filesList.push_back(full_file_name);
+ 			cout << "Processing file " << full_file_name << endl;
+ 		}
+ 			
+     	if (is_directory){
+ 			full_file_name = directory + file_name;
+ 			readFilesFromDirectory(full_file_name);
 		}
     }
     closedir(dir);
 }
+
+//void BStore::readFilesFromDirectory(string path){
+//	for(boost::filesystem::recursive_directory_iterator end, dir(path); dir!=end; ++dir){
+//		string fileName = dir->path().string();
+//		cout << "Processing " << fileName << endl;
+//		filesList.push_back(fileName);
+//	}
+//}
+
 
 ifstream::pos_type BStore::readFileSize(string filename){
 	ifstream file(filename.c_str(), std::ios_base::in | std::ios_base::binary | std::ios_base::ate);
