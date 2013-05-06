@@ -86,8 +86,10 @@ void BStore::readFilesFromDirectory(string directory){
 
     	if (is_directory)
 			readFilesFromDirectory(full_file_name);
-		else
+		else{
 			filesList.push_back(full_file_name);
+			cout << "Processing file " << full_file_name << endl;
+		}
     }
     closedir(dir);
 }

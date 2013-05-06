@@ -39,9 +39,9 @@ void Ddisk::addFile(string filename){
 void Ddisk::addFile(string filename, PRSubset& prSubset){
 	fileID fid(filename);
 	size_t size = readFileSize(filename);
-
+//	printhex(fid.get(), 32, "ADD FILE FID");
 	unsigned char* fileBytes = reinterpret_cast<unsigned char*>(readFileBytes(filename, size));
-
+//	printchars(fileBytes, size, "FILE");
 	addBlocks(fileBytes, size, fid, prSubset);
 } 
 
@@ -66,7 +66,7 @@ void Ddisk::makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid
     int32_t numBlocks = (int32_t)ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE);
     unsigned char* blocks = new unsigned char[numBlocks*BLOCK_SIZE]();
     
-    for(; counter < numBlocks - 2; counter++){
+    for(; counter < numBlocks - 1; counter++){
         memcpy(&blocks[counter * BLOCK_SIZE], &fileBytes[counter*MAX_BLOCK_DATA_SIZE] , MAX_BLOCK_DATA_SIZE);
         //cout << "Processing Block " << counter << endl;
 //        print("Blocks", &fileBytes[counter*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
@@ -75,11 +75,12 @@ void Ddisk::makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid
     }
 //    print(__PRETTY_FUNCTION__, prSubset, numBlocks);
 
+//	printhex(fid.get(), 32, "FID in MAKE BLOCKS");
     uint32_t sizeOfLastBlock = (uint32_t)filesize - ((uint32_t)filesize/MAX_BLOCK_DATA_SIZE) * MAX_BLOCK_DATA_SIZE;
     memcpy(&blocks[counter * BLOCK_SIZE], &fileBytes[counter*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
     D[prSubset[counter]] = new DataBlock(prSubset[counter], fid, &blocks[counter * BLOCK_SIZE], sizeOfLastBlock);
-	printhex(D[prSubset[counter]]->getEncrypted(), BLOCK_SIZE, "Encrypted BLOCK in DataBlock");
-	printhex(D[prSubset[counter]]->getDecrypted(), BLOCK_SIZE, "Decrypted BLOCK in DataBlock");
+//	printhex(D[prSubset[counter]]->getEncrypted(), BLOCK_SIZE, "Encrypted BLOCK in DataBlock");
+//	printhex(D[prSubset[counter]]->getDecrypted(), BLOCK_SIZE, "Decrypted BLOCK in DataBlock");
 }
 
 char* Ddisk::readFileBytes(string filename, size_t size){

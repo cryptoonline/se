@@ -51,7 +51,7 @@ int main(int argc, const char * argv[]){
 //	}
 
 	unsigned char* data = store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.");
-	for(int i = 0; i < 1412; i++)
+	for(int i = 0; i < 1500; i++)
 		cout << (char) data[i];	
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	return 0;

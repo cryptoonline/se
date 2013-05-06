@@ -39,36 +39,40 @@ void DataBlock::initialize(){
 
 DataBlock::DataBlock(uint32_t blockIndex){
 	//iv = new unsigned char[16];
-	this->block = new unsigned char[BLOCK_SIZE]();
+//	this->block = new unsigned char[BLOCK_SIZE]();
+	ciphertextBlock = new unsigned char[BLOCK_SIZE]();
+	plaintextBlock = new unsigned char[BLOCK_SIZE]();
     version = 0;
 	setupKey();
 	this->blockIndex = blockIndex;
 }
 
 DataBlock::DataBlock(uint32_t blockIndex, unsigned char* block){
-//    initialize();
-//	iv[16] = {0};
+	this->plaintextBlock = new unsigned char[BLOCK_SIZE]();
 	this->blockIndex = blockIndex;
 	setupKey();
-//	printhex(DataBlock::key, 16, "KEY for get");
-   // if(this->block == NULL)
-     //   delete[] this->block;
-    this->block = block;
+   // this->block = block;
+	this->ciphertextBlock = block;
     parseBlock();
     higherFid = fid->getPRPofHigherID(); /// This should be run after parsing the block
+	cout << "BLOCK INDEX " << this->blockIndex << endl;
+	printhex(ciphertextBlock, BLOCK_SIZE, "GET BLOCKS ENCRYPTED");
 }
 
 DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size = MAX_BLOCK_DATA_SIZE){
-	//initialize();
-//	iv[16] = {0};
+	ciphertextBlock = new unsigned char[BLOCK_SIZE]();
+	printhex(ciphertextBlock, BLOCK_SIZE, "EMPTY CIPHERTEXT ARRAY");
+	plaintextBlock = new unsigned char[BLOCK_SIZE]();
+	printchars(rawData, size, "ACTUAL DATA");
 	this->blockIndex = blockIndex;
 	setupKey();
-//	printhex(DataBlock::key, 16, "KEY for build");
     version = 0;
     higherFid = fid.getPRPofHigherID();
-    block = new unsigned char[size]();
+   // block = new unsigned char[size]();
     add(blockIndex, fid, rawData, size);
-    makeBlock();
+    makeBlock();	
+	cout << "BLOCK INDEX " << this->blockIndex << endl;
+	printhex(ciphertextBlock, BLOCK_SIZE, "BUILD BLOCKS ENCRYPTED");
 }
 
 /*!
@@ -84,11 +88,12 @@ DataBlock::~DataBlock(){
  This function can be used to retrieve the decrypted
  */
 unsigned char* DataBlock::getEncrypted(){
-    return block;
+   // return block;
+	return ciphertextBlock;
 }
 
 unsigned char* DataBlock::getDecrypted(){
-    return DEC();
+    return plaintextBlock;
 //    memcpy(block, decryptedblock, BLOCK_SIZE - sizeof(version) );
 //    return block;
 }
@@ -124,32 +129,47 @@ void DataBlock::add(uint32_t blockIndex, fileID &fid, unsigned char* rawData, ui
 /*! Create complete block of the following format ENC(rawData||paddedbit||fid)||version */
 void DataBlock::makeBlock(){
     uint32_t pointer = 0;
-    
-    block = rawData;
+   
+	memcpy(plaintextBlock, rawData, MAX_BLOCK_DATA_SIZE); 
+    //plaintextBlock = rawData;
 
     if(!padded)
         addPadding();
     pointer += MAX_BLOCK_DATA_SIZE;
     
-    block[pointer] = padded;
+    plaintextBlock[pointer] = padded;
     pointer += 1;
-        
-    memcpy(&block[pointer], fid->get(), 32);
+       
+	//printhex(fid->get(), 32, "FID in MAKE BLOCKS"); 
+    memcpy(&plaintextBlock[pointer], fid->get(), 32);
+	//printhex(&block[pointer], 32, "FID in MAKE after its copied to BLOCK");
     pointer += 32;
+   
+	printhex(plaintextBlock, BLOCK_SIZE, "Whole Decrypted block in MAKE BLOCK"); 
+    byte* encryptedBlock = ENC();
+	printhex(encryptedBlock, BLOCK_SIZE, "ENCRYPTED BLOCK");
+	printhex(ciphertextBlock, BLOCK_SIZE, "EMPTY CIPHERTEXT ARRAY");
+    memcpy(ciphertextBlock, encryptedBlock, BLOCK_SIZE-(uint32_t)sizeof(version));
+    delete[] encryptedBlock;;
     
-    const byte* encryptedBlock = ENC();
-    memcpy(block, encryptedBlock,BLOCK_SIZE-(uint32_t)sizeof(version));
-    delete[] encryptedBlock;
-    
-    memcpy(&block[pointer], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(uint32_t));
+    //memcpy(&block[pointer], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(uint32_t)); //Initially the array is intialized to zeros so we don't need to do this.
 }
 
 void DataBlock::parseBlock(){
 //	printhex(block, BLOCK_SIZE, "block in parse block");
-    version = *(uint32_t *)(&block[BLOCK_SIZE-sizeof(uint32_t)]);
-    fileID fid(&block[MAX_BLOCK_DATA_SIZE+1]);
-    this->fid = &fid;
-    padded = *(unsigned char *)(&block[MAX_BLOCK_DATA_SIZE+1]);
+    version = *(uint32_t *)(&ciphertextBlock[BLOCK_SIZE-sizeof(uint32_t)]);
+
+//	this->plaintextBlock = new unsigned char[BLOCK_SIZE]();
+	memcpy(&plaintextBlock[BLOCK_SIZE - sizeof(version)], &ciphertextBlock[BLOCK_SIZE-sizeof(version)], 4);
+	unsigned char* decryptedBlock = DEC();
+	memcpy(plaintextBlock, decryptedBlock, BLOCK_SIZE);
+	printhex(plaintextBlock, BLOCK_SIZE, "DECRYPTED BLOCK");
+//	delete[] plaintextBlock;
+    fileID* fid = new fileID(&plaintextBlock[MAX_BLOCK_DATA_SIZE+1]);
+    this->fid = fid;
+	printhex(fid->get(), 32, "FID in PARSE");
+	printhex(this->fid->get(), 32, "FID in PARSE OBJECT");
+    padded = *(unsigned char *)(&plaintextBlock[MAX_BLOCK_DATA_SIZE]);
     if(!padded)
         removePadding();
 }
@@ -159,9 +179,9 @@ void DataBlock::parseBlock(){
 //    uint32_t zeros[32] = {0};
 //    uint32_t pointer = MAX_BLOCK_DATA_SIZE + 1;
 //    memcpy(&block[pointer], zeros, 32);
-//    const byte* encryptedBlock = ENC();
-//    memcpy(block, encryptedBlock, BLOCK_SIZE-(uint32_t)sizeof(version));
-//    delete[] encryptedBlock;
+//    const byte* ciphertextBlock = ENC();
+//    memcpy(block, ciphertextBlock, BLOCK_SIZE-(uint32_t)sizeof(version));
+//    delete[] ciphertextBlock;
 //    memcpy(&block[pointer], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(uint32_t));
 //}
 
@@ -169,19 +189,21 @@ void DataBlock::parseBlock(){
  Use the pad the block when its less than required number of bytes 
  */
 void DataBlock::addPadding(){
-        block[rawDataSize] = 1;
+        plaintextBlock[rawDataSize] = 1;
 }
 
 void DataBlock::removePadding(){
     for(int i = MAX_BLOCK_DATA_SIZE; i > 0; i--)
-        if(block[i] == 1){
+        if(plaintextBlock[i] == 1){
             rawDataSize = i-1;
         }
 }
 
 bool DataBlock::checkFileID(fileID &fid){
     unsigned char* blockFid = this->fid->get();
+	printhex(blockFid, 32, "Datablock FID");
     unsigned char* fidToCheck = fid.get();
+	printhex(fid.get(), 32, "Required File FID");
     for(int i = 0; i < 32; i++)
         if(fidToCheck[i] != blockFid[i])
             return false;
@@ -194,7 +216,7 @@ bool DataBlock::checkFileID(fileID &fid){
 unsigned char* DataBlock::ENC(){
     AES cipher;
     makeIV(); //It will populate the iv parameter of the object
-    unsigned char * ciphertext = cipher.ENC(block, BLOCK_SIZE-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
+    unsigned char * ciphertext = cipher.ENC(plaintextBlock, BLOCK_SIZE-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
     return ciphertext;
 }
 
@@ -205,7 +227,7 @@ unsigned char* DataBlock::DEC(){
     AES cipher;
     makeIV(); //It will populate the iv parameter of the object
 //	printhex(iv, 16, "Decryption IV");
-    unsigned char * plaintext = cipher.DEC(block, BLOCK_SIZE-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
+    unsigned char * plaintext = cipher.DEC(ciphertextBlock, BLOCK_SIZE-(uint32_t)sizeof(version), DataBlock::key, DataBlock::iv);
     return plaintext;
 }
 
@@ -345,6 +367,6 @@ const bool DataBlock::isOccupied(){
 
 void DataBlock::encryptIfEmpty(){
     unsigned char* ciphertext = ENC();
-	memcpy(block, ciphertext, BLOCK_SIZE-(uint32_t)sizeof(version));
+	memcpy(ciphertextBlock, ciphertext, BLOCK_SIZE-(uint32_t)sizeof(version));
 	delete ciphertext;
 }

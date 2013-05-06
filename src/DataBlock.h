@@ -65,6 +65,8 @@ private:
     fileID* fid;                   /*!< File id */
     uint32_t higherFid;
     unsigned char* block;           /*!< This is used to hold the block data, padding byte,file id and version. All fields but version are encrytpted. Version is used in IV creation and there can't be encrypted */
+	unsigned char* plaintextBlock;
+	unsigned char* ciphertextBlock;
     static const char* keyFilename;
     void saveKeytoFile();
     void loadKeyfromFile();

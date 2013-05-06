@@ -76,24 +76,24 @@ void TBlock::make(){
 	memcpy(&block[8], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(version));
 	memcpy(&encryptedBlock[8], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(version));
 	cout << "Index in make is " << index << endl;
-	printhex(key, 16, "Key in make");
-	printhex(iv, 8, "IV in make");
-	printhex(block, T_BLOCK_SIZE, "Plaintext Block in make");
-	printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in make");
+	//printhex(key, 16, "Key in make");
+	//printhex(iv, 8, "IV in make");
+	//printhex(block, T_BLOCK_SIZE, "Plaintext Block in make");
+	//printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in make");
 }
 
 void TBlock::parse(){
 	version = *(uint32_t*)(encryptedBlock+(uint32_t)sizeof(prSubsetSeed)+(uint32_t)sizeof(prSubsetSize));
 //	cout << "Version " << version << endl;
 	cout << "Index in parse is " << index << endl;
-	printhex(key, 16, "Key in parse");
-	printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in parse");
+	//printhex(key, 16, "Key in parse");
+	//printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in parse");
 	unsigned char* plaintext = DEC();
-	printhex(iv, 8, "IV in parse");
+	//printhex(iv, 8, "IV in parse");
 	memcpy(block, plaintext, T_BLOCK_SIZE-sizeof(version));
 	delete[] plaintext;
 	memcpy(&block[T_BLOCK_SIZE-sizeof(version)], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(version));
-	printhex(block, T_BLOCK_SIZE, "Decrypted Block in parse");
+	//printhex(block, T_BLOCK_SIZE, "Decrypted Block in parse");
 	prSubsetSize = *(uint32_t*)(block);
     prSubsetSeed = *(uint32_t*)(block+(uint32_t)sizeof(prSubsetSize));
 }
@@ -115,7 +115,7 @@ void TBlock::setupKey(){
 	if(!wasKeyGenerated){
 		Key key(keyFile);
 		TBlock::key = key.get();
-		printhex(TBlock::key, 16, "TBlock key");
+		//printhex(TBlock::key, 16, "TBlock key");
 		wasKeyGenerated = true;
 	}
 //	cout << "Key is ";

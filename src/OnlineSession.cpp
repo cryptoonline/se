@@ -25,7 +25,7 @@ unsigned char* OnlineSession::get(string filename, PRSubset* prSubset){
 	fileID fid(filename);
 	this->fid = fid;
 	fileCompleteID = fid.get();
-
+	//printhex(fileCompleteID, 32, "GET");
     getCRI();
     bool fileExists = parseCRI();
 	if(!fileExists){
@@ -89,25 +89,25 @@ void OnlineSession::getCRI(){
     
     int32_t criNumBlocks = criPrSubset->getSize();
     unsigned char** criFile = readD(blockLocations, criNumBlocks);
-//	printhex(criFile, criNumBlocks, BLOCK_SIZE, "CRI FILE BLOCKS");    
+	//printhex(criFile, criNumBlocks, BLOCK_SIZE, "CRI FILE BLOCKS");    
 
     criFileBlocks = new DataBlock*[criNumBlocks];
 	decryptedCriFile = new unsigned char*[criNumBlocks];
     for(int i = 0; i < criNumBlocks; i++){
 		cout << "Processing cri blocks " << i << "/" << criNumBlocks - 1 << endl;
-		printhex(criFile[i], BLOCK_SIZE, "Processing following block");
+		//printhex(criFile[i], BLOCK_SIZE, "Processing following block");
         criFileBlocks[i] = new DataBlock(blockLocations[i], criFile[i]);
         decryptedCriFile[i] = criFileBlocks[i]->getDecrypted();
 	//	if(criFileBlocks[i]->checkFileID(fid)){
 	//		goodCriBlocks[i] = decryptedCriFile[i]; 
 	//		printhex(goodCriBlocks[i], BLOCK_SIZE, "Good Block");
 	//	}
-		printhex(decryptedCriFile[i], BLOCK_SIZE, "Decrypted Block");
+		//printhex(decryptedCriFile[i], BLOCK_SIZE, "Decrypted Block");
     }
 }
 
 bool OnlineSession::parseCRI(){
-	printhex(decryptedCriFile[0], BLOCK_SIZE, "Decrypted Block in parse CRI");
+	//printhex(decryptedCriFile[0], BLOCK_SIZE, "Decrypted Block in parse CRI");
     int criFileBytes = criPrSubset->getSize() * MAX_BLOCK_DATA_SIZE;
 	cout << "CRI have " << criPrSubset->getSize() << "blocks and " << criFileBytes << " bytes." << endl;
     criEntries = new unsigned char*[criFileBytes / CRI_ENTRY_SIZE]; //make 40 a parameter in parameters.h
@@ -126,7 +126,7 @@ bool OnlineSession::parseCRI(){
 //make it use checkFileID
     int32_t match = search(criEntries, fileCompleteID, criPrSubset->getSize(), CRI_ENTRY_SIZE, 8, 0);
     if(match != -1){
-		cout << "Seed for file is " << *(uint32_t*)(criEntries[match]+4) << " and size is " << *(uint32_t*)(criEntries[match]) << endl;
+		cout << "Seed for file is " << *(uint32_t*)(criEntries[match]) << " and size is " << *(uint32_t*)(criEntries[match] + 4) << endl;
         filePrSubset = new PRSubset(*(uint32_t*)(criEntries[match]+4), *(uint32_t*)(criEntries[match]));
         return true;
     }
@@ -152,11 +152,12 @@ void OnlineSession::getFile(){
         fileBlocksRead[i] = new DataBlock(blockLocations[i], encryptedBlocksData[i]);
         decryptedFileBlocksRead[i] = new unsigned char[BLOCK_SIZE]();
         memcpy(decryptedFileBlocksRead[i], fileBlocksRead[i]->getDecrypted(), BLOCK_SIZE);
-        if(fileBlocksRead[i]->checkFileID(fid)){
-            extractedFileBlocks[j] = fileBlocksRead[i];
+      if(fileBlocksRead[i]->checkFileID(fid)){
+           	cout << "FID CHECK WORKS" << endl;
+			extractedFileBlocks[j] = fileBlocksRead[i];
             memcpy(&fileDataRead[j*MAX_BLOCK_DATA_SIZE], decryptedFileBlocksRead[i], MAX_BLOCK_DATA_SIZE);
             j++;
-        }
+      }
     }
 }
 
@@ -181,8 +182,8 @@ unsigned char** OnlineSession::readD(uint32_t* blockLocations, uint32_t numBlock
 	//communicator.dGet(blockLocations, blocks, numBlocks);
 	cout << "Inefficient readD for memory, will make it efficinet once done with debuggin" << endl;
 	for( int i = 0; i < numBlocks; i++){
-	//	printhex(blocks[i], BLOCK_SIZE, "BLOCK in readD");
 		memcpy(blocks[i], &D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE); 
+		//printhex(blocks[i], BLOCK_SIZE, "BLOCK in readD");
 	}		
 	return blocks;
 }
@@ -196,12 +197,11 @@ void OnlineSession::writeD(uint32_t* blockLocations, uint32_t numBlocks, unsigne
            
 int32_t OnlineSession::search(unsigned char** arrayToSearchIn, unsigned char* arrayToSearchFor, int32_t rows, int32_t cols, int32_t startCol, int32_t startRow){
     int matches;
-	printhex(arrayToSearchIn, rows, cols, "arrayToSearchIn");
+	//printhex(arrayToSearchIn, rows, cols, "arrayToSearchIn");
     for(int i = startRow; i < rows; i++){
         matches = 0;
-		printhex(arrayToSearchFor, cols, "arrayToSearchFor");
+		//printhex(arrayToSearchFor, cols, "arrayToSearchFor");
         for(int j = 0; j < cols; j++){
-			printf("%02X compared to %02X\n", arrayToSearchFor[j], arrayToSearchIn[i][j+8]);
 			if( arrayToSearchFor[j] == arrayToSearchIn[i][j+startCol]){
                 matches++;
 				if(matches == 32)
@@ -232,8 +232,6 @@ void OnlineSession::loadDataStructures(){
 	cout << "Reading D from memory: " << endl;
 	loadFile(DF, D, DSize);
 	cout << "Reading D completed." << endl;
-
-	cout << D;
 }
 
 void OnlineSession::loadFile(string filename, char* input, int64_t size){
@@ -268,9 +266,3 @@ int64_t OnlineSession::readFileSize(string filename){
 //    }
 //    return false;
 //}
-
-
-
-
-
-

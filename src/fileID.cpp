@@ -89,6 +89,8 @@ void fileID::compute(){
 void fileID::parse(){
     higherID = ID;
     lowerID = ID + 4;
+//	memcpy(higherID, ID , 4);
+//	memcpy(lowerID, ID+4, 28);
 }
 
 void fileID::makeCRIID(){
