@@ -45,6 +45,7 @@ DataBlock::DataBlock(uint32_t blockIndex){
     version = 0;
 	setupKey();
 	this->blockIndex = blockIndex;
+	cout << "Block Index in constructor is " << this->blockIndex << endl;
 	higherFid = 0;
 }
 
@@ -55,10 +56,10 @@ DataBlock::DataBlock(uint32_t blockIndex, unsigned char* block){
    // this->block = block;
 	this->ciphertextBlock = block;
     parseBlock();
-	printhex(fid->get(), 32, "FID in DATABLOCK");
+	//printhex(fid->get(), 32, "FID in DATABLOCK");
 
     higherFid = fid->getPRPofHigherID(); /// This should be run after parsing the block
-	cout << "HIGHER FID " << higherFid << " for index " << blockIndex << endl;
+//	cout << "HIGHER FID " << higherFid << " for index " << blockIndex << endl;
 //	cout << "BLOCK INDEX " << this->blockIndex << endl;
 	//printhex(ciphertextBlock, BLOCK_SIZE, "GET BLOCKS ENCRYPTED");
 }
@@ -367,9 +368,10 @@ void DataBlock::setupKey(){
  This function can be used to check if the block is occupied or not.
  */
 const bool DataBlock::isOccupied(){
-	cout << "Index in " << __PRETTY_FUNCTION__ << " is " << blockIndex << endl;
-	cout << __PRETTY_FUNCTION__ << " higher FID is " << higherFid << endl;
-    return higherFid ? true : false;
+//	cout << blockIndex << endl;
+//	cout << "Index in " << __PRETTY_FUNCTION__ << " is " << blockIndex << endl;
+//	cout << __PRETTY_FUNCTION__ << " higher FID is " << higherFid << endl;
+    return this->higherFid ? true : false;
 }
 
 void DataBlock::encryptIfEmpty(){
