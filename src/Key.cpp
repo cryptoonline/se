@@ -20,6 +20,7 @@ char* Key::get(){
 
 void Key::save(){
 	keyfileWrite.open(filename.c_str());
+//	keyfileWrite.seekg(std::ios::beg);
 	keyfileWrite.write(key, KEY_SIZE);
 	if(!keyfileWrite.good())
 		cerr << "File is not good " << __LINE__;
@@ -32,6 +33,7 @@ void Key::load(){
 		cerr << "File is not good " << __LINE__;
 		exit(1);
 	}
+	keyfileRead.seekg(std::ios::beg);
 	keyfileRead.read(key, KEY_SIZE);	
 }
 

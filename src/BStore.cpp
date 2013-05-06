@@ -49,8 +49,10 @@ unsigned char* BStore::read(string filename){
 
 void BStore::write(string filename, unsigned char* filedata, uint32_t filesize){
 	OnlineSession session(communicator);
-	unsigned char* readData = session.get(filename);
+	PRSubset* prSubset = new PRSubset(filesize);
+	unsigned char* readData = session.get(filename, prSubset);
 	session.update(filedata, filesize, filename);
+	delete prSubset;
 }
 
 unsigned char* BStore::update(string filename, unsigned char* updatedFiledata, uint32_t filesize){

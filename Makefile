@@ -2,7 +2,7 @@ CC=g++
 RM=rm
 
 CFLAGS=-c -Wall -ggdb
-LDFLAGS=-lcryptopp
+LDFLAGS=-lcryptopp 
 SOURCES=AES.cpp Blowfish.cpp Communicator.cpp DataBlock.cpp Ddisk.cpp Debug.cpp PRF.cpp OnlineSession.cpp PRSubset.cpp SHA256bit.cpp TBlock.cpp Tdisk.cpp Tfile.cpp fileID.cpp BStore.cpp Key.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=main

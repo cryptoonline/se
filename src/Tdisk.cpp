@@ -14,7 +14,7 @@ Tdisk::Tdisk(){
         cout << (double)i*100/(double)MAX_T_SIZE << "\% T blocks initialized";
 		cout.flush();
 		cout << '\r';
-		T[i] = new TBlock();
+		T[i] = new TBlock(i);
 	}
 	cout << endl;
 }

@@ -37,7 +37,7 @@ private:
 	void setupKey();	
     
 public:
-    TBlock();
+    TBlock(uint32_t index);
 	~TBlock();
     TBlock(unsigned char* encryptedBlock, uint32_t index);
     void set(uint32_t prSubsetSize, uint32_t prSubsetSeed, uint32_t index);

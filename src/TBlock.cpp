@@ -11,9 +11,11 @@
 bool TBlock::wasKeyGenerated = false;
 char* TBlock::key = NULL;
 
-TBlock::TBlock(){
+TBlock::TBlock(uint32_t index){
     prSubsetSeed = 0;
     prSubsetSize = 0;
+	setupKey();
+	this->index = index;
 }
 
 TBlock::~TBlock(){
@@ -25,10 +27,12 @@ TBlock::TBlock(unsigned char* encryptedBlock, uint32_t index){
 	//block = new unsigned char[T_BLOCK_SIZE];
 	//this->encryptedBlock = encryptedBlock;
 	memset(block, 0, T_BLOCK_SIZE);
+	printhex(encryptedBlock, T_BLOCK_SIZE, "TBLOCK ENCRYPTED");
 	memcpy(this->encryptedBlock, encryptedBlock, T_BLOCK_SIZE);
 	this->index = index;
 	setupKey();
     parse();
+	printhex(block, T_BLOCK_SIZE, "DECRYPTED BLOCK");
 }
 
 void TBlock::set(uint32_t prSubsetSize, uint32_t prSubsetSeed, uint32_t index){

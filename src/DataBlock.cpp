@@ -45,6 +45,7 @@ DataBlock::DataBlock(uint32_t blockIndex){
     version = 0;
 	setupKey();
 	this->blockIndex = blockIndex;
+	higherFid = 0;
 }
 
 DataBlock::DataBlock(uint32_t blockIndex, unsigned char* block){
@@ -54,16 +55,19 @@ DataBlock::DataBlock(uint32_t blockIndex, unsigned char* block){
    // this->block = block;
 	this->ciphertextBlock = block;
     parseBlock();
+	printhex(fid->get(), 32, "FID in DATABLOCK");
+
     higherFid = fid->getPRPofHigherID(); /// This should be run after parsing the block
-	cout << "BLOCK INDEX " << this->blockIndex << endl;
-	printhex(ciphertextBlock, BLOCK_SIZE, "GET BLOCKS ENCRYPTED");
+	cout << "HIGHER FID " << higherFid << " for index " << blockIndex << endl;
+//	cout << "BLOCK INDEX " << this->blockIndex << endl;
+	//printhex(ciphertextBlock, BLOCK_SIZE, "GET BLOCKS ENCRYPTED");
 }
 
 DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size = MAX_BLOCK_DATA_SIZE){
 	ciphertextBlock = new unsigned char[BLOCK_SIZE]();
-	printhex(ciphertextBlock, BLOCK_SIZE, "EMPTY CIPHERTEXT ARRAY");
+	//printhex(ciphertextBlock, BLOCK_SIZE, "EMPTY CIPHERTEXT ARRAY");
 	plaintextBlock = new unsigned char[BLOCK_SIZE]();
-	printchars(rawData, size, "ACTUAL DATA");
+	//printchars(rawData, size, "ACTUAL DATA");
 	this->blockIndex = blockIndex;
 	setupKey();
     version = 0;
@@ -72,7 +76,7 @@ DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, u
     add(blockIndex, fid, rawData, size);
     makeBlock();	
 	cout << "BLOCK INDEX " << this->blockIndex << endl;
-	printhex(ciphertextBlock, BLOCK_SIZE, "BUILD BLOCKS ENCRYPTED");
+	//printhex(ciphertextBlock, BLOCK_SIZE, "BUILD BLOCKS ENCRYPTED");
 }
 
 /*!
@@ -145,10 +149,10 @@ void DataBlock::makeBlock(){
 	//printhex(&block[pointer], 32, "FID in MAKE after its copied to BLOCK");
     pointer += 32;
    
-	printhex(plaintextBlock, BLOCK_SIZE, "Whole Decrypted block in MAKE BLOCK"); 
+	//printhex(plaintextBlock, BLOCK_SIZE, "Whole Decrypted block in MAKE BLOCK"); 
     byte* encryptedBlock = ENC();
-	printhex(encryptedBlock, BLOCK_SIZE, "ENCRYPTED BLOCK");
-	printhex(ciphertextBlock, BLOCK_SIZE, "EMPTY CIPHERTEXT ARRAY");
+	//printhex(encryptedBlock, BLOCK_SIZE, "ENCRYPTED BLOCK");
+	//printhex(ciphertextBlock, BLOCK_SIZE, "EMPTY CIPHERTEXT ARRAY");
     memcpy(ciphertextBlock, encryptedBlock, BLOCK_SIZE-(uint32_t)sizeof(version));
     delete[] encryptedBlock;;
     
@@ -163,13 +167,13 @@ void DataBlock::parseBlock(){
 	memcpy(&plaintextBlock[BLOCK_SIZE - sizeof(version)], &ciphertextBlock[BLOCK_SIZE-sizeof(version)], 4);
 	unsigned char* decryptedBlock = DEC();
 	memcpy(plaintextBlock, decryptedBlock, BLOCK_SIZE);
-	printhex(plaintextBlock, BLOCK_SIZE, "DECRYPTED BLOCK");
-	printchars(plaintextBlock, BLOCK_SIZE, "DECRYPTED BLOCK CONTENTS");
+	//printhex(plaintextBlock, BLOCK_SIZE, "DECRYPTED BLOCK");
+	//printchars(plaintextBlock, BLOCK_SIZE, "DECRYPTED BLOCK CONTENTS");
 //	delete[] plaintextBlock;
     fileID* fid = new fileID(&plaintextBlock[MAX_BLOCK_DATA_SIZE+1]);
     this->fid = fid;
-	printhex(fid->get(), 32, "FID in PARSE");
-	printhex(this->fid->get(), 32, "FID in PARSE OBJECT");
+	//printhex(fid->get(), 32, "FID in PARSE");
+	//printhex(this->fid->get(), 32, "FID in PARSE OBJECT");
     padded = *(unsigned char *)(&plaintextBlock[MAX_BLOCK_DATA_SIZE]);
     if(!padded)
         removePadding();
@@ -202,9 +206,9 @@ void DataBlock::removePadding(){
 
 bool DataBlock::checkFileID(fileID &fid){
     unsigned char* blockFid = this->fid->get();
-	printhex(blockFid, 32, "Datablock FID");
+	//printhex(blockFid, 32, "Datablock FID");
     unsigned char* fidToCheck = fid.get();
-	printhex(fid.get(), 32, "Required File FID");
+	//printhex(fid.get(), 32, "Required File FID");
     for(int i = 0; i < 32; i++)
         if(fidToCheck[i] != blockFid[i])
             return false;
@@ -363,6 +367,8 @@ void DataBlock::setupKey(){
  This function can be used to check if the block is occupied or not.
  */
 const bool DataBlock::isOccupied(){
+	cout << "Index in " << __PRETTY_FUNCTION__ << " is " << blockIndex << endl;
+	cout << __PRETTY_FUNCTION__ << " higher FID is " << higherFid << endl;
     return higherFid ? true : false;
 }
 
