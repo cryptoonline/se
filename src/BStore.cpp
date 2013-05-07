@@ -50,6 +50,7 @@ void BStore::read(string filename, vector<unsigned char>& fileContents){
 void BStore::write(string filename, unsigned char* filedata, uint32_t filesize){
 	OnlineSession session(communicator);
 	vector<unsigned char> fileContents;
+	cout << "File size is " << filesize;
 	session.get(filename, filesize, fileContents);
 	session.update(filedata, filesize, filename);
 }

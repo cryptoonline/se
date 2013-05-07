@@ -52,10 +52,8 @@ class OnlineSession {
 	/* DataBlock and TBlock object arrays for update*/
 	DataBlock** D_session; 
 
-    /*! Uses higher fid and prSubset to get get this */
-    void getCRI();
-    /*! Parses CRI to get lower fid and PRSubset for the actual file, PRSubset and all other required things are remembered */
-    bool parseCRI();
+	void readTRecord();
+    bool readCRI();
     /*! Read file size from PRSubset and return it */
 //    uint32_t getFileSize();
     /*! Read blocks represented by PRSubset */
@@ -73,7 +71,7 @@ class OnlineSession {
     void writeD(uint32_t* blockLocations, uint32_t numBlocks, unsigned char** blocks);
 
 	void writeFile(unsigned char* fileBytes, uint32_t fileSize, fileID &fid, PRSubset &prSubset);
-	void makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid, size_t filesize);
+	void makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid, uint32_t filesize);
 	vector<uint32_t> getEmptyBlocks(PRSubset &prSubset);
 	void writeFinalize(uint32_t numBlocks);
 	

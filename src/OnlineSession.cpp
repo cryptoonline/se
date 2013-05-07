@@ -26,20 +26,22 @@ void OnlineSession::get(string filename, int32_t size, vector<unsigned char>& fi
 	this->fid = fid;
 	fileCompleteID = fid.get();
 	int32_t numBlocks = (int32_t)ceil((double)size/MAX_BLOCK_DATA_SIZE) * BLOW_UP;
-    getCRI();
-    bool fileExists = parseCRI();
+    readTRecord();
+    bool fileExists = tblock->getPrSubsetSize();
 	
-	bool readFile 		= (size == 0) &&  fileExists;
-	bool fileNotFound 	= (size == 0) && !fileExists;
-	bool updateFile 	= (size != 0) &&  fileExists;
-	bool writeFile		= (size != 0) && !fileExists;
+//	bool readFile 		= (size == 0) &&  fileExists;
+//	bool fileNotFound 	= (size == 0) && !fileExists;
+//	bool updateFile 	= (size != 0) &&  fileExists;
+//	bool writeFile		= (size != 0) && !fileExists;
 
-	if(fileNotFound){
+	if(!fileExists && size == 0){
 		cout << "BlindStorage: File not found. " << __FILE__ << ":" << __LINE__ <<  endl;
 		exit(1);
-	} else if(writeFile || updateFile)
+	}
+	if(size > 0)
 		filePrSubset = new PRSubset(numBlocks);
 		
+	readCRI();
     getFile(fileContents);
 }
 
@@ -90,59 +92,18 @@ void OnlineSession::rename(){
     
 }
 
-void OnlineSession::getCRI(){
+void OnlineSession::readTRecord(){
     uint32_t TRecordIndex = fid.getPRPofHigherID();
 	cout << "Index in " << __FUNCTION__ << " is " << TRecordIndex << endl;
-    //communicator.connect();
 	unsigned char* block = readT(TRecordIndex);
     tblock = new TBlock(block, TRecordIndex);
+}
+
+bool OnlineSession::readCRI(){
 	cri.addTBlock(*tblock);
 	uint32_t* blocksLocations = cri.getBlocksLocations();
 	printdec(blocksLocations, 4, "GET CRI");
 	cri.addFile(readD(blocksLocations, cri.getNumBlocks()));
-	
-//	cout << __FUNCTION__ << " Size is " << tblock->getPrSubsetSize() << " Seed is " << tblock->getPrSubsetSeed() << endl;
-//    criPrSubset = new PRSubset(tblock->getPrSubsetSize(), tblock->getPrSubsetSeed());
-//    uint32_t* blockLocations = criPrSubset->get();
-//    
-//    int32_t criNumBlocks = criPrSubset->getSize();
-//    unsigned char** criFile = readD(blockLocations, criNumBlocks);
-//	printhex(criFile, criNumBlocks, BLOCK_SIZE, "CRI FILE BLOCKS");    
-//
-//    criFileBlocks = new DataBlock*[criNumBlocks];
-//	decryptedCriFile = new unsigned char*[criNumBlocks];
-//    for(int i = 0; i < criNumBlocks; i++){
-//		cout << "Processing cri blocks " << i << "/" << criNumBlocks - 1 << endl;
-//		//printhex(criFile[i], BLOCK_SIZE, "Processing following block");
-//        criFileBlocks[i] = new DataBlock(blockLocations[i], criFile[i]);
-//        decryptedCriFile[i] = criFileBlocks[i]->getDecrypted();
-//	//	if(criFileBlocks[i]->checkFileID(fid)){
-//	//		goodCriBlocks[i] = decryptedCriFile[i]; 
-//	//		printhex(goodCriBlocks[i], BLOCK_SIZE, "Good Block");
-//	//	}
-//		//printhex(decryptedCriFile[i], BLOCK_SIZE, "Decrypted Block");
-//    }
-}
-
-bool OnlineSession::parseCRI(){
-	
-//	//printhex(decryptedCriFile[1], BLOCK_SIZE, "Decrypted Block in parse CRI");
-//    int criFileBytes = criPrSubset->getSize() * MAX_BLOCK_DATA_SIZE;
-//	cout << "CRI have " << criPrSubset->getSize() << "blocks and " << criFileBytes << " bytes." << endl;
-//    criEntries = new unsigned char*[criFileBytes / CRI_ENTRY_SIZE]; //make 40 a parameter in parameters.h
-//	//unsigned char** decrytedCriDataBlocks = new unsigned char*[criPrSubset->getSize()];
-//	//for( int i = 0; i < criPrSubset->getSize(); i++)
-//	//	decryptedCriDataBlocks[i] = new unsigned char[BLOCK_SIZE];
-//
-//    for(int i = 0; i < criFileBytes / CRI_ENTRY_SIZE; i++){
-//        criEntries[i] = new unsigned char[CRI_ENTRY_SIZE]();
-//        memcpy(criEntries[i], decryptedCriFile[0]+i*CRI_ENTRY_SIZE, CRI_ENTRY_SIZE);
-//       // if((i*CRI_ENTRY_SIZE) / MAX_BLOCK_DATA_SIZE >= 0)
-//         //   i += BLOCK_SIZE - MAX_BLOCK_DATA_SIZE;
-//		//printhex(criEntries[i], CRI_ENTRY_SIZE, "CRI Entry");
-//	//	cout << endl;
-//    }
-////make it use checkFileID
     int32_t match = cri.searchFID(fileCompleteID);
     if(match != -1){
 		unsigned char* criEntry = cri.getEntry(match);
@@ -151,17 +112,13 @@ bool OnlineSession::parseCRI(){
         filePrSubset = new PRSubset(*(uint32_t*)(criEntry+4), *(uint32_t*)(criEntry));
         return true;
     }
-    
     return false; //return false if file not found.
 }
-    
 
-//uint32_t OnlineSession::getFileSize(){
-//    return filePrSubset->getSize();
-//}
 void OnlineSession::getFile(vector<unsigned char>& fileContents){
     uint32_t* blockLocations = filePrSubset->get();
     int32_t prSubsetSize = filePrSubset->getSize();
+	cout << "PRSUBSET BLOCKS WHEN GETTING FILE IS " << prSubsetSize << endl;
     unsigned char** encryptedBlocksData = readD(blockLocations, prSubsetSize);
     decryptedFileBlocksRead = new unsigned char*[prSubsetSize];
     D_session = new DataBlock*[prSubsetSize];
@@ -268,25 +225,29 @@ int64_t OnlineSession::readFileSize(string filename){
 void OnlineSession::writeFile(unsigned char* fileBytes, uint32_t fileSize, fileID& fid, PRSubset& prSubset){
 	vector<uint32_t> emptyBlocks = getEmptyBlocks(prSubset);
 	cout << "BLOCKS IN WRITE FILE ARE " << prSubset.getSize() << endl;
-	if(emptyBlocks.size()*MAX_BLOCK_DATA_SIZE < fileSize){
+	if(emptyBlocks.size()*BLOCK_SIZE < fileSize){
 		cerr << "Not enough empty blocks" << endl;
 		exit(1);
 	}
 	makeBlocks(fileBytes, emptyBlocks.data(), fid, fileSize);
 }
 
-void OnlineSession::makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid, size_t filesize){
+void OnlineSession::makeBlocks(unsigned char* fileBytes, uint32_t* prSubset, fileID &fid, uint32_t filesize){
 	int counter = 0;
-	int32_t numBlocks = (int32_t)ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP;
+	int32_t numBlocks = (int32_t)ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE);
+	cout << "NUMBER OF BLOCKS " << numBlocks << endl;
 	unsigned char* block = new unsigned char[numBlocks * BLOCK_SIZE]();
 	for(; counter < numBlocks - 1; counter++){
+		cout << "COUNTER " << counter << endl;
 		memcpy(&block[counter*BLOCK_SIZE], &fileBytes[counter*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
 //		D_session[counter] = new DataBlock(prSubset[counter], fid, &blocks[counter*BLOCK_SIZE], MAX_BLOCK_DATA_SIZE);
 //		D_session[counter] = new DataBlock(prSubset[counter]);
 		D_session[counter]->update(fid, &block[counter*BLOCK_SIZE], MAX_BLOCK_DATA_SIZE);
 	}
-	uint32_t sizeOfLastBlock = (uint32_t)filesize - ((uint32_t)filesize/MAX_BLOCK_DATA_SIZE) * MAX_BLOCK_DATA_SIZE;
-	memcpy(&blocks[counter*BLOCK_SIZE], &fileBytes[counter*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
+	int32_t sizeOfLastBlock = (int32_t)filesize - ((int32_t)filesize/MAX_BLOCK_DATA_SIZE) * MAX_BLOCK_DATA_SIZE;
+	printhex(&block[counter*BLOCK_SIZE], BLOCK_SIZE, "EMPTY BLOCK");
+	printhex(&fileBytes[counter*MAX_BLOCK_DATA_SIZE], 145, "FILE DATA");
+	memcpy(&block[counter*BLOCK_SIZE], &fileBytes[counter*MAX_BLOCK_DATA_SIZE], 140);
 //	D_session[counter] = new DataBlock(prSubset[counter]);
 	D_session[counter]->update(fid, &block[counter*BLOCK_SIZE], MAX_BLOCK_DATA_SIZE);
 }
