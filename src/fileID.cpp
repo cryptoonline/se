@@ -40,6 +40,7 @@ fileID::fileID(unsigned char* ID){
 fileID::fileID(unsigned char* higherID, bool criFile){
     initialize();
     this->higherID = higherID;
+	memcpy(ID, higherID, 4);
 }
 
 fileID::~fileID(){

@@ -72,7 +72,10 @@ DataBlock::DataBlock(uint32_t blockIndex, fileID &fid, unsigned char* rawData, u
 	this->blockIndex = blockIndex;
 	setupKey();
     version = 0;
-    higherFid = fid.getPRPofHigherID();
+	this->fid = &fid;
+	printhex(this->fid->get(), 32, "CRI FID");
+//	getchar();
+   // higherFid = fid.getPRPofHigherID();
    // block = new unsigned char[size]();
     add(blockIndex, fid, rawData, size);
     makeBlock();	
