@@ -18,12 +18,14 @@
 #include "TBlock.h"
 #include "Tdisk.h"
 #include "Debug.h"
+#include "Cri.h"
 
 using namespace std;
 
 class OnlineSession {
     Communicator communicator;
     DataBlock** blocks;
+	Cri cri;
     PRSubset* filePrSubset;
 	PRSubset* criPrSubset;
     unsigned char* fileCompleteID;

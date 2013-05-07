@@ -14,6 +14,7 @@
 #include "Communicator.h"
 #include "OnlineSession.h"
 #include "Tdisk.h"
+#include "boost/filesystem.hpp"
 
 using namespace std;
 

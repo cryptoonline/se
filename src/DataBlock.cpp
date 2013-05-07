@@ -45,7 +45,7 @@ DataBlock::DataBlock(uint32_t blockIndex){
     version = 0;
 	setupKey();
 	this->blockIndex = blockIndex;
-	cout << "Block Index in constructor is " << this->blockIndex << endl;
+//	cout << "Block Index in constructor is " << this->blockIndex << endl;
 	higherFid = 0;
 }
 

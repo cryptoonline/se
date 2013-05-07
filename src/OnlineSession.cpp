@@ -96,52 +96,59 @@ void OnlineSession::getCRI(){
     //communicator.connect();
 	unsigned char* block = readT(TRecordIndex);
     tblock = new TBlock(block, TRecordIndex);
-	cout << __FUNCTION__ << " Size is " << tblock->getPrSubsetSize() << " Seed is " << tblock->getPrSubsetSeed() << endl;
-    criPrSubset = new PRSubset(tblock->getPrSubsetSize(), tblock->getPrSubsetSeed());
-    uint32_t* blockLocations = criPrSubset->get();
-    
-    int32_t criNumBlocks = criPrSubset->getSize();
-    unsigned char** criFile = readD(blockLocations, criNumBlocks);
-	printhex(criFile, criNumBlocks, BLOCK_SIZE, "CRI FILE BLOCKS");    
-
-    criFileBlocks = new DataBlock*[criNumBlocks];
-	decryptedCriFile = new unsigned char*[criNumBlocks];
-    for(int i = 0; i < criNumBlocks; i++){
-		cout << "Processing cri blocks " << i << "/" << criNumBlocks - 1 << endl;
-		//printhex(criFile[i], BLOCK_SIZE, "Processing following block");
-        criFileBlocks[i] = new DataBlock(blockLocations[i], criFile[i]);
-        decryptedCriFile[i] = criFileBlocks[i]->getDecrypted();
-	//	if(criFileBlocks[i]->checkFileID(fid)){
-	//		goodCriBlocks[i] = decryptedCriFile[i]; 
-	//		printhex(goodCriBlocks[i], BLOCK_SIZE, "Good Block");
-	//	}
-		//printhex(decryptedCriFile[i], BLOCK_SIZE, "Decrypted Block");
-    }
+	cri.addTBlock(*tblock);
+	uint32_t* blocksLocations = cri.getBlocksLocations();
+	printdec(blocksLocations, 4, "GET CRI");
+	cri.addFile(readD(blocksLocations, cri.getNumBlocks()));
+	
+//	cout << __FUNCTION__ << " Size is " << tblock->getPrSubsetSize() << " Seed is " << tblock->getPrSubsetSeed() << endl;
+//    criPrSubset = new PRSubset(tblock->getPrSubsetSize(), tblock->getPrSubsetSeed());
+//    uint32_t* blockLocations = criPrSubset->get();
+//    
+//    int32_t criNumBlocks = criPrSubset->getSize();
+//    unsigned char** criFile = readD(blockLocations, criNumBlocks);
+//	printhex(criFile, criNumBlocks, BLOCK_SIZE, "CRI FILE BLOCKS");    
+//
+//    criFileBlocks = new DataBlock*[criNumBlocks];
+//	decryptedCriFile = new unsigned char*[criNumBlocks];
+//    for(int i = 0; i < criNumBlocks; i++){
+//		cout << "Processing cri blocks " << i << "/" << criNumBlocks - 1 << endl;
+//		//printhex(criFile[i], BLOCK_SIZE, "Processing following block");
+//        criFileBlocks[i] = new DataBlock(blockLocations[i], criFile[i]);
+//        decryptedCriFile[i] = criFileBlocks[i]->getDecrypted();
+//	//	if(criFileBlocks[i]->checkFileID(fid)){
+//	//		goodCriBlocks[i] = decryptedCriFile[i]; 
+//	//		printhex(goodCriBlocks[i], BLOCK_SIZE, "Good Block");
+//	//	}
+//		//printhex(decryptedCriFile[i], BLOCK_SIZE, "Decrypted Block");
+//    }
 }
 
 bool OnlineSession::parseCRI(){
-	//printhex(decryptedCriFile[0], BLOCK_SIZE, "Decrypted Block in parse CRI");
-    int criFileBytes = criPrSubset->getSize() * MAX_BLOCK_DATA_SIZE;
-	cout << "CRI have " << criPrSubset->getSize() << "blocks and " << criFileBytes << " bytes." << endl;
-    criEntries = new unsigned char*[criFileBytes / CRI_ENTRY_SIZE]; //make 40 a parameter in parameters.h
-	//unsigned char** decrytedCriDataBlocks = new unsigned char*[criPrSubset->getSize()];
-	//for( int i = 0; i < criPrSubset->getSize(); i++)
-	//	decryptedCriDataBlocks[i] = new unsigned char[BLOCK_SIZE];
-
-    for(int i = 0; i < criFileBytes / CRI_ENTRY_SIZE; i++){
-        criEntries[i] = new unsigned char[CRI_ENTRY_SIZE]();
-        memcpy(criEntries[i], decryptedCriFile[0]+i*CRI_ENTRY_SIZE, CRI_ENTRY_SIZE);
-       // if((i*CRI_ENTRY_SIZE) / MAX_BLOCK_DATA_SIZE >= 0)
-         //   i += BLOCK_SIZE - MAX_BLOCK_DATA_SIZE;
-		//printhex(criEntries[i], CRI_ENTRY_SIZE, "CRI Entry");
-	//	cout << endl;
-    }
-//make it use checkFileID
-    int32_t match = search(criEntries, fileCompleteID, criPrSubset->getSize(), CRI_ENTRY_SIZE, 8, 0);
+	
+//	//printhex(decryptedCriFile[1], BLOCK_SIZE, "Decrypted Block in parse CRI");
+//    int criFileBytes = criPrSubset->getSize() * MAX_BLOCK_DATA_SIZE;
+//	cout << "CRI have " << criPrSubset->getSize() << "blocks and " << criFileBytes << " bytes." << endl;
+//    criEntries = new unsigned char*[criFileBytes / CRI_ENTRY_SIZE]; //make 40 a parameter in parameters.h
+//	//unsigned char** decrytedCriDataBlocks = new unsigned char*[criPrSubset->getSize()];
+//	//for( int i = 0; i < criPrSubset->getSize(); i++)
+//	//	decryptedCriDataBlocks[i] = new unsigned char[BLOCK_SIZE];
+//
+//    for(int i = 0; i < criFileBytes / CRI_ENTRY_SIZE; i++){
+//        criEntries[i] = new unsigned char[CRI_ENTRY_SIZE]();
+//        memcpy(criEntries[i], decryptedCriFile[0]+i*CRI_ENTRY_SIZE, CRI_ENTRY_SIZE);
+//       // if((i*CRI_ENTRY_SIZE) / MAX_BLOCK_DATA_SIZE >= 0)
+//         //   i += BLOCK_SIZE - MAX_BLOCK_DATA_SIZE;
+//		//printhex(criEntries[i], CRI_ENTRY_SIZE, "CRI Entry");
+//	//	cout << endl;
+//    }
+////make it use checkFileID
+    int32_t match = cri.searchFID(fileCompleteID);
     if(match != -1){
-		cout << "Seed for file is " << *(uint32_t*)(criEntries[match]) << " and size is " << *(uint32_t*)(criEntries[match] + 4) << endl;
+		unsigned char* criEntry = cri.getEntry(match);
+		cout << "Seed for file is " << *(uint32_t*)(criEntry) << " and size is " << *(uint32_t*)(criEntry + 4) << endl;
 		getchar();
-        filePrSubset = new PRSubset(*(uint32_t*)(criEntries[match]+4), *(uint32_t*)(criEntries[match]));
+        filePrSubset = new PRSubset(*(uint32_t*)(criEntry+4), *(uint32_t*)(criEntry));
         return true;
     }
     

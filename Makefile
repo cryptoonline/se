@@ -2,8 +2,8 @@ CC=g++
 RM=rm
 
 CFLAGS=-c -Wall -ggdb
-LDFLAGS=-lcryptopp 
-SOURCES=AES.cpp Blowfish.cpp Communicator.cpp DataBlock.cpp Ddisk.cpp Debug.cpp PRF.cpp OnlineSession.cpp PRSubset.cpp SHA256bit.cpp TBlock.cpp Tdisk.cpp Tfile.cpp fileID.cpp BStore.cpp Key.cpp main.cpp
+LDFLAGS=-lcryptopp -lboost_system-mt -lboost_filesystem-mt -L/usr/local/Cellar/boost/1.53.0/lib -I/usr/local/Cellar/boost/1.53.0/include
+SOURCES=AES.cpp Blowfish.cpp Communicator.cpp Cri.cpp DataBlock.cpp Ddisk.cpp Debug.cpp PRF.cpp OnlineSession.cpp PRSubset.cpp SHA256bit.cpp TBlock.cpp Tdisk.cpp Tfile.cpp fileID.cpp BStore.cpp Key.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=main
 
