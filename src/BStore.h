@@ -23,7 +23,8 @@ public:
 	BStore(Communicator &communicator, string path);
 	~BStore();
 	void upload();
-	unsigned char* read(string filename);
+
+	void read(string filename, vector<unsigned char>& fileContents);
 	void write(string filename, unsigned char* filedata, uint32_t size);
 	unsigned char* update(string filename, unsigned char* updateFiledata, uint32_t size);
 	void del(string filename);

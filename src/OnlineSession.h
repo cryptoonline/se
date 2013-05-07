@@ -35,7 +35,7 @@ class OnlineSession {
     unsigned char** criEntries;
     DataBlock** extractedFileBlocks;
     unsigned char** decryptedFileBlocksRead;
-    unsigned char* fileDataRead;
+//    unsigned char* fileDataRead;
    	unsigned char** goodCriBlocks;
  
     DataBlock** fileBlockstoBeWritten;
@@ -57,7 +57,7 @@ class OnlineSession {
     /*! Read file size from PRSubset and return it */
 //    uint32_t getFileSize();
     /*! Read blocks represented by PRSubset */
-    void getFile();
+    void getFile(vector<unsigned char>& fileContents);
 //    bool searchCRI();
     int32_t search(unsigned char** arrayToSearchIn, unsigned char* arrayToSearchFor, int32_t rows, int32_t cols, int32_t startCol = 0, int32_t startRow = 0);
     
@@ -82,7 +82,7 @@ class OnlineSession {
 public:
     OnlineSession(Communicator &communicator);
     ~OnlineSession();
-    unsigned char* get(string filename, PRSubset* prSubset = NULL);
+    void get(string filename, int32_t size, vector<unsigned char>& fileContents);
     void update(unsigned char* input, uint32_t size, string filename);
     void remove();
     /*! Use homorphic encryption to support this */

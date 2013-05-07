@@ -20,7 +20,7 @@ BStore::BStore(Communicator &communicator, string directoryPath): D(TOTAL_BLOCKS
 		int32_t fileSize = readFileSize(filesList[i]);
 		uint32_t numBlocks =(uint32_t) ceil((double)fileSize/MAX_BLOCK_DATA_SIZE) * BLOW_UP;
 		PRSubset prSubset(numBlocks);
-	T.addFile(filesList[i], prSubset);
+		T.addFile(filesList[i], prSubset);
 		D.addFile(filesList[i], prSubset);	
 	}
 	cout << endl;
@@ -42,17 +42,16 @@ BStore::~BStore(){
 void BStore::upload(){
 }
 
-unsigned char* BStore::read(string filename){
+void BStore::read(string filename, vector<unsigned char>& fileContents){
 	OnlineSession session(communicator);
-	return session.get(filename);
+	session.get(filename, 0, fileContents); //Second arugment is size and is needed for write and update
 }
 
 void BStore::write(string filename, unsigned char* filedata, uint32_t filesize){
 	OnlineSession session(communicator);
-	PRSubset* prSubset = new PRSubset(ceil((double)filesize/MAX_BLOCK_DATA_SIZE) * BLOW_UP);
-	unsigned char* readData = session.get(filename, prSubset);
+	vector<unsigned char> fileContents;
+	session.get(filename, filesize, fileContents);
 	session.update(filedata, filesize, filename);
-	delete prSubset;
 }
 
 unsigned char* BStore::update(string filename, unsigned char* updatedFiledata, uint32_t filesize){
