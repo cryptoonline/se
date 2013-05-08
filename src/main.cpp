@@ -19,6 +19,8 @@
 #include "Blowfish.h"
 #include "Debug.h"
 #include <string>
+#include "SSE.h"
+
 using std::string;
 
 #include <cstdlib>
@@ -51,9 +53,11 @@ unsigned char* readFile(string filename){
 	
 int main(int argc, const char * argv[]){
 	Communicator comm;
-
-//	BStore store(comm);	
-	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
+	SSE sse;
+	sse.indexGen("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
+	getchar();
+	BStore store(comm);	
+//	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 //	unsigned char plaintext[] = "8TR Mode Test";
 //	unsigned char key[] = {0xF5, 0x34, 0xFC, 0x7F, 0x05, 0x65, 0xA8, 0xCF, 0x16, 0x29, 0xF0, 0x1D, 0xB3, 0x1A, 0xE3, 0xCA};
@@ -67,19 +71,28 @@ int main(int argc, const char * argv[]){
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	vector<unsigned char> data;;
+	vector<unsigned char> data;
 //	store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.", data);
 	store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/inbox/2.", data);
 	cout << "File is here " << endl;
 	for(int i = 0; i < data.size(); i++)
-		cout << (char) data[i];	
+		cout << (char) data[i];
+	getchar();	
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	string filename = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/holst-k/inbox/8.";
+	store.write(filename, readFile(filename), readFileSize(filename));
+	vector<unsigned char> data3;
+	store.read(filename, data3);
+	for(int i = 0; i < data3.size(); i++){
+		cout << (char) data3[i];
+	}
+	cout << readFileSize(filename) << endl;
+	getchar();
+	cout << readFile(filename) << endl;
 	cout << "File size is " << readFileSize(filename) << endl;
 	getchar();
-	store.write(filename, readFile(filename), readFileSize(filename));
 //	unsigned char* data1 = store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/holst-k/inbox/8.");
 //   for(int i = 0; i < 2045; i++)
 //   	cout <<(char) data1[i];

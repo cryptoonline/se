@@ -16,12 +16,22 @@
 #include "Tdisk.h"
 #include "boost/filesystem.hpp"
 
+#include "tr1/unordered_map"
+using std::tr1::unordered_map;
+
+#include "tr1/unordered_set"
+using std::tr1::unordered_set;
+
 using namespace std;
+
+typedef uint64_t docid_t;
 
 class BStore{
 public:
+
 	BStore(Communicator &communicator);
 	BStore(Communicator &communicator, string path);
+	BStore(unordered_map< string, unordered_set<uint64_t> > & map);
 	~BStore();
 	void upload();
 

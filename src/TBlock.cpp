@@ -50,8 +50,8 @@ void TBlock::set(uint32_t prSubsetSize, uint32_t prSubsetSeed, uint32_t index){
 
 void TBlock::update(uint32_t prSubsetSize, uint32_t prSubsetSeed){
 	version++;
-	this->prSubsetSize = prSubsetSize;
-	this->prSubsetSeed = prSubsetSeed;
+	this->prSubsetSize = prSubsetSeed;
+	this->prSubsetSeed = prSubsetSize;
 	make();		
 }
 
@@ -82,8 +82,9 @@ void TBlock::make(){
 	cout << "Index in make is " << index << endl;
 	//printhex(key, 16, "Key in make");
 	//printhex(iv, 8, "IV in make");
-	//printhex(block, T_BLOCK_SIZE, "Plaintext Block in make");
-	//printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in make");
+	printhex(block, T_BLOCK_SIZE, "Plaintext Block in make");
+	printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in make");
+	getchar();
 }
 
 void TBlock::parse(){

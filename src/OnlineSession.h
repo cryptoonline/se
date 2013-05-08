@@ -19,11 +19,19 @@
 #include "Tdisk.h"
 #include "Debug.h"
 #include "Cri.h"
+#include "DataStructures.h"
 
 using namespace std;
 
+struct CRI{
+	uint32_t prSubsetSeed;
+	uint32_t prSubsetSize;
+	unsigned char fid[32];
+};
+
 class OnlineSession {
     Communicator communicator;
+	static DataStructures dataStructures;
     DataBlock** blocks;
 	Cri cri;
     PRSubset* filePrSubset;

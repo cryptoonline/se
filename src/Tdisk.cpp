@@ -50,9 +50,9 @@ void Tdisk::finalize(Ddisk &D){
 		unsigned char* seedarray = static_cast<unsigned char*>(static_cast<void*>(&seed));
 		//printhex(seedarray, 4, "Seed");
        	//printhex(static_cast<unsigned char*>(static_cast<void*>(cri.data())),  cri.size()*sizeof(CRI), "CRI in Tdisk");
-//		fid.makeCRIID();
-		printhex(fid.get(), 32, "FID IN TDISK FOR CIR");
-		getchar();
+		fid.makeCRIID();
+//		printhex(fid.get(), 32, "FID IN TDISK FOR CIR");
+//		getchar();
         D.addBlocks(static_cast<unsigned char*>(static_cast<void*>(cri.data())), cri.size()*sizeof(CRI), fid, prSubset);
         T[*(uint32_t*)TRecordIndex]->set(prSubset.getSeed(), prSubset.getSize(), *(uint32_t*)TRecordIndex);
 

@@ -45,7 +45,8 @@ void Ddisk::addFile(string filename, PRSubset& prSubset){
 	addBlocks(fileBytes, size, fid, prSubset);
 } 
 
-void Ddisk::addFile(unsigned char* fileBytes, uint32_t fileSize, fileID &fid, PRSubset &prSubset){
+void Ddisk::addFile(string filename, unsigned char* fileBytes, uint32_t fileSize, PRSubset &prSubset){
+	fileID fid(filename);
     addBlocks(fileBytes, fileSize, fid, prSubset);
 }
 

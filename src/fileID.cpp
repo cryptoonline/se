@@ -95,8 +95,9 @@ void fileID::parse(){
 }
 
 void fileID::makeCRIID(){
-    delete[] lowerID;
-    lowerID = new unsigned char[28](); /// Zero it.
+    //delete[] lowerID;
+    //lowerID = new unsigned char[28](); /// Zero it
+	memset(&ID[4], 0, 28);
 }
 
 void fileID::generateKeys(){

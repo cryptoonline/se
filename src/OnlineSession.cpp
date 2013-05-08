@@ -8,10 +8,12 @@
 
 #include "OnlineSession.h"
 
+DataStructures OnlineSession::dataStructures;
+
 OnlineSession::OnlineSession(Communicator &communicator){
     this->communicator = communicator;
 	this->communicator.connect();
-	loadDataStructures();
+//	loadDataStructures();
 //    this->criPrSubset = criPrSubset;
 //    this->criFid = criFid;
 //    this->filename = filename;
@@ -41,6 +43,8 @@ void OnlineSession::get(string filename, int32_t size, vector<unsigned char>& fi
 	if(size > 0)
 		filePrSubset = new PRSubset(numBlocks);
 		
+//	if(!fileExists)
+//		criPrSubset = new PRSubset(4);
 	readCRI();
     getFile(fileContents);
 }
@@ -50,7 +54,6 @@ void OnlineSession::update(unsigned char* input, uint32_t size, string filename)
 	cout << "FILE SIZE IN UPDATE IS " << size << endl;
 	cout << "BLOCK IN UPDATE ARE " << numBlocks << endl;
 	cout << "filePrSubset size is " << filePrSubset->getSize() << endl;
-	getchar();
 	
 	cout << "BLOCKs in PRSUBSET ARE " << filePrSubset->getSize() << endl;
 	uint32_t* prSubsetArray = filePrSubset->get();
@@ -67,10 +70,16 @@ void OnlineSession::update(unsigned char* input, uint32_t size, string filename)
         encryptedfileBlockstoBeWritten[i] = D_session[i]->getEncrypted();
 
 	cout << "D Updated" << endl;
-    if(tblock != NULL)
-		tblock->update(filePrSubset->getSize(), filePrSubset->getSeed());
-	else
-		cerr << "Access NULL pointer  at line " << __LINE__ << " in " << __PRETTY_FUNCTION__; 
+		PRSubset* criPrSubset = cri.getCRIPrSubset();
+		struct CRI criEntry;
+		criEntry.prSubsetSeed = filePrSubset->getSeed();
+		criEntry.prSubsetSize = filePrSubset->getSize();
+		memcpy(criEntry.fid, fid.get(), 32);
+		cout << "CRI Subset size is " << criPrSubset->getSize() << " and seed is " << criPrSubset->getSeed() << endl;
+		tblock->update(criPrSubset->getSize(), criPrSubset->getSeed());
+		printhex(tblock->getEncrypted(), T_BLOCK_SIZE, "TBLOCK ENCRYPTED IN ONLINESESSION");
+		cout << "FID IS " << fid.getPRPofHigherID() << " cri is " << criPrSubset->getSize() << " seed is " << criPrSubset->getSeed() << endl;
+//		memcpy(&T[fid.getPRPofHigherID()], tblock->getEncrypted(), T_BLOCK_SIZE);
     writeT(fid.getPRPofHigherID(), tblock->getEncrypted());
     writeD(filePrSubset->get(), filePrSubset->getSize(), encryptedfileBlockstoBeWritten);
 }
@@ -94,21 +103,23 @@ void OnlineSession::rename(){
 
 void OnlineSession::readTRecord(){
     uint32_t TRecordIndex = fid.getPRPofHigherID();
+	cout << "Reading " << TRecordIndex << endl;
 	cout << "Index in " << __FUNCTION__ << " is " << TRecordIndex << endl;
 	unsigned char* block = readT(TRecordIndex);
     tblock = new TBlock(block, TRecordIndex);
+	printhex(tblock->getEncrypted(), T_BLOCK_SIZE, "READ T RECORD ENCRYPTED DATA");
+	printhex(tblock->getDecrypted(), T_BLOCK_SIZE, "READ T RECORD DECRYPTED DATA");
 }
 
 bool OnlineSession::readCRI(){
 	cri.addTBlock(*tblock);
 	uint32_t* blocksLocations = cri.getBlocksLocations();
 	printdec(blocksLocations, 4, "GET CRI");
-	cri.addFile(readD(blocksLocations, cri.getNumBlocks()));
+	cri.addFile(readD(blocksLocations, cri.getNumBlocks()), fid);
     int32_t match = cri.searchFID(fileCompleteID);
     if(match != -1){
 		unsigned char* criEntry = cri.getEntry(match);
 		cout << "Seed for file is " << *(uint32_t*)(criEntry) << " and size is " << *(uint32_t*)(criEntry + 4) << endl;
-		getchar();
         filePrSubset = new PRSubset(*(uint32_t*)(criEntry+4), *(uint32_t*)(criEntry));
         return true;
     }
@@ -138,36 +149,38 @@ void OnlineSession::getFile(vector<unsigned char>& fileContents){
 unsigned char* OnlineSession::readT(uint32_t TRecordIndex){
 	unsigned char* TEntry = new unsigned char[T_BLOCK_SIZE];
 //	communicator.tGet(TRecordIndex, reinterpret_cast<char*>(TEntry));
-	memcpy(TEntry, &T[TRecordIndex*T_BLOCK_SIZE], 12);
-	return reinterpret_cast<unsigned char*>(TEntry);
+	dataStructures.tGet(TRecordIndex, TEntry);
+	return TEntry;
 }
 
 void OnlineSession::writeT(uint32_t TRecordIndex, unsigned char* block){
 //	communicator.tPut(TRecordIndex, reinterpret_cast<char*>(block));
-	memcpy(&T[TRecordIndex*T_BLOCK_SIZE], block, T_BLOCK_SIZE);
+	dataStructures.tPut(TRecordIndex, block);
 }
 
 unsigned char** OnlineSession::readD(uint32_t* blockLocations, uint32_t numBlocks){
 	unsigned char** blocks = new unsigned char*[numBlocks];
 	for(int i = 0; i < numBlocks; i++)
 		blocks[i] = new unsigned char[BLOCK_SIZE];
+	dataStructures.dGet(blockLocations, numBlocks, blocks);
 	//for(int i = 0; i < numBlocks; i++){
 	//	communicator.dGet(blockLocations[i], reinterpret_cast<char*>(blocks[i]));
 	//}
 	//communicator.dGet(blockLocations, blocks, numBlocks);
-	cout << "Inefficient readD for memory, will make it efficinet once done with debuggin" << endl;
-	for( int i = 0; i < numBlocks; i++){
-		memcpy(blocks[i], &D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE); 
+//	cout << "Inefficient readD for memory, will make it efficinet once done with debuggin" << endl;
+//	for( int i = 0; i < numBlocks; i++){
+//		memcpy(blocks[i], &D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE); 
 		//printhex(blocks[i], BLOCK_SIZE, "BLOCK in readD");
-	}		
+//	}		
 	return blocks;
 }
 
 void OnlineSession::writeD(uint32_t* blockLocations, uint32_t numBlocks, unsigned char** blocks){
-	for(int i = 0; i < numBlocks; i++){
+	dataStructures.dPut(blockLocations, numBlocks, blocks);	
+//	for(int i = 0; i < numBlocks; i++){
 //		communicator.dPut(blockLocations[i], reinterpret_cast<char*>(blocks[i]));
-		memcpy(&D[blockLocations[i]*BLOCK_SIZE], blocks[i], BLOCK_SIZE);
-	}
+//		memcpy(&D[blockLocations[i]*BLOCK_SIZE], blocks[i], BLOCK_SIZE);
+//	}
 }
            
            

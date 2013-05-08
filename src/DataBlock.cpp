@@ -219,6 +219,17 @@ bool DataBlock::checkFileID(fileID &fid){
     return true;
 }
 
+bool DataBlock::checkCRIFileID(fileID &fid){
+	unsigned char* blockFid = this->fid->get();
+	unsigned char* fidToCheck = fid.get();
+	for(int i = 0; i < 4; i++)
+		if(fidToCheck[i] != blockFid[i])
+			return false;
+	for(int i = 5; i < 32; i++)
+		if(fidToCheck[i] != 0)
+			return false;
+	return true;
+}
 /*!
  This function encrypts the block. It uses makeIV() function to create IV and AES.ENC to encrypt the block 
  */

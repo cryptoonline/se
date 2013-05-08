@@ -8,6 +8,33 @@
 BStore::BStore(Communicator &communicator){
 	this->communicator = communicator;
 }
+
+BStore::BStore(unordered_map< string, unordered_set<uint64_t> >& map) : D(TOTAL_BLOCKS){
+	for(unordered_map<string, unordered_set<docid_t> >::iterator itmap = map.begin(); itmap != map.end(); ++itmap) {
+		const string & keyword = itmap->first;
+		unordered_set<docid_t> & set = itmap->second;
+		unsigned char documents[set.size()*sizeof(docid_t)];
+		int counter = 0;
+		for(unordered_set<docid_t>::iterator itset = set.begin(); itset != set.end(); ++itset) {
+			docid_t documentId = *itset;
+			memcpy(&documents[counter*sizeof(docid_t)], static_cast<unsigned char*>(static_cast<void*>(&documentId)), sizeof(docid_t)); 
+		}
+		int32_t documentsListSize = set.size()*sizeof(docid_t);
+		int32_t numBlocks = (int32_t)ceil((double)documentsListSize/BLOCK_SIZE) * BLOW_UP;
+		PRSubset prSubset(numBlocks);
+		T.addFile(keyword, prSubset);
+		D.addFile(keyword, documents, documentsListSize, prSubset);
+	}
+	
+	T.finalize(D);
+	cout << "Writing T to disk" << endl;
+	T.writeToDisk();
+
+	D.finalize();
+	cout << "Writing D to disk" << endl;
+	D.writeToDisk();
+}
+
 BStore::BStore(Communicator &communicator, string directoryPath): D(TOTAL_BLOCKS){
 	this->communicator = communicator;
 	readFilesFromDirectory(directoryPath);

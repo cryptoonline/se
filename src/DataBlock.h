@@ -43,7 +43,7 @@ public:
     void add(uint32_t blockIndex, fileID &fid, unsigned char* rawData, uint32_t size);
     void encryptIfEmpty();
     bool checkFileID(fileID &fid);
-
+	bool checkCRIFileID(fileID &fid);
 
     void print(string tag, unsigned char* value);
     void print(string tag, int value);
