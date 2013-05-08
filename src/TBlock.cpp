@@ -84,7 +84,6 @@ void TBlock::make(){
 	//printhex(iv, 8, "IV in make");
 	printhex(block, T_BLOCK_SIZE, "Plaintext Block in make");
 	printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in make");
-	getchar();
 }
 
 void TBlock::parse(){

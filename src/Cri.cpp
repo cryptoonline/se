@@ -15,7 +15,6 @@ void Cri::addTBlock(TBlock& tblock){
 		prSubset = new PRSubset(tblock.getPrSubsetSize(), tblock.getPrSubsetSeed());
 	
 	cout << "PrSubset size is " << prSubset->getSize() << " and seed is " << prSubset->getSeed() << endl;
-	getchar();
 	blocksLocations = prSubset->get();
 	numBlocks = prSubset->getSize();
 	blocks = new DataBlock*[numBlocks];
@@ -31,7 +30,6 @@ void Cri::addFile(unsigned char** file, fileID& fid){
 	this->fid = &fid;
 //	this->fid->makeCRIID();
 	printhex(this->fid->get(), 32, "FID");
-	getchar();
 	ciphertextBlocks = file;
 	decrypt();
 }
