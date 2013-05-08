@@ -22,6 +22,7 @@
 #include "DataStructures.h"
 
 using namespace std;
+using std::reverse_iterator;
 
 struct CRI{
 	uint32_t prSubsetSeed;
@@ -90,7 +91,7 @@ class OnlineSession {
 public:
     OnlineSession(Communicator &communicator);
     ~OnlineSession();
-    void get(string filename, int32_t size, vector<unsigned char>& fileContents);
+    bool get(string filename, int32_t size, vector<unsigned char>& fileContents);
     void update(unsigned char* input, uint32_t size, string filename);
     void remove();
     /*! Use homorphic encryption to support this */

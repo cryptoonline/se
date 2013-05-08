@@ -59,7 +59,7 @@ int main(int argc, const char * argv[]){
 	BStore store(comm);	
 //	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	vector<uint64_t> docs(80);
+	vector<uint64_t> docs;
 	sse.search("corner", docs);
 	for(int i = 0; i < docs.size(); i++)
 		cout << docs[i] << endl;

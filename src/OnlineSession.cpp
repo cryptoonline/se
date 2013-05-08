@@ -23,7 +23,7 @@ OnlineSession::OnlineSession(Communicator &communicator){
 OnlineSession::~OnlineSession(){
 }
 
-void OnlineSession::get(string filename, int32_t size, vector<unsigned char>& fileContents){
+bool OnlineSession::get(string filename, int32_t size, vector<unsigned char>& fileContents){
 	fileID fid(filename);
 	this->fid = fid;
 	fileCompleteID = fid.get();
@@ -38,7 +38,7 @@ void OnlineSession::get(string filename, int32_t size, vector<unsigned char>& fi
 
 	if(!fileExists && size == 0){
 		cout << "BlindStorage: File not found. " << __FILE__ << ":" << __LINE__ <<  endl;
-		exit(1);
+		return false;
 	}
 	if(size > 0)
 		filePrSubset = new PRSubset(numBlocks);
@@ -47,6 +47,7 @@ void OnlineSession::get(string filename, int32_t size, vector<unsigned char>& fi
 //		criPrSubset = new PRSubset(4);
 	readCRI();
     getFile(fileContents);
+	return true;
 }
 
 void OnlineSession::update(unsigned char* input, uint32_t size, string filename){
@@ -140,10 +141,18 @@ void OnlineSession::getFile(vector<unsigned char>& fileContents){
 		decryptedFileBlocksRead[i] = D_session[i]->getDecrypted();
         if(D_session[i]->checkFileID(fid)){
 			extractedFileBlocks[j] = D_session[i];
-			fileContents.insert(fileContents.end(), &decryptedFileBlocksRead[i][0], &decryptedFileBlocksRead[i][MAX_BLOCK_DATA_SIZE]);
+			printhex(decryptedFileBlocksRead[i], BLOCK_SIZE, "GET FILE");
+			fileContents.insert(fileContents.end(), &decryptedFileBlocksRead[i][0], &decryptedFileBlocksRead[i][MAX_BLOCK_DATA_SIZE+1]);
             j++;
       }
     }
+	
+	for(int k = fileContents.size(); k > 0; k--)
+		if(fileContents[k] == 1){
+			fileContents.resize(k-1);
+			break;
+		}
+	print_docid_t(fileContents, "FILE CONTENTS IN ONLINE SESSION GET");
 }
 
 unsigned char* OnlineSession::readT(uint32_t TRecordIndex){
