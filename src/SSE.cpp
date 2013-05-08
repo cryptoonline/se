@@ -98,12 +98,15 @@ void SSE::add(string path){
 	
 }
 
-void SSE::search(string keyword, vector<docid_t>& docs){
+bool SSE::search(string keyword, vector<docid_t>& docs){
 	vector<unsigned char> docIDBytes;
-	store->read(keyword, docIDBytes);
+	bool fileExists = store->read(keyword, docIDBytes);
+	if(!fileExists)
+		return false;
 	for(int i = 0; i < docIDBytes.size()/8; i++){
 		docs.push_back(*(docid_t*)(&docIDBytes[i*8]));
 	}
+	return true;
 	// call BStore.get(keyword)
 	// convert byte array to array of uint64_t
 	// TODO: check for file with filename docNameHash(document) in

@@ -74,11 +74,11 @@ BStore::~BStore(){
 void BStore::upload(){
 }
 
-void BStore::read(string filename, vector<unsigned char>& fileContents){
+bool BStore::read(string filename, vector<unsigned char>& fileContents){
 	OnlineSession session(communicator);
-	session.get(filename, 0, fileContents); //Second arugment is size and is needed for write and update
+	bool fileStatus = session.get(filename, 0, fileContents); //Second arugment is size and is needed for write and update
 	print_docid_t(fileContents, "BSTORE READ");
-	getchar();
+	return fileStatus;
 }
 
 void BStore::write(string filename, unsigned char* filedata, uint32_t filesize){

@@ -38,7 +38,7 @@ bool OnlineSession::get(string filename, int32_t size, vector<unsigned char>& fi
 
 	if(!fileExists && size == 0){
 		cout << "BlindStorage: File not found. " << __FILE__ << ":" << __LINE__ <<  endl;
-		return false;
+		exit(0);
 	}
 	if(size > 0)
 		filePrSubset = new PRSubset(numBlocks);
@@ -47,7 +47,7 @@ bool OnlineSession::get(string filename, int32_t size, vector<unsigned char>& fi
 //		criPrSubset = new PRSubset(4);
 	readCRI();
     getFile(fileContents);
-	return true;
+	return fileExists;
 }
 
 void OnlineSession::update(unsigned char* input, uint32_t size, string filename){

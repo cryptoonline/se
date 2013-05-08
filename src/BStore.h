@@ -35,7 +35,7 @@ public:
 	~BStore();
 	void upload();
 
-	void read(string filename, vector<unsigned char>& fileContents);
+	bool  read(string filename, vector<unsigned char>& fileContents);
 	void write(string filename, unsigned char* filedata, uint32_t size);
 	unsigned char* update(string filename, unsigned char* updateFiledata, uint32_t size);
 	void del(string filename);
