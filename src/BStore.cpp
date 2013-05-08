@@ -20,6 +20,10 @@ BStore::BStore(unordered_map< string, unordered_set<uint64_t> >& map) : D(TOTAL_
 			memcpy(&documents[counter*sizeof(docid_t)], static_cast<unsigned char*>(static_cast<void*>(&documentId)), sizeof(docid_t)); 
 			counter++;
 		}
+		if(keyword == "corner"){
+			cout << "Set size is " << set.size() << endl;
+			getchar();
+		}
 		int32_t documentsListSize = set.size()*sizeof(docid_t);
 		int32_t numBlocks = (int32_t)ceil((double)documentsListSize/BLOCK_SIZE) * BLOW_UP;
 		PRSubset prSubset(numBlocks);

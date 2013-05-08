@@ -32,7 +32,7 @@ public:
 	void indexGen(string path);
 	void remove(string document);
 	void add(string path);
-	vector<docid_t> search(string keyword);
+	void search(string keyword, vector<docid_t>& docs);
 
 private:
 	BStore* store;

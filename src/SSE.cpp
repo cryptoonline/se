@@ -12,24 +12,15 @@ using std::cout;
 using std::endl;
 using std::ifstream;
 
-docid_t SSE::docNameHash(string & doc)
-{
+docid_t SSE::docNameHash(string & doc){
 	SHA256bit hash;
 	hash.keyGen();
 	unsigned char* fileNameHash = hash.doFinal(doc);
 	docid_t result = *(uint64_t*)fileNameHash;
 	return result;
-	
-//	static CryptoPP::SHA256 hash;
-//	static byte digest[CryptoPP::SHA256::DIGESTSIZE];
-//	hash.CalculateDigest(digest, (unsigned char *) doc.c_str(), CryptoPP::SHA256::DIGESTSIZE);
-//	docid_t result;
-//	memcpy(&result, digest, sizeof(docid_t));
-//	return result;
 }
 
-SSE::SSE()
-{
+SSE::SSE(){
 	// TODO: construct and initialize BStore object
 }
 
@@ -97,20 +88,23 @@ void SSE::indexGen(string path)
 
 }
 
-void SSE::remove(string document)
-{
+void SSE::remove(string document){
+	
 	// TODO: delete docNameHash(document) from DocumentStore
 }
 
-void SSE::add(string path)
-{
+void SSE::add(string path){
 	// TODO
+	
 }
 
-vector<docid_t> SSE::search(string keyword)
-{
+void SSE::search(string keyword, vector<docid_t>& docs){
+	vector<unsigned char> docIDBytes;
+	store->read(keyword, docIDBytes);
+	for(int i = 0; i < docIDBytes.size()/8; i++){
+		docs.push_back(*(docid_t*)(&docIDBytes[i*8]));
+	}
 	// call BStore.get(keyword)
 	// convert byte array to array of uint64_t
 	// TODO: check for file with filename docNameHash(document) in
 }
-

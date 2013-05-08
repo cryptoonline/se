@@ -53,51 +53,42 @@ unsigned char* readFile(string filename){
 	
 int main(int argc, const char * argv[]){
 	Communicator comm;
-//	SSE sse;
-//	sse.indexGen("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
+	SSE sse;
+	sse.indexGen("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
 //	getchar();
 	BStore store(comm);	
 //	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-//	unsigned char plaintext[] = "8TR Mode Test";
-//	unsigned char key[] = {0xF5, 0x34, 0xFC, 0x7F, 0x05, 0x65, 0xA8, 0xCF, 0x16, 0x29, 0xF0, 0x1D, 0xB3, 0x1A, 0xE3, 0xCA};
-//	unsigned char iv[] = {0xA4, 0xD1, 0x6C, 0xBC, 0x01, 0x0D, 0xAC, 0xAA, 0x2E, 0x54, 0xFA, 0x67, 0x6B, 0x57, 0xA3, 0x45};
-//	AES cipher;
-//	unsigned char* ciphertext = cipher.ENC(plaintext, 128, key, iv);
-//	for(int i = 0; i < 16; i++){
-//		printf("%02X", ciphertext[i]);
+	vector<uint64_t> docs(80);
+	sse.search("corner", docs);
+	for(int i = 0; i < docs.size(); i++)
+		cout << docs[i] << endl;
+	getchar();
+	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+//	vector<unsigned char> data;
+////	store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.", data);
+//	store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/inbox/2.", data);
+//	cout << "File is here " << endl;
+//	for(int i = 0; i < data.size(); i++)
+//		cout << (char) data[i];
+//	getchar();	
+//	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+//	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+//	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+//	string filename = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/holst-k/inbox/8.";
+//	store.write(filename, readFile(filename), readFileSize(filename));
+//	vector<unsigned char> data3;
+//	store.read(filename, data3);
+//	for(int i = 0; i < data3.size(); i++){
+//		cout << (char) data3[i];
 //	}
-
-	vector<unsigned char> docs;
-	store.read("corner", docs);
-	for(int i = 0; i < docs.size()/8; i++)
-		cout << *(uint64_t*)(&docs[i*8]) << endl;
-	getchar();
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	vector<unsigned char> data;
-//	store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.", data);
-	store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/inbox/2.", data);
-	cout << "File is here " << endl;
-	for(int i = 0; i < data.size(); i++)
-		cout << (char) data[i];
-	getchar();	
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	string filename = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/holst-k/inbox/8.";
-	store.write(filename, readFile(filename), readFileSize(filename));
-	vector<unsigned char> data3;
-	store.read(filename, data3);
-	for(int i = 0; i < data3.size(); i++){
-		cout << (char) data3[i];
-	}
-	cout << readFileSize(filename) << endl;
-	getchar();
-	cout << readFile(filename) << endl;
-	cout << "File size is " << readFileSize(filename) << endl;
-	getchar();
+//	cout << readFileSize(filename) << endl;
+//	getchar();
+//	cout << readFile(filename) << endl;
+//	cout << "File size is " << readFileSize(filename) << endl;
+//	getchar();
 //	unsigned char* data1 = store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/holst-k/inbox/8.");
 //   for(int i = 0; i < 2045; i++)
 //   	cout <<(char) data1[i];
