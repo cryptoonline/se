@@ -53,9 +53,9 @@ unsigned char* readFile(string filename){
 	
 int main(int argc, const char * argv[]){
 	Communicator comm;
-	SSE sse;
-	sse.indexGen("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
-	getchar();
+//	SSE sse;
+//	sse.indexGen("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
+//	getchar();
 	BStore store(comm);	
 //	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
@@ -68,6 +68,11 @@ int main(int argc, const char * argv[]){
 //		printf("%02X", ciphertext[i]);
 //	}
 
+	vector<unsigned char> docs;
+	store.read("corner", docs);
+	for(int i = 0; i < docs.size()/8; i++)
+		cout << *(uint64_t*)(&docs[i*8]) << endl;
+	getchar();
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 	cout << endl << "*******************************************************************************************************************************************************************" << endl;

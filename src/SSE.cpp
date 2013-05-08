@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include "SHA256bit.h"
 #include <boost/filesystem.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -13,12 +14,18 @@ using std::ifstream;
 
 docid_t SSE::docNameHash(string & doc)
 {
-	static CryptoPP::SHA256 hash;
-	static byte digest[CryptoPP::SHA256::DIGESTSIZE];
-	hash.CalculateDigest(digest, (unsigned char *) doc.c_str(), CryptoPP::SHA256::DIGESTSIZE);
-	docid_t result;
-	memcpy(&result, digest, sizeof(docid_t));
+	SHA256bit hash;
+	hash.keyGen();
+	unsigned char* fileNameHash = hash.doFinal(doc);
+	docid_t result = *(uint64_t*)fileNameHash;
 	return result;
+	
+//	static CryptoPP::SHA256 hash;
+//	static byte digest[CryptoPP::SHA256::DIGESTSIZE];
+//	hash.CalculateDigest(digest, (unsigned char *) doc.c_str(), CryptoPP::SHA256::DIGESTSIZE);
+//	docid_t result;
+//	memcpy(&result, digest, sizeof(docid_t));
+//	return result;
 }
 
 SSE::SSE()

@@ -18,6 +18,7 @@ BStore::BStore(unordered_map< string, unordered_set<uint64_t> >& map) : D(TOTAL_
 		for(unordered_set<docid_t>::iterator itset = set.begin(); itset != set.end(); ++itset) {
 			docid_t documentId = *itset;
 			memcpy(&documents[counter*sizeof(docid_t)], static_cast<unsigned char*>(static_cast<void*>(&documentId)), sizeof(docid_t)); 
+			counter++;
 		}
 		int32_t documentsListSize = set.size()*sizeof(docid_t);
 		int32_t numBlocks = (int32_t)ceil((double)documentsListSize/BLOCK_SIZE) * BLOW_UP;
