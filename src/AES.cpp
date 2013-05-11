@@ -8,72 +8,39 @@
 
 #include "AES.h"
 
-//
-//  AES.cpp
-//  BlindStorage
-//
-//  Created by Muhammad Naveed on 3/15/13.
-//  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
-//
-
-
 AES::AES(){
-    key = new byte[CryptoPP::AES::DEFAULT_KEYLENGTH];
+	KEYLENGTH = CryptoPP::AES::DEFAULT_KEYLENGTH;
 }
     
 AES::~AES(){
 }
 
-
-byte* AES::keyGen(){
+void AES::keyGen(byte key[], int KEYLENGTH){
+	this->KEYLENGTH = KEYLENGTH;
     CryptoPP::AutoSeededRandomPool prng;
-    prng.GenerateBlock(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
-//    ::memset( key, 0x01, CryptoPP::AES::DEFAULT_KEYLENGTH );
-    return key;
+    prng.GenerateBlock(key, KEYLENGTH);
 }
     
-byte* AES::ENC(byte* plaintext, uint32_t size, byte* key, byte* iv){
-    ciphertext = new byte[size];
-	CryptoPP::CTR_Mode<CryptoPP::AES>::Encryption Encryptor;
-    Encryptor.SetKeyWithIV(key, 16, iv);
-    Encryptor.ProcessData(ciphertext, plaintext, size);
-	return ciphertext;
+void AES::ENC_CTR(byte input[], byte output[], uint32_t size, byte key[], byte iv[]){
+	CryptoPP::CTR_Mode<CryptoPP::AES>::Encryption encryptor;
+    encryptor.SetKeyWithIV(key, KEYLENGTH, iv);
+    encryptor.ProcessData(output, input, size);
 }
 
-byte* AES::DEC(byte* ciphertext, uint32_t size, byte* key, byte* iv){
-    plaintext = new byte[size];
-    if(ciphertext == NULL)
-        cerr << "Ciphertext is NULL in " << __PRETTY_FUNCTION__ << " in file " << __FILE__ << " at line " << __LINE__;
-    CryptoPP::CTR_Mode<CryptoPP::AES>::Decryption Decryptor;
-    Decryptor.SetKeyWithIV(key, 16, iv);
-    Decryptor.ProcessData(plaintext, ciphertext, size);
-    return plaintext;
+void AES::DEC_CTR(byte input[], byte output[], uint32_t size, byte key[], byte iv[]){
+    CryptoPP::CTR_Mode<CryptoPP::AES>::Decryption decryptor;
+    decryptor.SetKeyWithIV(key, KEYLENGTH, iv);
+    decryptor.ProcessData(output, input, size);
 }
 
-byte* AES::ENC(byte* plaintext, uint32_t size, byte* key){
-	byte iv[16];	memset(iv, 0, 16);
-	//ciphertext = new byte[(uint32_t)ceil((double)size/16) * size];
-	ciphertext = new byte[32];
-	CryptoPP::CBC_CTS_Mode<CryptoPP::AES>::Encryption Encryptor;
-	Encryptor.SetKeyWithIV(key, 16, iv);
-	Encryptor.ProcessData(ciphertext, plaintext, size);
-	return ciphertext;	
+void AES::ENC_CBC(byte input[], byte output[], uint32_t size, byte key[], byte iv[]){
+	CryptoPP::CBC_CTS_Mode<CryptoPP::AES>::Encryption encryptor;
+	encryptor.SetKeyWithIV(key, KEYLENGTH, iv);
+	encryptor.ProcessData(output, input, size);
 }
 
-byte* AES::DEC(byte* ciphertext, uint32_t size, byte* key){
-	byte iv[16];	memset(iv, 0, 16);
-	plaintext = new byte[size];
-	CryptoPP::CBC_Mode<CryptoPP::AES>::Decryption Decryptor;
-	Decryptor.SetKeyWithIV(key, 16, iv);
-	Decryptor.ProcessData(plaintext, ciphertext, size);
-	return plaintext;
+void AES::DEC_CBC(byte input[], byte output[], uint32_t size, byte key[], byte iv[]){
+	CryptoPP::CBC_CTS_Mode<CryptoPP::AES>::Decryption decryptor;
+	decryptor.SetKeyWithIV(key, KEYLENGTH, iv);
+	decryptor.ProcessData(output, input, size);
 }
-void AES::print(string tag, string value){
-    cout << endl << "<" << tag << ">" << value << "</" << tag << ">" << endl;
-}
-
-void AES::print(string tag, byte* value){
-    cout << endl << "<" << tag << ">" << value << "</" << tag << ">" << endl;
-}
-
-

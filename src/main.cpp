@@ -52,21 +52,32 @@ unsigned char* readFile(string filename){
 }
 	
 int main(int argc, const char * argv[]){
-	Communicator comm;
-	SSE sse;
-	sse.indexGen("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
+	AES cipher;
+	unsigned char plaintext[16];
+	unsigned char ciphertext[16];
+	unsigned char key[16];
+	unsigned char iv[16];
+	memset(plaintext, 10, 16);
+	cipher.keyGen(key, 16);
+	memset(iv, 10, 16);
+	cipher.ENC_CTR(plaintext, ciphertext, 16, key, iv);
+//	Communicator comm;
+//	string path;// = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/saibi-e";
+//	cout << "Enter path: ";
+//	cin >> path;
+//	SSE sse;
+//	sse.indexGen(path);
 //	getchar();
-	BStore store(comm);	
+//	BStore store(comm);	
 //	BStore store(comm, "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/");
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	vector<uint64_t> docs;
-	sse.search("corner", docs);
-	for(int i = 0; i < docs.size(); i++)
-		cout << docs[i] << endl;
-	getchar();
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
-	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+//	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+//	vector<uint64_t> docs;
+//	sse.search("corner", docs);
+//	for(int i = 0; i < docs.size(); i++)
+//		cout << docs[i] << endl;
+//	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+//	cout << endl << "*******************************************************************************************************************************************************************" << endl;
+//	cout << endl << "*******************************************************************************************************************************************************************" << endl;
 //	vector<unsigned char> data;
 ////	store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/calendar/1.", data);
 //	store.read("/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e/inbox/2.", data);

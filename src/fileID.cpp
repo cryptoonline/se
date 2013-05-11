@@ -22,7 +22,7 @@ fileID::fileID(){
 }
 
 fileID::fileID(string filename){
-	cout << "Filename is " << filename << endl;
+	//cout << "Filename is " << filename << endl;
     initialize();
     this->filename = filename;
     compute();

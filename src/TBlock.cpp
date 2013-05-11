@@ -27,12 +27,12 @@ TBlock::TBlock(unsigned char* encryptedBlock, uint32_t index){
 	//block = new unsigned char[T_BLOCK_SIZE];
 	//this->encryptedBlock = encryptedBlock;
 	memset(block, 0, T_BLOCK_SIZE);
-	printhex(encryptedBlock, T_BLOCK_SIZE, "TBLOCK ENCRYPTED");
+//	printhex(encryptedBlock, T_BLOCK_SIZE, "TBLOCK ENCRYPTED");
 	memcpy(this->encryptedBlock, encryptedBlock, T_BLOCK_SIZE);
 	this->index = index;
 	setupKey();
     parse();
-	printhex(block, T_BLOCK_SIZE, "DECRYPTED BLOCK");
+	//printhex(block, T_BLOCK_SIZE, "DECRYPTED BLOCK");
 }
 
 void TBlock::set(uint32_t prSubsetSize, uint32_t prSubsetSeed, uint32_t index){
@@ -79,17 +79,17 @@ void TBlock::make(){
 	delete[] ciphertext;
 	memcpy(&block[8], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(version));
 	memcpy(&encryptedBlock[8], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(version));
-	cout << "Index in make is " << index << endl;
+	//cout << "Index in make is " << index << endl;
 	//printhex(key, 16, "Key in make");
 	//printhex(iv, 8, "IV in make");
-	printhex(block, T_BLOCK_SIZE, "Plaintext Block in make");
-	printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in make");
+	//printhex(block, T_BLOCK_SIZE, "Plaintext Block in make");
+	//printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in make");
 }
 
 void TBlock::parse(){
 	version = *(uint32_t*)(encryptedBlock+(uint32_t)sizeof(prSubsetSeed)+(uint32_t)sizeof(prSubsetSize));
 //	cout << "Version " << version << endl;
-	cout << "Index in parse is " << index << endl;
+	//cout << "Index in parse is " << index << endl;
 	//printhex(key, 16, "Key in parse");
 	//printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in parse");
 	unsigned char* plaintext = DEC();
@@ -119,10 +119,10 @@ unsigned char* TBlock::DEC(){
 void TBlock::setupKey(){
 	string keyFile = T_KEYFILE;
 	if(!wasKeyGenerated){
-		cout << "Key Generated" << endl;
+		//cout << "Key Generated" << endl;
 		Key key(keyFile);
 		TBlock::key = key.get();
-		printhex(TBlock::key, 16, "TBlock key");
+		//printhex(TBlock::key, 16, "TBlock key");
 		wasKeyGenerated = true;
 	}
 //	cout << "Key is ";

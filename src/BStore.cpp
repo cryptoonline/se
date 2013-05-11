@@ -10,34 +10,50 @@ BStore::BStore(Communicator &communicator){
 }
 
 BStore::BStore(unordered_map< string, unordered_set<uint64_t> >& map) : D(TOTAL_BLOCKS){
+	clock_t begin;
+	clock_t end;
+	double time = 0;
 	for(unordered_map<string, unordered_set<docid_t> >::iterator itmap = map.begin(); itmap != map.end(); ++itmap) {
 		const string & keyword = itmap->first;
 		unordered_set<docid_t> & set = itmap->second;
 		unsigned char documents[set.size()*sizeof(docid_t)];
 		int counter = 0;
+		
 		for(unordered_set<docid_t>::iterator itset = set.begin(); itset != set.end(); ++itset) {
 			docid_t documentId = *itset;
 			memcpy(&documents[counter*sizeof(docid_t)], static_cast<unsigned char*>(static_cast<void*>(&documentId)), sizeof(docid_t)); 
 			counter++;
 		}
-		if(keyword == "corner"){
-			cout << "Set size is " << set.size() << endl;
-			getchar();
-		}
+//		if(keyword == "corner"){
+//			cout << "Set size is " << set.size() << endl;
+//			getchar();
+//		}
 		int32_t documentsListSize = set.size()*sizeof(docid_t);
+
+		begin = clock();
 		int32_t numBlocks = (int32_t)ceil((double)documentsListSize/BLOCK_SIZE) * BLOW_UP;
 		PRSubset prSubset(numBlocks);
 		T.addFile(keyword, prSubset);
 		D.addFile(keyword, documents, documentsListSize, prSubset);
+		end = clock();
+		time += ((double)(end-begin))/CLOCKS_PER_SEC;
 	}
 	
+	begin = clock();
 	T.finalize(D);
+	end = clock();
+		time += ((double)(end-begin))/CLOCKS_PER_SEC;
 	cout << "Writing T to disk" << endl;
 	T.writeToDisk();
 
+	begin = clock();
 	D.finalize();
+	end = clock();
+		time += ((double)(end-begin))/CLOCKS_PER_SEC;
 	cout << "Writing D to disk" << endl;
 	D.writeToDisk();
+
+	cout << "Preprocessing took " << time << " seconds." << endl;
 }
 
 BStore::BStore(Communicator &communicator, string directoryPath): D(TOTAL_BLOCKS){
@@ -58,11 +74,13 @@ BStore::BStore(Communicator &communicator, string directoryPath): D(TOTAL_BLOCKS
 	cout << endl;
 	T.finalize(D);
 	cout << "Writing T to disk" << endl;
-	T.writeToDisk();
 	
 	D.finalize();
+	//cout << "Preprocessing took " << ((double)(clock() - begin))/CLOCKS_PER_SEC << endl;
 	cout << "Writing D to disk" << endl;
 	D.writeToDisk();
+
+	T.writeToDisk();
 
 
 

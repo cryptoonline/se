@@ -45,32 +45,21 @@ using CryptoPP::StreamTransformationFilter;
 using CryptoPP::CTR_Mode;
 
 #include "assert.h"
-//
-//  AES.cpp
-//  BlindStorage
-//
-//  Created by Muhammad Naveed on 3/18/13.
-//  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
-//
+
+#include "Debug.h"
 
 class AES {
 private:
-    byte* key;
-    byte* plaintext;
-    byte* ciphertext;
+	int KEYLENGTH;
     
 public:
     AES();
     ~AES();
-    byte* keyGen();
-    byte* ENC(byte* plaintext, uint32_t size, byte* key, byte* iv);
-    byte* DEC(byte* ciphertext, uint32_t size, byte* key, byte* iv);
-    byte* ENC(byte* plaintext, uint32_t size, byte* key);
-	byte* DEC(byte* ciphertext, uint32_t size, byte* key);
-	void print(string tag, string value);
-    void print(string tag, byte* value);
+    void keyGen(byte key[], int KEYLENGTH = CryptoPP::AES::DEFAULT_KEYLENGTH);
+    void ENC_CTR(byte input[], byte output[], uint32_t size, byte key[], byte iv[]);
+    void DEC_CTR(byte input[], byte output[], uint32_t size, byte key[], byte iv[]);
+    void ENC_CBC(byte input[], byte output[], uint32_t size, byte key[], byte iv[]);
+	void DEC_CBC(byte input[], byte output[], uint32_t size, byte key[], byte iv[]);
   };
-
-
 
 #endif /* defined(__BlindStorage__AES__) */
