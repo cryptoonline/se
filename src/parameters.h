@@ -30,6 +30,16 @@ const int16_t KEY_SIZE = 16;
 const int16_t T_RECORD_BITS = 24;
 
 const uint32_t BIT_MASK = 0x00003FFF;
+
+/****************************************AES parameters***********************************/
+#define AES_BLOCK_SIZE 16;
+#define AES_KEY_SIZE 16;
+
+/****************************************typedefs*****************************************/
+typedef unsigned char byte;
+typedef uint32_t b_index_t;
+typedef uint16_t version_t;
+
 /****************************************FileNames****************************************/ 
 #define D_KEYFILE "/Users/naveed/BStore/data/keys/D.KEY"
 #define T_KEYFILE "/Users/naveed/BStore/data/keys/T.KEY"

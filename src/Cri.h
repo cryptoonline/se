@@ -16,8 +16,8 @@
 class Cri{
 private:
 	DataBlock** blocks;
-	DataBlock** extractedBlocks;
-	PRSubset* prSubset;
+	DataBlock** extractedBlocks; //Not neeeded
+	PRSubset* prSubset;					 
 	uint32_t* blocksLocations;
 	unsigned char** ciphertextBlocks;
 	unsigned char** plaintextBlocks;

@@ -17,20 +17,20 @@ AES::~AES(){
 
 void AES::keyGen(byte key[], int KEYLENGTH){
 	this->KEYLENGTH = KEYLENGTH;
-    CryptoPP::AutoSeededRandomPool prng;
-    prng.GenerateBlock(key, KEYLENGTH);
+	CryptoPP::AutoSeededRandomPool prng;
+  prng.GenerateBlock(key, KEYLENGTH);
 }
     
 void AES::ENC_CTR(byte input[], byte output[], uint32_t size, byte key[], byte iv[]){
 	CryptoPP::CTR_Mode<CryptoPP::AES>::Encryption encryptor;
-    encryptor.SetKeyWithIV(key, KEYLENGTH, iv);
-    encryptor.ProcessData(output, input, size);
+  encryptor.SetKeyWithIV(key, KEYLENGTH, iv);
+  encryptor.ProcessData(output, input, size);
 }
 
 void AES::DEC_CTR(byte input[], byte output[], uint32_t size, byte key[], byte iv[]){
-    CryptoPP::CTR_Mode<CryptoPP::AES>::Decryption decryptor;
-    decryptor.SetKeyWithIV(key, KEYLENGTH, iv);
-    decryptor.ProcessData(output, input, size);
+  CryptoPP::CTR_Mode<CryptoPP::AES>::Decryption decryptor;
+  decryptor.SetKeyWithIV(key, KEYLENGTH, iv);
+  decryptor.ProcessData(output, input, size);
 }
 
 void AES::ENC_CBC(byte input[], byte output[], uint32_t size, byte key[], byte iv[]){
