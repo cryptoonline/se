@@ -6,15 +6,34 @@
 //  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
 //
 
+#include <stdint.h>
+
 #ifndef __BlindStorage__parameters__
 #define __BlindStorage__parameters__
 
-#include <stdint.h>
-#include <iostream>
+/****************************************typedefs*****************************************/
+typedef unsigned char byte;
+typedef uint32_t b_index_t;
+typedef uint16_t version_t;
 
-const uint32_t TOTAL_BLOCKS = 4194304;//1048576;//76;//1048576;//1048576;//1048576;//1048576;//1048576;//1048576;//1048576;//1048576;//1048576;//16777216;//1048576; ///2^20
-const uint32_t BLOCK_SIZE = 512;//-1-2*sizeof(uint32_t); /*! 1+2*sizeof(uint32_t) is subtracted, so the block size after adding trailer is equal to power of 2 */
-const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 1 - sizeof(uint32_t) - 32; /*!< This repesents the size (bytes) of the data part of block, maximum size of the block can be 2^32 as limited by the method used for creating unique IV for every block. */
+#define TOTAL_BLOCKS 4194304
+#define BLOCK_SIZE 512
+const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
+
+/* BLOCK FORMAT */
+/* DATA + Padding Byte + CRI Byte + FID + VERSION */
+/* 			+ 1 					 + 1 		    + 32	+ 4				*/
+const uint32_t PADBYTE_LOC = MAX_BLOCK_DATA_SIZE;
+const uint32_t CRIBYTE_LOC = MAX_BLOCK_DATA_SIZE + 1;
+const uint32_t FILEID_LOC = MAX_BLOCK_DATA_SIZE + 2;
+const uint32_t VERSION_LOC = MAX_BLOCK_DATA_SIZE + 2 + 32; 
+
+#define FILEID_SIZE 32
+#define HIGHERFID_SIZE 4
+#define LOWERFID_SIZE 28
+
+#define PRF_KEY_SIZE 16
+#define SHA_BLOCK_SIZE 32
 
 const uint32_t MAX_T_SIZE = 16384;//76;//16777216;
 const uint16_t T_BLOCK_SIZE = 12;
@@ -32,18 +51,13 @@ const int16_t T_RECORD_BITS = 24;
 const uint32_t BIT_MASK = 0x00003FFF;
 
 /****************************************AES parameters***********************************/
-#define AES_BLOCK_SIZE 16;
-#define AES_KEY_SIZE 16;
-
-/****************************************typedefs*****************************************/
-typedef unsigned char byte;
-typedef uint32_t b_index_t;
-typedef uint16_t version_t;
+#define AES_BLOCK_SIZE 16
+#define AES_KEY_SIZE 16
 
 /****************************************FileNames****************************************/ 
 #define D_KEYFILE "/Users/naveed/BStore/data/keys/D.KEY"
 #define T_KEYFILE "/Users/naveed/BStore/data/keys/T.KEY"
-#define D_FILE "/Users/naveed/BStore/data/D";
-#define T_FILE "/Users/naveed/BStore/data/T"; 
+#define D_FILE "/Users/naveed/BStore/data/D"
+#define T_FILE "/Users/naveed/BStore/data/T" 
 
 #endif /* defined(__BlindStorage__parameters__) */

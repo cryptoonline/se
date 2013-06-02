@@ -12,14 +12,18 @@
 #include <iostream>
 #include <stdint.h>
 #include "AES.h"
+#include "parameters.h"
 
 class PRF {
 private:
-	static unsigned char* key;
+	static byte key[];
+	byte iv[AES_BLOCK_SIZE];
     
 public:
-    uint32_t encrypt(unsigned char* plaintext, uint16_t size, uint32_t  bitMask);
-    unsigned char* keyGen();
+    uint32_t encrypt(byte plaintext[], uint16_t size, uint32_t bitMask);
+    void keyGen(byte key[]);
+		void setKey(byte key[]);
+		void setIV(byte iv[]);
 };
 
 #endif /* defined(__BlindStorage__PRF__) */

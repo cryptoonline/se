@@ -7,19 +7,30 @@
 //
 
 #include "PRF.h"
-unsigned char* PRF::key = new unsigned char[16]();
 
-uint32_t PRF::encrypt(unsigned char* plaintext, uint16_t size, uint32_t bitMask){
-    AES cipher;
-	uint16_t ciphertextSize = 32;
-	unsigned char* ciphertext = cipher.ENC(plaintext, size, key);
-    uint32_t integer = *(uint32_t*)(ciphertext);
+byte PRF::key[PRF_KEY_SIZE];
+
+uint32_t PRF::encrypt(byte plaintext[], uint16_t size, uint32_t bitMask){ //Last two parameters used for testing
+	AES cipher;
+	byte ciphertext[SHA_BLOCK_SIZE];
+
+	memset(iv, 0, AES_BLOCK_SIZE);
+
+	cipher.ENC_CBC(plaintext, ciphertext, SHA_BLOCK_SIZE, key, iv);
+	uint32_t integer = *(uint32_t*)(ciphertext);
 	return integer & bitMask; 	
 }
 
-unsigned char* PRF::keyGen(){
-    AES cipher;
-	//key = cipher.keyGen();
-	memset(key, 0, 16);
-	return key;
+void PRF::setKey(byte key[]){
+	memcpy(this->key, key, AES_KEY_SIZE);
+}
+
+void PRF::setIV(byte iv[]){
+	memcpy(this->iv, iv, AES_BLOCK_SIZE);
+}
+
+void PRF::keyGen(byte key[]){
+  AES cipher;
+	cipher.keyGen(key);
+	memcpy(key, this->key, PRF_KEY_SIZE);
 }
