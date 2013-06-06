@@ -34,6 +34,7 @@ const uint32_t VERSION_LOC = MAX_BLOCK_DATA_SIZE + 2 + 32;
 
 #define PRF_KEY_SIZE 16
 #define SHA_BLOCK_SIZE 32
+#define HMAC_KEY_SIZE 20
 
 const uint32_t MAX_T_SIZE = 16384;//76;//16777216;
 const uint16_t T_BLOCK_SIZE = 12;

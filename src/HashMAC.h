@@ -1,13 +1,13 @@
 //
-//  SHA256.h
+//  HashMAC.h
 //  BlindStorage
 //
 //  Created by Muhammad Naveed on 4/21/13.
 //  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
 //
 
-#ifndef __BlindStorage__SHA256__
-#define __BlindStorage__SHA256__
+#ifndef __BlindStorage__HashMAC__
+#define __BlindStorage__HashMAC__
 
 #include <iostream>
 using std::cout;
@@ -45,20 +45,16 @@ using CryptoPP::HashVerificationFilter;
 #include "cryptopp562/secblock.h"
 using CryptoPP::SecByteBlock;
 
+#include "parameters.h"
 
-class SHA256bit {
+class HashMAC {
 private:
-    int16_t keyLength;
-    unsigned char key[16];
-        
+	static byte key[];
     
-    
-public:
-    
-    SHA256bit();
-    const unsigned char* keyGen();
-    unsigned char* doFinal(string filename);
-    bool verify(const unsigned char* hmac);
+public: 
+	void keyGen(byte key[]);
+	void setKey(byte key[]);
+	void doFinal(string filename, byte mac[]);
 };
 
 #endif /* defined(__BlindStorage__SHA256__) */
