@@ -31,11 +31,16 @@ public:
 
 	void make(fileID fid, byte block[], int dataSize = MAX_BLOCK_DATA_SIZE, bool isCRI = false, version_t version = 0);
 	
-	void load(byte block[]);
+	void parse(byte block[]);
 	void update(fileID fid, byte block[], int dataSize = MAX_BLOCK_DATA_SIZE, bool isCRI = false);
+	void clear();
 
 	bool comparefileID(fileID& fid);
 	bool isCRIBlock();
+
+	void getEncrypted(byte block[]);
+	void getDecrypted(byte block[]);
+	int getDataSize();
 
 private:
 	static b_index_t instanceCounter;
@@ -60,10 +65,6 @@ private:
 	void addTrailer();
 	void addPadding();
 	void removePadding();
-
-	void getEncrypted();
-	void getDecrypted();
-	int getDataSize();	
 };
 
 #endif /* defined(__BlindStorage__DataBlock__) */

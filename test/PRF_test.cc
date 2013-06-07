@@ -14,6 +14,6 @@ TEST(PRFEncryption, Test1) {
 	PRF prf;
 	prf.setKey(key);
 	uint32_t result_expected = 1074372545;
-	uint32_t result_actual = prf.encrypt(plaintext, 32, 0xFFFFFFFF);
+	uint32_t result_actual = prf.encrypt(plaintext, 0xFFFFFFFF);
 	EXPECT_EQ(result_expected, result_actual);
 }

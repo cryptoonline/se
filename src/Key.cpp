@@ -5,23 +5,25 @@
 
 #include "Key.h"
 
-Key::Key(string filename){
+Key::Key(string filename, int keySize){
 	this->filename = filename;
-	key = new char[KEY_SIZE];
+	this->keySize = keySize;
+	key = new char[keySize];
 	setup();
 }
 
 Key::~Key(){
+	delete[] key;
 }
 
-char* Key::get(){
-	return key;
+void Key::get(byte key[]){
+	memcpy(key, this->key, keySize);
 }
 
 void Key::save(){
 	keyfileWrite.open(filename.c_str());
 //	keyfileWrite.seekg(std::ios::beg);
-	keyfileWrite.write(key, KEY_SIZE);
+	keyfileWrite.write(key, keySize);
 	if(!keyfileWrite.good())
 		cerr << "File is not good " << __LINE__;
 }
@@ -29,12 +31,12 @@ void Key::save(){
 
 void Key::load(){
 	if(!keyfileRead.good()){
-	keyfileRead.open(filename.c_str());
+		keyfileRead.open(filename.c_str());
 		cerr << "File is not good " << __LINE__;
 		exit(1);
 	}
 	keyfileRead.seekg(std::ios::beg);
-	keyfileRead.read(key, KEY_SIZE);	
+	keyfileRead.read(key, keySize);	
 }
 
 void Key::setup(){
@@ -49,8 +51,8 @@ void Key::setup(){
 }
 
 void Key::generate(){
-	AES cipher;
-	key = reinterpret_cast<char*>(cipher.keyGen());
+	CryptoPP::AutoSeededRandomPool prng;
+	prng.GenerateBlock(reinterpret_cast<byte*>(key), keySize);
 }
 
 bool Key::isKeyPresentOnDisk(){

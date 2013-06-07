@@ -20,7 +20,7 @@ private:
 	byte iv[AES_BLOCK_SIZE];
     
 public:
-    uint32_t encrypt(byte plaintext[], uint16_t size, uint32_t bitMask);
+    uint32_t encrypt(byte plaintext[], uint32_t bitMask);
     void keyGen(byte key[]);
 		void setKey(byte key[]);
 		void setIV(byte iv[]);

@@ -33,6 +33,7 @@ const uint32_t VERSION_LOC = MAX_BLOCK_DATA_SIZE + 2 + 32;
 #define LOWERFID_SIZE 28
 
 #define PRF_KEY_SIZE 16
+#define PRF_BLOCK_SIZE 16
 #define SHA_BLOCK_SIZE 32
 #define HMAC_KEY_SIZE 20
 

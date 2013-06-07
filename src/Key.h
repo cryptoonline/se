@@ -7,9 +7,14 @@
 #define __BlindStorage__Key__
 
 #include "parameters.h"
-#include "AES.h"
+
 #include <iostream>
+using std::cerr;
+
 #include <fstream>
+
+#include "cryptopp562/osrng.h"
+using CryptoPP::AutoSeededRandomPool;
 
 using std::ifstream;
 using std::ofstream;
@@ -17,10 +22,13 @@ using std::string;
 
 class Key{
 private:
+	int keySize;
 	char* key;
+
 	std::ifstream keyfileRead;
 	std::ofstream keyfileWrite;
-	string filename;	
+	string filename;
+
 	void generate();
 	bool isKeyPresentOnDisk();
 	void save();
@@ -28,9 +36,9 @@ private:
 	void setup();
 	
 public:
-	Key(string filename);
+	Key(string filename, int keySize);
 	~Key();
-	char* get();
+	void get(byte key[]);
 };
 
 #endif /* defined(__BlindStorage__Key__) */

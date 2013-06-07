@@ -5,44 +5,78 @@
 
 #include "gtest/gtest.h"
 
+#include "./../src/helper.h"
 #include "./../src/DataBlock.h"
 #include "./../src/fileID.h"
+#include "./../src/Key.h"
+#include "./../src/Debug.h"
 
-class DataBlockPreprocessing : public testing::Test {
-	protected:
-		virtual void SetUp(){
+class DataBlockTest : public testing::Test {
+protected:
+	virtual void SetUp(){
+		dataSize = MAX_BLOCK_DATA_SIZE;
+		memset(blockData, 0, BLOCK_SIZE);
+		memset(randomData, 0, dataSize);
+		
+		Key key("DataBlockTestKey", AES_KEY_SIZE);
+		byte blockKey[AES_KEY_SIZE];
+		key.get(blockKey);
+		block.setKey(blockKey);
+		
+		gen_random(randomData, dataSize);
 
-		}
+		fileID fid("test test");
+		byte fidBytes[FILEID_SIZE];
+		fid.get(fidBytes);
+		
+		memcpy(blockData, randomData, dataSize);
+		blockData[dataSize] = 1;
+		blockData[dataSize+1] = 1;
+		memcpy(&blockData[dataSize+2], fidBytes, FILEID_SIZE);
 
-		virtual void TearDown(){
-		}
+		DataBlock block(0);
+		this->block = block;
+		block.make(fid, randomData, dataSize, true);
+		
+		memset(encryptedBlock, 0, BLOCK_SIZE);
+		memset(decryptedBlock, 0, BLOCK_SIZE);
 
-//		void makeDataBlock(b_index_t index, fileID fid, bool isCRI, byte block[], int dataSize){
-//			this->index = index;
-//			this->fid = fid;
-//			this->isCRI = isCRI;
-//			this->block = block;
-//			this->dataSize = dataSize;
+		block.getEncrypted(encryptedBlock);
+		block.getDecrypted(decryptedBlock);
+	}
 
-//			dataBlock.make(fid, block, dataSize, false, 0);
-//		}
+	virtual void TearDown(){
+	}
 
-//		b_index_t index;
-//		version_t version;
-//		fileID fid;
-//		bool isPadded;
-//		bool isCRI;
-//		byte* block;
-//		int dataSize;
+	DataBlock block;
+	byte blockData[BLOCK_SIZE];
 
-		DataBlock dataBlock;
+	byte encryptedBlock[BLOCK_SIZE];
+	byte decryptedBlock[BLOCK_SIZE];
+
+	byte randomData[BLOCK_SIZE];
+
+	int dataSize;
+	
+
 };
 
-TEST_F(DataBlockPreprocessing, NoPadding){
+TEST_F(DataBlockTest, Preprocessing) {
+ 	EXPECT_TRUE( 0 == std::memcmp(blockData, decryptedBlock, BLOCK_SIZE));
 }
 
-TEST_F(DataBlockPreprocessing, Padding){
-}
+TEST_F(DataBlockTest, OnlineRead) {
 
-TEST_F(DataBlockPreprocessing, CRI){
+	DataBlock block(0);
+	
+	Key key("DataBlockTestKey", AES_KEY_SIZE);
+	byte blockKey[AES_KEY_SIZE];
+	key.get(blockKey);
+	block.setKey(blockKey);
+	
+	block.parse(encryptedBlock);
+	byte blockDataRetrieved[BLOCK_SIZE];
+	block.getDecrypted(blockDataRetrieved);
+
+	EXPECT_TRUE( 0 == std::memcmp(blockDataRetrieved, blockData, BLOCK_SIZE));
 }

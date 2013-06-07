@@ -8,10 +8,8 @@
 #include "./../src/AES.h"
 #include "./../src/helper.h"
 #include "./../src/Debug.h"
+#include "./../src/parameters.h"
 #include "gtest/gtest.h"
-
-#define KEY_SIZE 16
-#define BLOCK_SIZE 16
 
 void AES_CTR_ENC_TEST(unsigned char plaintext[], unsigned char ciphertext_expected[], unsigned char key[], unsigned char iv[]);
 void AES_CTR_DEC_TEST(unsigned char ciphertext[], unsigned char plaintext_expected[], unsigned char key[], unsigned char iv[]);
@@ -108,10 +106,10 @@ TEST(AESCBCEncryption, NISTTestVector3){
 	string plaintextHexString = "9b7cee827a26575afdbb7c7a329f887238052e3601a7917456ba61251c214763d5e1847a6ad5d54127a399ab07ee3599";
 	string ciphertext_expectedHexString = "d5aed6c9622ec451a15db12819952b6752501cf05cdbf8cda34a457726ded97818e1f127a28d72db5652749f0c6afee5";
 	
-	int plaintextLength = 3*BLOCK_SIZE;
+	int plaintextLength = 3*AES_BLOCK_SIZE;
 	
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char plaintext[plaintextLength];							hexStringToByteArray(plaintextHexString, plaintext);
 	unsigned char ciphertext_expected[plaintextLength];		hexStringToByteArray(ciphertext_expectedHexString, ciphertext_expected);
 
@@ -126,8 +124,8 @@ TEST(AESCBCEncryption, NISTTestVector4){
 	
 	int plaintextLength = plaintextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char plaintext[plaintextLength];							hexStringToByteArray(plaintextHexString, plaintext);
 	unsigned char ciphertext_expected[plaintextLength];		hexStringToByteArray(ciphertext_expectedHexString, ciphertext_expected);
 
@@ -142,8 +140,8 @@ TEST(AESCBCEncryption, NISTTestVector5){
 	
 	int plaintextLength = plaintextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char plaintext[plaintextLength];							hexStringToByteArray(plaintextHexString, plaintext);
 	unsigned char ciphertext_expected[plaintextLength];		hexStringToByteArray(ciphertext_expectedHexString, ciphertext_expected);
 
@@ -158,8 +156,8 @@ TEST(AESCBCEncryption, NISTTestVector6){
 	
 	int plaintextLength = plaintextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char plaintext[plaintextLength];							hexStringToByteArray(plaintextHexString, plaintext);
 	unsigned char ciphertext_expected[plaintextLength];		hexStringToByteArray(ciphertext_expectedHexString, ciphertext_expected);
 
@@ -174,8 +172,8 @@ TEST(AESCBCEncryption, NISTTestVector7){
 	
 	int plaintextLength = plaintextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char plaintext[plaintextLength];							hexStringToByteArray(plaintextHexString, plaintext);
 	unsigned char ciphertext_expected[plaintextLength];		hexStringToByteArray(ciphertext_expectedHexString, ciphertext_expected);
 
@@ -190,8 +188,8 @@ TEST(AESCBCEncryption, NISTTestVector8){
 	
 	int plaintextLength = plaintextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char plaintext[plaintextLength];							hexStringToByteArray(plaintextHexString, plaintext);
 	unsigned char ciphertext_expected[plaintextLength];		hexStringToByteArray(ciphertext_expectedHexString, ciphertext_expected);
 
@@ -206,8 +204,8 @@ TEST(AESCBCEncryption, NISTTestVector9){
 	
 	int plaintextLength = plaintextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char plaintext[plaintextLength];							hexStringToByteArray(plaintextHexString, plaintext);
 	unsigned char ciphertext_expected[plaintextLength];		hexStringToByteArray(ciphertext_expectedHexString, ciphertext_expected);
 
@@ -222,8 +220,8 @@ TEST(AESCBCEncryption, NISTTestVector10){
 	
 	int plaintextLength = plaintextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char plaintext[plaintextLength];							hexStringToByteArray(plaintextHexString, plaintext);
 	unsigned char ciphertext_expected[plaintextLength];		hexStringToByteArray(ciphertext_expectedHexString, ciphertext_expected);
 
@@ -238,8 +236,8 @@ TEST(AESCBCDecryption, NISTTestVector1){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -254,8 +252,8 @@ TEST(AESCBCDecryption, NISTTestVector2){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -270,8 +268,8 @@ TEST(AESCBCDecryption, NISTTestVector3){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -286,8 +284,8 @@ TEST(AESCBCDecryption, NISTTestVector4){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -302,8 +300,8 @@ TEST(AESCBCDecryption, NISTTestVector5){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -318,8 +316,8 @@ TEST(AESCBCDecryption, NISTTestVector6){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -334,8 +332,8 @@ TEST(AESCBCDecryption, NISTTestVector7){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -350,8 +348,8 @@ TEST(AESCBCDecryption, NISTTestVector8){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -366,8 +364,8 @@ TEST(AESCBCDecryption, NISTTestVector9){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -382,8 +380,8 @@ TEST(AESCBCDecryption, NISTTestVector10){
 	
 	int ciphertextLength = ciphertextHexString.size() / 2;
 
-	unsigned char key[KEY_SIZE];													hexStringToByteArray(keyHexString, key);
-	unsigned char iv[BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
+	unsigned char key[AES_KEY_SIZE];													hexStringToByteArray(keyHexString, key);
+	unsigned char iv[AES_BLOCK_SIZE];													hexStringToByteArray(ivHexString, iv);
 	unsigned char ciphertext[ciphertextLength];						hexStringToByteArray(ciphertextHexString, ciphertext);
 	unsigned char plaintext_expected[ciphertextLength];		hexStringToByteArray(plaintext_expectedHexString, plaintext_expected);
 
@@ -396,17 +394,17 @@ int main(int argc, char **argv) {
 }
 
 void AES_CTR_ENC_TEST(unsigned char plaintext[], unsigned char ciphertext_expected[], unsigned char key[], unsigned char iv[]){
-	unsigned char ciphertext_actual[BLOCK_SIZE];
+	unsigned char ciphertext_actual[AES_BLOCK_SIZE];
 	AES cipher;
-	cipher.ENC_CTR(plaintext, ciphertext_actual, BLOCK_SIZE, key, iv);
-	EXPECT_TRUE( 0 == std::memcmp(ciphertext_expected, ciphertext_actual, BLOCK_SIZE));
+	cipher.ENC_CTR(plaintext, ciphertext_actual, AES_BLOCK_SIZE, key, iv);
+	EXPECT_TRUE( 0 == std::memcmp(ciphertext_expected, ciphertext_actual, AES_BLOCK_SIZE));
 }
 
 void AES_CTR_DEC_TEST(unsigned char ciphertext[], unsigned char plaintext_expected[], unsigned char key[], unsigned char iv[]){
-	unsigned char plaintext_actual[BLOCK_SIZE];
+	unsigned char plaintext_actual[AES_BLOCK_SIZE];
 	AES cipher;
-	cipher.DEC_CTR(ciphertext, plaintext_actual, BLOCK_SIZE, key, iv);
-	EXPECT_TRUE( 0 == std::memcmp(plaintext_expected, plaintext_actual, BLOCK_SIZE));
+	cipher.DEC_CTR(ciphertext, plaintext_actual, AES_BLOCK_SIZE, key, iv);
+	EXPECT_TRUE( 0 == std::memcmp(plaintext_expected, plaintext_actual, AES_BLOCK_SIZE));
 }
 
 void AES_CBC_ENC_TEST(unsigned char plaintext[], unsigned char ciphertext_expected[], uint32_t size, unsigned char key[], unsigned char iv[]){

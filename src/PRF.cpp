@@ -10,7 +10,7 @@
 
 byte PRF::key[PRF_KEY_SIZE];
 
-uint32_t PRF::encrypt(byte plaintext[], uint16_t size, uint32_t bitMask){ //Last two parameters used for testing
+uint32_t PRF::encrypt(byte plaintext[], uint32_t bitMask){
 	AES cipher;
 	byte ciphertext[SHA_BLOCK_SIZE];
 
