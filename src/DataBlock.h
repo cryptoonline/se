@@ -42,11 +42,15 @@ public:
 	void getDecrypted(byte block[]);
 	int getDataSize();
 
+	bool isOccupied();
+	void encryptIfEmpty(byte emptyBlock[]);
+
 private:
 	static b_index_t instanceCounter;
 	b_index_t index;
 	version_t version;
 	fileID fid;
+	byte fidBytes[FILEID_SIZE];
 	bool isCRI;
 
 	bool isBlockEncrypted;

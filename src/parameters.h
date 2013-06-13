@@ -14,19 +14,29 @@
 /****************************************typedefs*****************************************/
 typedef unsigned char byte;
 typedef uint32_t b_index_t;
+typedef uint32_t t_index_t;
 typedef uint16_t version_t;
+typedef uint32_t higherfid_t;
+typedef uint32_t prSubsetSize_t;
+typedef uint32_t prSubsetSeed_t;
 
 #define TOTAL_BLOCKS 4194304
 #define BLOCK_SIZE 512
 const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 
+#define TBLOCK_SIZE 12
+
 /* BLOCK FORMAT */
 /* DATA + Padding Byte + CRI Byte + FID + VERSION */
 /* 			+ 1 					 + 1 		    + 32	+ 4				*/
-const uint32_t PADBYTE_LOC = MAX_BLOCK_DATA_SIZE;
-const uint32_t CRIBYTE_LOC = MAX_BLOCK_DATA_SIZE + 1;
-const uint32_t FILEID_LOC = MAX_BLOCK_DATA_SIZE + 2;
-const uint32_t VERSION_LOC = MAX_BLOCK_DATA_SIZE + 2 + 32; 
+#define PADBYTE_LOC MAX_BLOCK_DATA_SIZE
+#define CRIBYTE_LOC MAX_BLOCK_DATA_SIZE + 1
+#define FILEID_LOC MAX_BLOCK_DATA_SIZE + 2
+#define VERSION_LOC MAX_BLOCK_DATA_SIZE + 2 + 32
+
+#define TSIZE_LOC 0
+#define TSEED_LOC sizeof(prSubsetSize_t)
+#define TVERSION_LOC TSEED_LOC + sizeof(prSubsetSeed_t)
 
 #define FILEID_SIZE 32
 #define HIGHERFID_SIZE 4

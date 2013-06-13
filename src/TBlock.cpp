@@ -1,156 +1,109 @@
 //
-//  TBlock.cpp
-//  BlindStorage
-//
-//  Created by Muhammad Naveed on 4/14/13.
-//  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
+// TBlock.cpp
+// BlindStorage
 //
 
 #include "TBlock.h"
 
-bool TBlock::wasKeyGenerated = false;
-char* TBlock::key = NULL;
+byte TBlock::key[AES_KEY_SIZE] = {0};
+t_index_t TBlock::instanceCounter = 0;
 
-TBlock::TBlock(uint32_t index){
-    prSubsetSeed = 0;
-    prSubsetSize = 0;
-	setupKey();
+TBlock::TBlock(){
+	version = 0;
+	size = 0;
+	seed = 0;
+	index = instanceCounter;
+	instanceCounter++;
+	isBlockEncrypted = false;
+}
+
+TBlock::TBlock(t_index_t index){
+	version = 0;
+	size = 0;
+	seed = 0;
 	this->index = index;
+	isBlockEncrypted = false;
 }
 
 TBlock::~TBlock(){
-	delete[] iv;
 }
 
-TBlock::TBlock(unsigned char* encryptedBlock, uint32_t index){
-	//iv = new char[16]();
-	//block = new unsigned char[T_BLOCK_SIZE];
-	//this->encryptedBlock = encryptedBlock;
-	memset(block, 0, T_BLOCK_SIZE);
-//	printhex(encryptedBlock, T_BLOCK_SIZE, "TBLOCK ENCRYPTED");
-	memcpy(this->encryptedBlock, encryptedBlock, T_BLOCK_SIZE);
-	this->index = index;
-	setupKey();
-    parse();
-	//printhex(block, T_BLOCK_SIZE, "DECRYPTED BLOCK");
+void TBlock::setKey(byte key[]){
+	memcpy(this->key, key, AES_KEY_SIZE);
 }
 
-void TBlock::set(uint32_t prSubsetSize, uint32_t prSubsetSeed, uint32_t index){
-	//iv = new char[16];
-	//encryptedBlock = new unsigned char[T_BLOCK_SIZE];
-    this->prSubsetSize = prSubsetSize;
-    this->prSubsetSeed = prSubsetSeed;
-	this->index = index;
-	memset(block, 0, T_BLOCK_SIZE);
-	version = 0;
-	setupKey();
-   // block = new unsigned char[sizeof(this->prSubsetSize) + sizeof(this->prSubsetSeed) + sizeof(version)];
-    make();
+void TBlock::make(prSubsetSize_t size, prSubsetSeed_t seed){
+	this->size = size;
+	this->seed = seed;
+
+	memcpy(block, static_cast<byte*>(static_cast<void*>(&size)), sizeof(prSubsetSize_t));
+	memcpy(block, static_cast<byte*>(static_cast<void*>(&seed)), sizeof(prSubsetSeed_t));
+	memcpy(block, static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
+
+	encrypt();
 }
 
-void TBlock::update(uint32_t prSubsetSize, uint32_t prSubsetSeed){
+void TBlock::parse(byte block[]){
+//	this->block = block;
+	memcpy(this->block, block, TBLOCK_SIZE);
+	version = *(version_t*)(block+TVERSION_LOC);
+	decrypt();
+	size = *(prSubsetSize_t*)(block+TSIZE_LOC);
+	seed = *(prSubsetSeed_t*)(block+TSEED_LOC);
+}
+
+void TBlock::update(prSubsetSize_t size, prSubsetSeed_t seed){
 	version++;
-	this->prSubsetSize = prSubsetSeed;
-	this->prSubsetSeed = prSubsetSize;
-	make();		
+	make(size, seed);
 }
 
-unsigned char* TBlock::getDecrypted(){
-    return block;
-}
-
-unsigned char* TBlock::getEncrypted(){
-	return encryptedBlock;
-}
-
-uint32_t TBlock::getPrSubsetSeed(){
-    return prSubsetSeed;
-}
-
-uint32_t TBlock::getPrSubsetSize(){
-    return prSubsetSize;
-}
-
-void TBlock::make(){
-    memcpy(block, static_cast<unsigned char*>(static_cast<void*>(&prSubsetSeed)), sizeof(prSubsetSeed));
-    memcpy(&block[4], static_cast<unsigned char*>(static_cast<void*>(&prSubsetSize)), sizeof(prSubsetSize));
-	unsigned char* ciphertext = ENC();
-	memcpy(encryptedBlock, ciphertext, T_BLOCK_SIZE - sizeof(version));
-	delete[] ciphertext;
-	memcpy(&block[8], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(version));
-	memcpy(&encryptedBlock[8], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(version));
-	//cout << "Index in make is " << index << endl;
-	//printhex(key, 16, "Key in make");
-	//printhex(iv, 8, "IV in make");
-	//printhex(block, T_BLOCK_SIZE, "Plaintext Block in make");
-	//printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in make");
-}
-
-void TBlock::parse(){
-	version = *(uint32_t*)(encryptedBlock+(uint32_t)sizeof(prSubsetSeed)+(uint32_t)sizeof(prSubsetSize));
-//	cout << "Version " << version << endl;
-	//cout << "Index in parse is " << index << endl;
-	//printhex(key, 16, "Key in parse");
-	//printhex(encryptedBlock, T_BLOCK_SIZE, "Encrypted Block in parse");
-	unsigned char* plaintext = DEC();
-	//printhex(iv, 8, "IV in parse");
-	memcpy(block, plaintext, T_BLOCK_SIZE-sizeof(version));
-	delete[] plaintext;
-	memcpy(&block[T_BLOCK_SIZE-sizeof(version)], static_cast<unsigned char*>(static_cast<void*>(&version)), sizeof(version));
-	//printhex(block, T_BLOCK_SIZE, "Decrypted Block in parse");
-	prSubsetSize = *(uint32_t*)(block);
-    prSubsetSeed = *(uint32_t*)(block+(uint32_t)sizeof(prSubsetSize));
-}
-
-unsigned char* TBlock::ENC(){
-	Blowfish cipher;
+void TBlock::encrypt(){
+	TruncAES cipher;
 	makeIV();
-	if(key == NULL)
-		cerr << "Key is NULL at line " << __LINE__ << " in " << __PRETTY_FUNCTION__ << endl;
-	return cipher.ENC(block, T_BLOCK_SIZE - sizeof(version), reinterpret_cast<unsigned char*>(key), reinterpret_cast<unsigned char*>(iv)); 
+	cipher.ENC(block, block, TBLOCK_SIZE-sizeof(version_t), key, iv);
+	isBlockEncrypted = true;
 }
 
-unsigned char* TBlock::DEC(){
-	Blowfish cipher;
+void TBlock::decrypt(){
+	TruncAES cipher;
 	makeIV();
-	return cipher.DEC(encryptedBlock, T_BLOCK_SIZE-sizeof(version) ,reinterpret_cast<unsigned char*>(key), reinterpret_cast<unsigned char*>(iv));
-}
-
-void TBlock::setupKey(){
-	string keyFile = T_KEYFILE;
-	if(!wasKeyGenerated){
-		//cout << "Key Generated" << endl;
-		Key key(keyFile);
-		TBlock::key = key.get();
-		//printhex(TBlock::key, 16, "TBlock key");
-		wasKeyGenerated = true;
-	}
-//	cout << "Key is ";
-//	for(int i = 0; i < 16; i++)
-//		cout << (unsigned int) key[i];
-//	cout << endl;
+	cipher.DEC(block, block, TBLOCK_SIZE-sizeof(version_t), key, iv);
+	isBlockEncrypted = false;
 }
 
 void TBlock::makeIV(){
-//	memset(iv, 0, 8);
-//	printf("Index is %x\n", index);
-	memcpy(iv, static_cast<unsigned char*>(static_cast<void*>(&index)), 4);
-	memcpy(iv+4, static_cast<unsigned char*>(static_cast<void*>(&version)), 4);
-//	printhex(iv, 8, "IV");
-//	cout << "IV is ";
-//	for(int i = 0; i < 16; i++)
-//		printf("%02X ", iv[i]);
-//	cout << endl;
-	
+	memcpy(iv, static_cast<byte*>(static_cast<void*>(&index)), sizeof(t_index_t));
+	memcpy(iv+sizeof(t_index_t), static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
+	memset(iv+sizeof(t_index_t)+sizeof(version_t), 0, AES_BLOCK_SIZE-sizeof(t_index_t)-sizeof(version_t));
+}
+
+void TBlock::getEncrypted(byte block[]){
+	if(!isBlockEncrypted)
+		encrypt();
+	memcpy(block, this->block, BLOCK_SIZE);
+}
+
+void TBlock::getDecrypted(byte block[]){
+	if(isBlockEncrypted)
+		decrypt();
+	memcpy(block, this->block, BLOCK_SIZE);
+}
+
+prSubsetSize_t TBlock::getSize(){
+	return size;
+}
+
+prSubsetSeed_t TBlock::getSeed(){
+	return seed;
+}
+
+bool TBlock::isOccupied(){
+	return size ? true : false;	
 }
 
 void TBlock::encryptIfEmpty(){
 	if(!isOccupied()){
-		unsigned char* ciphertext = ENC();
-		memcpy(encryptedBlock, ciphertext, T_BLOCK_SIZE);
+		memset(block, 0, TBLOCK_SIZE);
+		encrypt();
 	}
-}
-
-bool TBlock::isOccupied(){
-	return prSubsetSize;
 }

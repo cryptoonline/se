@@ -13,12 +13,16 @@ b_index_t DataBlock::instanceCounter = 0;
 
 //This constructor should only be used in preprocessing.
 DataBlock::DataBlock(){ 
-	instanceCounter++;
+	version = 0;
 	index = instanceCounter;
+	instanceCounter++;
+	isBlockEncrypted = false;
 }
 
 DataBlock::DataBlock(b_index_t index){
+	version = 0;
 	this->index = index;
+	isBlockEncrypted = false;
 }
 
 DataBlock::~DataBlock(){
@@ -47,7 +51,6 @@ void DataBlock::addTrailer(){
 
 	block[CRIBYTE_LOC] = isCRI;
 
-	byte fidBytes[FILEID_SIZE];
 	fid.get(fidBytes);
 	memcpy(&block[FILEID_LOC], fidBytes, FILEID_SIZE);
 	memcpy(&block[VERSION_LOC], static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
@@ -111,7 +114,7 @@ void DataBlock::decrypt(){
 void DataBlock::makeIV(){
 	memcpy(iv, static_cast<byte*>(static_cast<void*>(&index)), sizeof(b_index_t));
 	memcpy(iv+sizeof(b_index_t), static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
-	memset(iv+sizeof(b_index_t)+sizeof(version_t), 0, AES_BLOCK_SIZE-sizeof(b_index_t)+sizeof(version_t));
+	memset(iv+sizeof(b_index_t)+sizeof(version_t), 0, AES_BLOCK_SIZE-sizeof(b_index_t)-sizeof(version_t));
 }
 
 int DataBlock::getDataSize(){
@@ -122,10 +125,24 @@ void DataBlock::getEncrypted(byte block[]){
 	if(!isBlockEncrypted)
 		encrypt();
 	memcpy(block, this->block, BLOCK_SIZE);
+//	block = this->block;
 }
 
 void DataBlock::getDecrypted(byte block[]){
 	if(isBlockEncrypted)
 		decrypt();
 	memcpy(block, this->block, BLOCK_SIZE);
+//	block = this->block;
+}
+
+bool DataBlock::isOccupied(){
+	higherfid_t higherFid = *(higherfid_t*)(fidBytes);
+	return higherFid ? true : false;
+}
+
+void DataBlock::encryptIfEmpty(byte emptyBlock[]){
+	block = emptyBlock;
+	if(!isOccupied()){
+		encrypt();		
+	}
 }

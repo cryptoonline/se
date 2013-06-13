@@ -33,7 +33,7 @@ fileID::fileID(string filename) {
 
 fileID::fileID(byte ID[]) {
 	memcpy(this->ID, ID, FILEID_SIZE);
-	higherID = *(int *)(ID);
+	higherID = *(higherfid_t*)(ID);
 }
 
 fileID::~fileID() {

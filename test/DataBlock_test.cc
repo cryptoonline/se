@@ -80,3 +80,39 @@ TEST_F(DataBlockTest, OnlineRead) {
 
 	EXPECT_TRUE( 0 == std::memcmp(blockDataRetrieved, blockData, BLOCK_SIZE));
 }
+
+TEST_F(DataBlockTest, OnlineUpdate){
+	DataBlock block(0);
+	byte blockDataUpdated[BLOCK_SIZE];
+	memcpy(blockDataUpdated, blockData, BLOCK_SIZE);
+
+	block.parse(encryptedBlock);
+	
+	blockDataUpdated[dataSize+1] = 0;
+	blockDataUpdated[BLOCK_SIZE-2] = 1;
+	fileID fid2("test test");
+
+	byte blockDataExpected[BLOCK_SIZE];
+	memcpy(blockDataExpected, blockDataUpdated, BLOCK_SIZE);
+	block.update(fid2, blockDataUpdated, MAX_BLOCK_DATA_SIZE, false);
+
+	byte blockDataActual[BLOCK_SIZE];
+	block.getDecrypted(blockDataActual);
+
+	printhex(blockDataActual, BLOCK_SIZE, "BLOCK DATA ACTUAL");
+	printhex(blockDataExpected, BLOCK_SIZE, "BLOCK DATA EXPPECTED");
+	EXPECT_TRUE( 0 == std::memcmp(blockDataExpected, blockDataActual, BLOCK_SIZE));
+
+}
+
+TEST_F(DataBlockTest, EmptyBlockTest) {
+	DataBlock block(0);
+	
+	byte emptyBlock[BLOCK_SIZE] = {0};
+	block.encryptIfEmpty(emptyBlock);
+	
+	byte decryptedBlock[BLOCK_SIZE];
+	block.getDecrypted(decryptedBlock);
+
+	EXPECT_TRUE( 0 == std::memcmp(decryptedBlock, emptyBlock, BLOCK_SIZE));
+}

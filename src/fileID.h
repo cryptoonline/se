@@ -19,7 +19,7 @@ using std::string;
 class fileID {
 private:
 	byte ID[FILEID_SIZE];
-	int higherID;
+	higherfid_t higherID;
 
 	static byte hmacKey[];
 	static byte prfKey[];

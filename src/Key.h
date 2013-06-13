@@ -23,7 +23,8 @@ using std::string;
 class Key{
 private:
 	int keySize;
-	char* key;
+//	char* key;
+	byte key[keySize];
 
 	std::ifstream keyfileRead;
 	std::ofstream keyfileWrite;

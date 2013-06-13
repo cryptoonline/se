@@ -5,15 +5,15 @@
 
 #include "Key.h"
 
-Key::Key(string filename, int keySize){
+Key::Key(string filename, int size): key(size){
 	this->filename = filename;
-	this->keySize = keySize;
-	key = new char[keySize];
+//	this->keySize = keySize;
+//	key = new char[keySize];
 	setup();
 }
 
 Key::~Key(){
-	delete[] key;
+//	delete[] key;
 }
 
 void Key::get(byte key[]){
@@ -52,7 +52,7 @@ void Key::setup(){
 
 void Key::generate(){
 	CryptoPP::AutoSeededRandomPool prng;
-	prng.GenerateBlock(reinterpret_cast<byte*>(key), keySize);
+	prng.GenerateBlock(key, keySize);
 }
 
 bool Key::isKeyPresentOnDisk(){

@@ -1,55 +1,54 @@
 //
-//  TBlock.h
-//  BlindStorage
-//
-//  Created by Muhammad Naveed on 4/14/13.
-//  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
+// TBlock.h
+// BlindStorage
 //
 
 #ifndef __BlindStorage__TBlock__
 #define __BlindStorage__TBlock__
 
-#include <stdint.h>
 #include <iostream>
+using std::memcpy;
+using std::memset;
+
 #include "parameters.h"
-#include "Blowfish.h"
-#include "Key.h"
-#include "Debug.h"
+#include "TruncAES.h"
 
 class TBlock {
 private:
-	uint32_t version;
-    uint32_t index;
-	uint32_t prSubsetSize;
-    uint32_t prSubsetSeed;
-    unsigned char block[12]; /// Format: seed(4 bytes) || size(4 bytes) || version(4 bytes))
-	unsigned char encryptedBlock[12];
-    static char* key;
-	char iv[8];
-	static bool wasKeyGenerated;
-		
-	void make();
-    void parse();
+	static t_index_t instanceCounter;
+	t_index_t index;
 
-	unsigned char* ENC();
-	unsigned char* DEC();
+	version_t version;
+	prSubsetSize_t size;
+	prSubsetSeed_t seed;
+	
+	byte block[TBLOCK_SIZE];
+
+	static byte key[AES_KEY_SIZE];
+	byte iv[AES_BLOCK_SIZE];
+
+	bool isBlockEncrypted;
+	void encrypt();
+	void decrypt();
 	void makeIV();
-	void setupKey();	
-    
+
 public:
-    TBlock(uint32_t index);
+	TBlock();
+	TBlock(t_index_t index);
 	~TBlock();
-    TBlock(unsigned char* encryptedBlock, uint32_t index);
-    void set(uint32_t prSubsetSize, uint32_t prSubsetSeed, uint32_t index);
-    uint32_t getPrSubsetSize();
-    uint32_t getPrSubsetSeed();
-	void update(uint32_t prSubsetSize, uint32_t prSubsetSeed);
-    
+	void setKey(byte key[]);
+	void make(prSubsetSize_t size, prSubsetSeed_t seed);
+	void parse(byte block[]);
+	void update(prSubsetSize_t size, prSubsetSeed_t seed);
+
 	bool isOccupied();
 	void encryptIfEmpty();
 
-	unsigned char* getEncrypted();
-	unsigned char* getDecrypted();
+	void getEncrypted(byte block[]);
+	void getDecrypted(byte block[]);
+
+	prSubsetSize_t getSize();
+	prSubsetSeed_t getSeed();
 };
 
 #endif /* defined(__BlindStorage__TBlock__) */
