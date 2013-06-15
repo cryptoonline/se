@@ -13,6 +13,9 @@ using std::cerr;
 
 #include <fstream>
 
+#include <vector>
+using std::vector;
+
 #include "cryptopp562/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
 
@@ -20,11 +23,14 @@ using std::ifstream;
 using std::ofstream;
 using std::string;
 
+#include "Debug.h"
+
 class Key{
 private:
 	int keySize;
 //	char* key;
-	byte key[keySize];
+//	byte key[keySize];
+	vector<byte> key;
 
 	std::ifstream keyfileRead;
 	std::ofstream keyfileWrite;

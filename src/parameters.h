@@ -24,7 +24,7 @@ typedef uint32_t prSubsetSeed_t;
 #define BLOCK_SIZE 512
 const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 
-#define TBLOCK_SIZE 12
+#define TBLOCK_SIZE 10
 
 /* BLOCK FORMAT */
 /* DATA + Padding Byte + CRI Byte + FID + VERSION */
@@ -33,10 +33,6 @@ const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 #define CRIBYTE_LOC MAX_BLOCK_DATA_SIZE + 1
 #define FILEID_LOC MAX_BLOCK_DATA_SIZE + 2
 #define VERSION_LOC MAX_BLOCK_DATA_SIZE + 2 + 32
-
-#define TSIZE_LOC 0
-#define TSEED_LOC sizeof(prSubsetSize_t)
-#define TVERSION_LOC TSEED_LOC + sizeof(prSubsetSeed_t)
 
 #define FILEID_SIZE 32
 #define HIGHERFID_SIZE 4
@@ -47,14 +43,14 @@ const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 #define SHA_BLOCK_SIZE 32
 #define HMAC_KEY_SIZE 20
 
+#define CRI_BLOCK_SIZE 36
+
 const uint32_t MAX_T_SIZE = 16384;//76;//16777216;
 const uint16_t T_BLOCK_SIZE = 12;
 
 const uint16_t MAX_NO_OF_COLLISIONS = 1024;
 
 const uint16_t BLOW_UP = 4;
-
-const int16_t CRI_ENTRY_SIZE = 40;
 
 const int16_t KEY_SIZE = 16;
 

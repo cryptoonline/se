@@ -1,50 +1,37 @@
 //
-// Cri.h
+// CRI.h
 // BlindStorage
 //
 
-#ifndef __BlindStorage__Cri__
-#define __BlindStorage__Cri__
+#ifndef __BlindStorage__CRI__
+#define __BlindStorage__CRI__
+
+#include <vector>
+using std::vector;
 
 #include "DataBlock.h"
 #include "TBlock.h"
+#include "CRIBlock.h"
 #include "PRSubset.h"
 #include "parameters.h"
 #include "Debug.h"
 #include "fileID.h"
 
-class Cri{
+class CRI{
 private:
-	DataBlock** blocks;
-	DataBlock** extractedBlocks; //Not neeeded
-	PRSubset* prSubset;					 
-	uint32_t* blocksLocations;
-	unsigned char** ciphertextBlocks;
-	unsigned char** plaintextBlocks;
-	unsigned char** extractedPlaintextBlocks;
-	unsigned char** entries;
-	
-	fileID* fid;
-
-	uint32_t numBlocks;
-	uint32_t numEntries;
-
-	void decrypt();
-	
-	void makeCriBlock(unsigned char* criEntry);
-	int32_t getEmptyCriEntry();
+	higherfid_t higherfid;
+	vector<CRIBlock> blocks;
 
 public:
-	Cri();
+	CRI(higherfid_t higherfid);
+	~CRI();
 
-	void addTBlock(TBlock& tblock);
-	void addFile(unsigned char** file, fileID& fid);
-	uint32_t* getBlocksLocations();
-	uint32_t getNumBlocks();
-	unsigned char* getEntry(int32_t index);	
-	int32_t searchFID(unsigned char* arrayToSearchFor);
-	void writeCriEntry(unsigned char* D, unsigned char* criEntry);
-	PRSubset* getCRIPrSubset();
+	bool isEmpty();
+	void parseBytes(vector<byte> blocksBytes);
+	void makeBytes(vector<byte> blocksBytes);
+	void addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]);
+	void search(fileID fid, CRIBlock& block);
+	void search(byte lowerFid[], CRIBlock& block);
 };
 
-#endif /* defined(__BlindStorage__Cri__) */
+#endif /* defined(__BlindStorage__CRI__) */

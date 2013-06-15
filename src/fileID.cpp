@@ -43,6 +43,10 @@ void fileID::get(byte ID[]) {
 	memcpy(ID, this->ID, FILEID_SIZE);
 }
 
+void fileID::getLowerID(byte lowerID[]){
+	memcpy(lowerID, &ID[HIGHERFID_SIZE], LOWERFID_SIZE);
+}
+
 void fileID::setupKey() {
 	Key key0("keys/fileIDHMACKey", HMAC_KEY_SIZE);
 	key0.get(hmacKey);

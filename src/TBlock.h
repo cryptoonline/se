@@ -12,6 +12,7 @@ using std::memset;
 
 #include "parameters.h"
 #include "TruncAES.h"
+#include "Debug.h"
 
 class TBlock {
 private:

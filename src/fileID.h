@@ -34,6 +34,7 @@ public:
 	~fileID();
 	
 	void get(byte ID[]);
+	void getLowerID(byte lowerID[]);
 };
 
 #endif /* define(__BlindStorage__fileID__) */

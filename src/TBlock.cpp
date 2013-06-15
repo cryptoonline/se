@@ -37,8 +37,8 @@ void TBlock::make(prSubsetSize_t size, prSubsetSeed_t seed){
 	this->seed = seed;
 
 	memcpy(block, static_cast<byte*>(static_cast<void*>(&size)), sizeof(prSubsetSize_t));
-	memcpy(block, static_cast<byte*>(static_cast<void*>(&seed)), sizeof(prSubsetSeed_t));
-	memcpy(block, static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
+	memcpy(block+sizeof(prSubsetSize_t), static_cast<byte*>(static_cast<void*>(&seed)), sizeof(prSubsetSeed_t));
+	memcpy(block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
 
 	encrypt();
 }
@@ -46,10 +46,11 @@ void TBlock::make(prSubsetSize_t size, prSubsetSeed_t seed){
 void TBlock::parse(byte block[]){
 //	this->block = block;
 	memcpy(this->block, block, TBLOCK_SIZE);
-	version = *(version_t*)(block+TVERSION_LOC);
+	version = *(version_t*)(block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t));
+	isBlockEncrypted = true;
 	decrypt();
-	size = *(prSubsetSize_t*)(block+TSIZE_LOC);
-	seed = *(prSubsetSeed_t*)(block+TSEED_LOC);
+	size = *(prSubsetSize_t*)(this->block);
+	seed = *(prSubsetSeed_t*)(this->block+sizeof(prSubsetSize_t));
 }
 
 void TBlock::update(prSubsetSize_t size, prSubsetSeed_t seed){
@@ -80,13 +81,13 @@ void TBlock::makeIV(){
 void TBlock::getEncrypted(byte block[]){
 	if(!isBlockEncrypted)
 		encrypt();
-	memcpy(block, this->block, BLOCK_SIZE);
+	memcpy(block, this->block, TBLOCK_SIZE);
 }
 
 void TBlock::getDecrypted(byte block[]){
 	if(isBlockEncrypted)
 		decrypt();
-	memcpy(block, this->block, BLOCK_SIZE);
+	memcpy(block, this->block, TBLOCK_SIZE);
 }
 
 prSubsetSize_t TBlock::getSize(){
