@@ -17,9 +17,14 @@ using std::endl;
 #include <string>
 using std::string;
 
+#include <stdio.h>
+using std::memset;
+
 #include "AES.h"
 #include "parameters.h"
 #include "fileID.h"
+
+#include "Debug.h"
 
 class DataBlock {
 public:
@@ -29,18 +34,18 @@ public:
 
 	void setKey(byte key[]);
 
-	void make(fileID fid, byte block[], int dataSize = MAX_BLOCK_DATA_SIZE, bool isCRI = false, version_t version = 0);
+	void make(fileID fid, byte block[], dataSize_t dataSize = MAX_BLOCK_DATA_SIZE, bool isCRI = false, version_t version = 0);
 	
 	void parse(byte block[]);
-	void update(fileID fid, byte block[], int dataSize = MAX_BLOCK_DATA_SIZE, bool isCRI = false);
+	void update(fileID fid, byte block[], dataSize_t dataSize = MAX_BLOCK_DATA_SIZE, bool isCRI = false);
 	void clear();
 
-	bool comparefileID(fileID& fid);
+	bool comparefileID(fileID fid);
 	bool isCRIBlock();
 
 	void getEncrypted(byte block[]);
 	void getDecrypted(byte block[]);
-	int getDataSize();
+	dataSize_t getDataSize();
 
 	bool isOccupied();
 	void encryptIfEmpty(byte emptyBlock[]);
@@ -57,7 +62,7 @@ private:
 
 	byte* block;
 
-	int dataSize;
+	dataSize_t dataSize;
 
 	static byte key[AES_KEY_SIZE];
 	byte iv[AES_BLOCK_SIZE];

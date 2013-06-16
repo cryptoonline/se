@@ -16,12 +16,14 @@ DataBlock::DataBlock(){
 	version = 0;
 	index = instanceCounter;
 	instanceCounter++;
+	memset(fidBytes, 0, FILEID_SIZE);
 	isBlockEncrypted = false;
 }
 
 DataBlock::DataBlock(b_index_t index){
 	version = 0;
 	this->index = index;
+	memset(fidBytes, 0, FILEID_SIZE);
 	isBlockEncrypted = false;
 }
 
@@ -33,7 +35,7 @@ void DataBlock::setKey(byte key[]){
 	memcpy(this->key, key, AES_KEY_SIZE);
 }
 
-void DataBlock::make(fileID fid, byte block[], int dataSize, bool isCRI, version_t version) {
+void DataBlock::make(fileID fid, byte block[], dataSize_t dataSize, bool isCRI, version_t version) {
 	this->fid = fid;
 	this->isCRI = isCRI;
 	this->version = version;
@@ -82,7 +84,7 @@ void DataBlock::parse(byte block[]){
 	isCRI = (bool)(block[CRIBYTE_LOC]);
 }
 
-void DataBlock::update(fileID fid, byte block[], int dataSize, bool isCRI){
+void DataBlock::update(fileID fid, byte block[], dataSize_t dataSize, bool isCRI){
 	version++;
 	make(fid, block, dataSize, isCRI, version);
 }
@@ -117,7 +119,7 @@ void DataBlock::makeIV(){
 	memset(iv+sizeof(b_index_t)+sizeof(version_t), 0, AES_BLOCK_SIZE-sizeof(b_index_t)-sizeof(version_t));
 }
 
-int DataBlock::getDataSize(){
+dataSize_t DataBlock::getDataSize(){
 	return dataSize;
 }
 

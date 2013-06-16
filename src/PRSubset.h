@@ -17,20 +17,23 @@
 
 class PRSubset {
 private:
-    uint32_t* subset;
-    uint32_t size;
-    uint32_t seed;
-    void make();
-    uint32_t getRDRAND();
-    void generateSeed();
+	prSubsetSize_t size;
+	prSubsetSeed_t seed;
+	
+	prSubsetSeed_t getRDRAND();
+	void generateSeed();
+	
+	void make(b_index_t subset[]);
     
 public:
-    PRSubset();
-    PRSubset(uint32_t size);
-    PRSubset(uint32_t size, uint32_t seed);
-    uint32_t getSeed();
-    uint32_t getSize();
-    uint32_t* get();
+	PRSubset();
+	PRSubset(prSubsetSize_t size);
+	PRSubset(prSubsetSize_t size, prSubsetSeed_t seed);
+	
+	prSubsetSize_t getSize() const;
+	prSubsetSeed_t getSeed() const;
+	
+	void get(b_index_t subset[]);
 };
 
 #endif /* defined(__BlindStorage__PRSubset__) */
