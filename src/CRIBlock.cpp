@@ -25,7 +25,7 @@ void CRIBlock::make(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]){
 }
 
 void CRIBlock::parse(byte block[]){
-	memcpy(this->block, block, LOWERFID_SIZE);
+	memcpy(this->block, block, CRI_BLOCK_SIZE);
 	size = *(prSubsetSize_t*)(block);
 	seed = *(prSubsetSeed_t*)(block+sizeof(prSubsetSize_t));
 	memcpy(lowerFid, block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), LOWERFID_SIZE);
@@ -35,8 +35,8 @@ void CRIBlock::get(byte block[]){
 	memcpy(block, this->block, CRI_BLOCK_SIZE);
 }
 
-void CRIBlock::get(vector<byte> block){
-	block.insert(block.begin(), &this->block[0], &this->block[CRI_BLOCK_SIZE]);
+void CRIBlock::get(vector<byte>& block){
+	block.insert(block.begin(), &(this->block[0]), &(this->block[CRI_BLOCK_SIZE]));
 }
 
 bool CRIBlock::match(byte lowerFid[]){

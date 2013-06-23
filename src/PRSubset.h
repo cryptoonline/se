@@ -12,6 +12,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <iostream>
+using std::endl;
+using std::cerr;
+
 #include "parameters.h"
 #include <fstream>
 
@@ -33,7 +36,7 @@ public:
 	prSubsetSize_t getSize() const;
 	prSubsetSeed_t getSeed() const;
 	
-	void get(b_index_t subset[]);
+	void get(b_index_t subset[], b_index_t size);
 };
 
 #endif /* defined(__BlindStorage__PRSubset__) */

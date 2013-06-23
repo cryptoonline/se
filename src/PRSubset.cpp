@@ -14,11 +14,15 @@ PRSubset::PRSubset(){
 }
 
 PRSubset::PRSubset(prSubsetSize_t size){
+	if(size < 128)
+		size = 128;
 	this->size = size;
 	generateSeed();
 }
 
 PRSubset::PRSubset(prSubsetSize_t size, prSubsetSeed_t seed){
+	if(size < 128)
+		size = 128;
 	this->size = size;
 	this->seed = seed;
 }
@@ -30,7 +34,11 @@ void PRSubset::make(b_index_t subset[]){
 	}
 }
 
-void PRSubset::get(b_index_t subset[]){
+void PRSubset::get(b_index_t subset[], b_index_t size){
+	if(size < 128){
+		cerr << "PRSubset size is lower than the lower bound. Exiting!" << endl;
+		exit(1);
+	}
 	make(subset); 
 }
 

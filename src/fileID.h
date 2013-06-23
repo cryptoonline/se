@@ -35,6 +35,7 @@ public:
 	
 	void get(byte ID[]);
 	void getLowerID(byte lowerID[]);
+	higherfid_t getHigherID();
 };
 
 #endif /* define(__BlindStorage__fileID__) */

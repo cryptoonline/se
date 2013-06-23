@@ -21,13 +21,15 @@ class Ddisk {
 private:
 	b_index_t numBlocks;
 //	vector<DataBlock> D;
-	DataBlock D[TOTAL_BLOCKS];
-	void makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>& emptyBlocks);
+//	DataBlock D[TOTAL_BLOCKS];
+	DataBlock** D;
+	void makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>& emptyBlocks, bool isCRI);
 	void getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks);
     
 public:
 	Ddisk(b_index_t numBlocks = TOTAL_BLOCKS);
-	void addBlocks(byte bytes[], size_t size, fileID fid, PRSubset prSubset);
+	~Ddisk();
+	void addBlocks(byte bytes[], size_t size, fileID fid, PRSubset prSubset, bool isCRI = false);
 	void encryptEmptyBlocks();
 	void getBlock(b_index_t index, DataBlock& block);
 };

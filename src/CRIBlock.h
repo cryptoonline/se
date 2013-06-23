@@ -17,6 +17,8 @@ using std::vector;
 using std::memset;
 using std::memcpy;
 
+#include "Debug.h"
+
 class CRIBlock{
 public:
 	CRIBlock();
@@ -26,7 +28,7 @@ public:
 	void parse(byte block[]);
 
 	void get(byte block[]);
-	void get(vector<byte> block);
+	void get(vector<byte>& block);
 
 	bool match(byte lowerFid[]);
 

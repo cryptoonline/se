@@ -89,3 +89,24 @@ TEST(TBlockOnline, seed){
 
 	EXPECT_EQ(seedExpected, seedActual);
 }
+
+TEST(TBlockArray, Test1){
+	TBlock tblocks[16];
+
+	Key key("TBlockTestKey", AES_KEY_SIZE);
+	byte tblockKey[AES_KEY_SIZE];
+	key.get(tblockKey);
+	tblocks[0].setKey(tblockKey);
+
+	byte blockEncrypted[] = {0xb4, 0x73, 0xf2, 0x06, 0xae, 0x54, 0xba, 0x3c, 0x00, 0x00};
+	tblocks[0].parse(blockEncrypted);
+
+	byte blockExpected[] = {10, 0, 0, 0, 1, 0, 0, 0, 0, 0};
+	byte blockActual[TBLOCK_SIZE];
+	tblocks[0].getDecrypted(blockActual);
+
+	printhex(blockExpected, TBLOCK_SIZE, "TBLOCK EXPECTED");
+	printhex(blockActual, TBLOCK_SIZE, "TBLOCK ACTUAL");
+
+	EXPECT_TRUE( 0 == std::memcmp(blockExpected, blockActual, TBLOCK_SIZE));
+}

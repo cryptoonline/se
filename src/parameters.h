@@ -21,19 +21,21 @@ typedef uint32_t prSubsetSize_t;
 typedef uint32_t prSubsetSeed_t;
 typedef uint32_t dataSize_t;
 
-#define TOTAL_BLOCKS 1024 //4194304
+#define TOTAL_BLOCKS 65536
 #define BLOCK_SIZE 512
 const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
+#define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)
 
+#define TTOTAL_BLOCKS 1024
 #define TBLOCK_SIZE 10
 
 /* BLOCK FORMAT */
 /* DATA + Padding Byte + CRI Byte + FID + VERSION */
 /* 			+ 1 					 + 1 		    + 32	+ 4				*/
 #define PADBYTE_LOC MAX_BLOCK_DATA_SIZE
-#define CRIBYTE_LOC MAX_BLOCK_DATA_SIZE + 1
-#define FILEID_LOC MAX_BLOCK_DATA_SIZE + 2
-#define VERSION_LOC MAX_BLOCK_DATA_SIZE + 2 + 32
+#define CRIBYTE_LOC (MAX_BLOCK_DATA_SIZE + 1)
+#define FILEID_LOC (MAX_BLOCK_DATA_SIZE + 2)
+#define VERSION_LOC (MAX_BLOCK_DATA_SIZE + 2 + 32)
 
 #define FILEID_SIZE 32
 #define HIGHERFID_SIZE 4
@@ -45,11 +47,8 @@ const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 #define HMAC_KEY_SIZE 20
 
 #define CRI_BLOCK_SIZE 36
-
-#define PRSUBSET_SIZE_LOWER_BOUND 128;
-
-const uint32_t MAX_T_SIZE = 16384;//76;//16777216;
-const uint16_t T_BLOCK_SIZE = 12;
+#define CRI_PER_BLOCK (MAX_BLOCK_DATA_SIZE / CRI_BLOCK_SIZE)
+#define PRSUBSET_SIZE_LOWER_BOUND 128
 
 const uint16_t MAX_NO_OF_COLLISIONS = 1024;
 

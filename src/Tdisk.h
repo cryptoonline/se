@@ -2,9 +2,6 @@
 //  Tdisk.h
 //  BlindStorage
 //
-//  Created by Muhammad Naveed on 4/14/13.
-//  Copyright (c) 2013 Muhammad Naveed. All rights reserved.
-//
 
 #ifndef __BlindStorage__Tdisk__
 #define __BlindStorage__Tdisk__
@@ -12,35 +9,34 @@
 #include <stdint.h>
 #include <iostream>
 #include "TBlock.h"
+#include "CRI.h"
 #include "parameters.h"
 #include "fileID.h"
 #include "PRSubset.h"
 #include "PRF.h"
-#include <ext/hash_map>
+#include <tr1/unordered_map>
 #include <vector>
 #include "Ddisk.h"
+#include "Debug.h"
+#include <tr1/memory>
 
-using namespace std;
+using std::tr1::shared_ptr;
+using std::tr1::unordered_map;
 
 class Tdisk{
 private:
-    struct CRI{
-        uint32_t prSubsetSeed;
-        uint32_t prSubsetSize;
-        unsigned char fid[32];
-    };
-    
-    TBlock** T;
-    __gnu_cxx::hash_map<uint32_t, vector<struct CRI> > map; //Higher 32 bits of value is storing seed and lower 32 bits are storing size
+	TBlock** T;
+	unordered_map<higherfid_t, CRI> criMap;
+	vector<byte> criBytes;
 
 public:
-    Tdisk();
-    ~Tdisk();
-    void addFile(string filename, PRSubset &prSubset);
-    void finalize(Ddisk &D);
-    void upload();
-	void writeToDisk();
-    
+	Tdisk();
+	~Tdisk();
+	void addFile(fileID fid, PRSubset prSubset);
+	void finalize(Ddisk &D);
+	void upload();
+	void getBlock(t_index_t index, TBlock& block);
+	void writeToDisk();  
 };
 
 #endif /* defined(__BlindStorage__Tdisk__) */

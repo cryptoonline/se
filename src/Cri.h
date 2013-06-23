@@ -21,17 +21,21 @@ class CRI{
 private:
 	higherfid_t higherfid;
 	vector<CRIBlock> blocks;
-
+		
 public:
+	CRI();
 	CRI(higherfid_t higherfid);
 	~CRI();
 
 	bool isEmpty();
-	void parseBytes(vector<byte> blocksBytes);
-	void makeBytes(vector<byte> blocksBytes);
+//	void parseBytes(vector<byte>& blocksBytes);
+	void parseBytes(byte blocksBytes[], uint32_t size);
+	void makeBytes(vector<byte>& blocksBytes);
+	void makeBytes(byte* blockBytes);
 	void addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]);
 	void search(fileID fid, CRIBlock& block);
 	void search(byte lowerFid[], CRIBlock& block);
+	int size();
 };
 
 #endif /* defined(__BlindStorage__CRI__) */
