@@ -105,8 +105,5 @@ TEST(TBlockArray, Test1){
 	byte blockActual[TBLOCK_SIZE];
 	tblocks[0].getDecrypted(blockActual);
 
-	printhex(blockExpected, TBLOCK_SIZE, "TBLOCK EXPECTED");
-	printhex(blockActual, TBLOCK_SIZE, "TBLOCK ACTUAL");
-
 	EXPECT_TRUE( 0 == std::memcmp(blockExpected, blockActual, TBLOCK_SIZE));
 }

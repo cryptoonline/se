@@ -59,9 +59,7 @@ void Key::generate(){
 	byte key[keySize];
 	CryptoPP::AutoSeededRandomPool prng;
 	prng.GenerateBlock(key, keySize);
-	printhex(key, keySize, "Generated Key");
 	this->key.insert(this->key.begin(), &key[0], &key[keySize]);
-	printhex(this->key.data(), keySize, "Genereted Key copied to Vector");
 }
 
 bool Key::isKeyPresentOnDisk(){

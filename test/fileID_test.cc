@@ -14,7 +14,7 @@ TEST(FileID, Test1NeedsManualChecking) {
 	fileID fid("Hi There");
 	byte fidBytes[FILEID_SIZE];
 	fid.get(fidBytes);
-	printhex(fidBytes, FILEID_SIZE, "FID Bytes");
+//	printhex(fidBytes, FILEID_SIZE, "FID Bytes");
 }
 
 TEST(FileID, ZeroBytes) {

@@ -9,6 +9,7 @@ CRI::CRI(){
 }
 
 CRI::CRI(higherfid_t higherfid){
+	empty = true;
 	this->higherfid = higherfid;
 //	blocks.resize(2);
 }
@@ -20,6 +21,7 @@ void CRI::addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]){
 	CRIBlock block;
 	block.make(size, seed, lowerFid);
 	blocks.push_back(block);
+	empty = false;
 }
 
 void CRI::makeBytes(byte* blocksBytes){
@@ -49,6 +51,12 @@ void CRI::makeBytes(vector<byte>& blocksBytes){
 		blocksBytes.insert(blocksBytes.end(), block.begin(), block.begin()+CRI_BLOCK_SIZE);
 		counter++;
 	}
+	if(blocksBytes.size() % BLOCK_SIZE != 0){
+		int numZeros = BLOCK_SIZE*(int)ceil((double)blocksBytes.size()/(double)BLOCK_SIZE)-blocksBytes.size();
+		byte zeros[numZeros];
+		memset(zeros, 0, numZeros);
+		blocksBytes.insert(blocksBytes.end(), &zeros[0], &zeros[numZeros]);
+	}
 }
 
 // void CRI::parseBytes(vector<byte>& blocksBytes){
@@ -71,7 +79,13 @@ void CRI::parseBytes(byte blocksBytes[], uint32_t size){
 		memcpy(block, &blocksBytes[i], CRI_BLOCK_SIZE);
 		CRIBlock criBlock;
 		criBlock.parse(block);
+		if(criBlock.getSize() == 0){
+			if(i==0)
+				empty = true;
+			break;
+		}
 		blocks.push_back(criBlock);
+		empty = false;
 	}
 }
 
@@ -93,9 +107,5 @@ void CRI::search(byte lowerFid[], CRIBlock& block){
 }
 
 bool CRI::isEmpty(){
-	byte zeroLowerFid[LOWERFID_SIZE] = {0};
-	if(blocks[0].match(zeroLowerFid))
-		return true;
-	else
-		return false;
+	return empty;
 }

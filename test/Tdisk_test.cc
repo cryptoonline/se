@@ -45,7 +45,7 @@ TEST(TdiskTest, Test1){
 
 	byte blockData[TBLOCK_SIZE];
 	block.getDecrypted(blockData);
-	printhex(blockData, TBLOCK_SIZE, "TBLOCK DATA");
+//	printhex(blockData, TBLOCK_SIZE, "TBLOCK DATA");
 //	EXPECT_EQ(1024, block.getSize());
 //	EXPECT_EQ(10, block.getSeed());
 

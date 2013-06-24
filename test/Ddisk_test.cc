@@ -34,7 +34,7 @@ TEST(DdiskTest, Test1){
 	else
 		prSubset.get(subset, BLOW_UP*numBlocks);
 
-	D.addBlocks(bytes, numOfBytes, fid, prSubset);
+	D.addFile(bytes, numOfBytes, fid, prSubset);
 	D.encryptEmptyBlocks();
 	
 	byte blockData[BLOCK_SIZE];

@@ -37,7 +37,7 @@ protected:
 		DataBlock block(0);
 		this->block = block;
 		block.make(fid, randomData, dataSize, true);
-		
+	
 		memset(encryptedBlock, 0, BLOCK_SIZE);
 		memset(decryptedBlock, 0, BLOCK_SIZE);
 
@@ -99,8 +99,6 @@ TEST_F(DataBlockTest, OnlineUpdate){
 	byte blockDataActual[BLOCK_SIZE];
 	block.getDecrypted(blockDataActual);
 
-	printhex(blockDataActual, BLOCK_SIZE, "BLOCK DATA ACTUAL");
-	printhex(blockDataExpected, BLOCK_SIZE, "BLOCK DATA EXPPECTED");
 	EXPECT_TRUE( 0 == std::memcmp(blockDataExpected, blockDataActual, BLOCK_SIZE));
 
 }
@@ -115,4 +113,18 @@ TEST_F(DataBlockTest, EmptyBlockTest) {
 	block.getDecrypted(decryptedBlock);
 
 	EXPECT_TRUE( 0 == std::memcmp(decryptedBlock, emptyBlock, BLOCK_SIZE));
+}
+
+TEST_F(DataBlockTest, FidMatchTestCase){
+	fileID fid1("test test");
+	fileID fid2("test test");
+	block.make(fid1, randomData, dataSize, true);
+	EXPECT_TRUE(block.fidMatchCheck(fid2));
+}
+
+TEST_F(DataBlockTest, FidNonMatchTestCase){
+	fileID fid1("test test");
+	fileID fid2("test tess");
+	block.make(fid1, randomData, dataSize, true);
+	EXPECT_FALSE(block.fidMatchCheck(fid2));
 }

@@ -49,7 +49,7 @@ void Ddisk::getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks){
 	cout << "Size is " << emptyBlocks.size() << endl;
 }
 
-void Ddisk::addBlocks(byte bytes[], size_t size, fileID fid, PRSubset prSubset, bool isCRI){
+void Ddisk::addFile(byte bytes[], size_t size, fileID fid, PRSubset prSubset, bool isCRI){
 	vector<b_index_t> emptyBlocks;
 	getEmptyBlocks(prSubset, emptyBlocks);
 	if(emptyBlocks.size()*MAX_BLOCK_DATA_SIZE < size){

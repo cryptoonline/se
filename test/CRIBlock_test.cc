@@ -28,8 +28,6 @@ TEST(CRIBlockTest, make){
 	memcpy(blockExpected+sizeof(prSubsetSize_t), static_cast<byte*>(static_cast<void*>(&seed)), sizeof(prSubsetSeed_t));
 	memcpy(blockExpected+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), lowerFid, LOWERFID_SIZE);
 
-	cout << "Size is " << size << " and seed is " << seed << "." << endl;
-	printhex(blockExpected, CRI_BLOCK_SIZE, "CRI BLOCK");
 	byte blockActual[CRI_BLOCK_SIZE];
 	block.get(blockActual);
 	EXPECT_TRUE(0 == std::memcmp(blockActual, blockExpected, CRI_BLOCK_SIZE));

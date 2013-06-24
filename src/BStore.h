@@ -24,28 +24,16 @@ using std::tr1::unordered_set;
 
 using namespace std;
 
-typedef uint64_t docid_t;
-
 class BStore{
 public:
-
-	BStore(Communicator &communicator);
-	BStore(Communicator &communicator, string path);
-	BStore(unordered_map< string, unordered_set<uint64_t> > & map);
+	BStore();
+	BStore(string directoryPath);
 	~BStore();
-	void upload();
-
-	bool  read(string filename, vector<unsigned char>& fileContents);
-	void write(string filename, unsigned char* filedata, uint32_t size);
-	unsigned char* update(string filename, unsigned char* updateFiledata, uint32_t size);
-	void del(string filename);
-	void rename(string filename);
-	ifstream::pos_type readFileSize(string filename);
 
 private:
-	Communicator communicator;
-	vector<string> filesList;
-	void readFilesFromDirectory(string path);
+	void readFileNamesFromDirectory(string path, vector<string>& filesList);
+	void readFile(string path, byte contents[], b_index_t numBlocks);
+	size_t readFileSize(string path);
 	Ddisk D;
 	Tdisk T;
 };

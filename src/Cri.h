@@ -21,6 +21,7 @@ class CRI{
 private:
 	higherfid_t higherfid;
 	vector<CRIBlock> blocks;
+	bool empty;
 		
 public:
 	CRI();

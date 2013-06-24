@@ -45,8 +45,10 @@ public:
 
 	void getEncrypted(byte block[]);
 	void getDecrypted(byte block[]);
+	void getDecryptedData(byte data[]);
 	dataSize_t getDataSize();
 
+	bool fidMatchCheck(fileID& fid);
 	bool isOccupied();
 	void encryptIfEmpty(byte emptyBlock[]);
 

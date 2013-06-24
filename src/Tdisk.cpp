@@ -50,7 +50,7 @@ void Tdisk::finalize(Ddisk &D){
 
 		byte fidBytesRet[FILEID_SIZE];
 		fid.get(fidBytesRet);
-		D.addBlocks(criBytes.data(), cri.size(), fid, prSubset, true);
+		D.addFile(criBytes.data(), cri.size(), fid, prSubset, true);
 		}			 
 
 	for(int i = 0; i < TTOTAL_BLOCKS; i++)

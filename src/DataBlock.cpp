@@ -37,6 +37,8 @@ void DataBlock::setKey(byte key[]){
 
 void DataBlock::make(fileID fid, byte block[], dataSize_t dataSize, bool isCRI, version_t version) {
 	this->fid = fid;
+	byte fidBytes[FILEID_SIZE];
+	this->fid.get(fidBytes);
 	this->isCRI = isCRI;
 	this->version = version;
 	this->block = block;
@@ -63,7 +65,7 @@ void DataBlock::addPadding(){
 }
 
 void DataBlock::removePadding(){
-	for(int i = MAX_BLOCK_DATA_SIZE; i > 0; i--)
+	for(int i = MAX_BLOCK_DATA_SIZE+1; i > 0; i--)
 		if(block[i] == 1){
 			dataSize = i-1;
 		}
@@ -137,9 +139,25 @@ void DataBlock::getDecrypted(byte block[]){
 //	block = this->block;
 }
 
+void DataBlock::getDecryptedData(byte data[]){
+	if(isBlockEncrypted)
+		decrypt();
+	memcpy(block, this->block, dataSize);
+}
+
 bool DataBlock::isOccupied(){
 	higherfid_t higherFid = *(higherfid_t*)(fidBytes);
 	return higherFid ? true : false;
+}
+
+bool DataBlock::fidMatchCheck(fileID& fid){
+	byte thisfidBytes[FILEID_SIZE];
+	byte fidBytes[FILEID_SIZE];
+
+	this->fid.get(thisfidBytes);
+	fid.get(fidBytes);
+
+	return !memcmp(thisfidBytes, fidBytes, FILEID_SIZE);
 }
 
 void DataBlock::encryptIfEmpty(byte emptyBlock[]){

@@ -29,7 +29,7 @@ private:
 public:
 	Ddisk(b_index_t numBlocks = TOTAL_BLOCKS);
 	~Ddisk();
-	void addBlocks(byte bytes[], size_t size, fileID fid, PRSubset prSubset, bool isCRI = false);
+	void addFile(byte bytes[], size_t size, fileID fid, PRSubset prSubset, bool isCRI = false);
 	void encryptEmptyBlocks();
 	void getBlock(b_index_t index, DataBlock& block);
 };
