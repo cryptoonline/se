@@ -25,34 +25,29 @@ void CRI::addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]){
 }
 
 void CRI::makeBytes(byte* blocksBytes){
-	int numPaddingBytes = MAX_BLOCK_DATA_SIZE - CRI_PER_BLOCK * CRI_BLOCK_SIZE;
-	int counter = 0;
 	int pointer = 0;
 	for(vector<CRIBlock>::iterator it = blocks.begin(); it != blocks.end(); ++it){
 		byte block[CRI_BLOCK_SIZE];
 		it->get(block);
-		printhex(block, CRI_BLOCK_SIZE, __PRETTY_FUNCTION__);
 		memcpy(&blocksBytes[pointer], block, CRI_BLOCK_SIZE);
 		pointer += CRI_BLOCK_SIZE;
-		if(counter++ % CRI_PER_BLOCK == 0)
-			pointer += numPaddingBytes + TRAILER_SIZE;
 	}
 }
 
 void CRI::makeBytes(vector<byte>& blocksBytes, string function){
 	int counter = 0;
-	int numPaddingBytes = MAX_BLOCK_DATA_SIZE - CRI_PER_BLOCK * CRI_BLOCK_SIZE + TRAILER_SIZE;
+	int numPaddingBytes = MAX_BLOCK_DATA_SIZE - CRI_PER_BLOCK * CRI_BLOCK_SIZE;// + TRAILER_SIZE;
 	byte zeros[numPaddingBytes];
 	memset(zeros, 0, numPaddingBytes);
 	cout << "Function is " << function << " Time is " << clock() << endl;
 	for(vector<CRIBlock>::iterator it = blocks.begin(); it != blocks.end(); ++it){
-		if(counter % CRI_PER_BLOCK == 0 && counter != 0)
-			blocksBytes.insert(blocksBytes.end(), &zeros[0], &zeros[numPaddingBytes]);
 		vector<byte> block;
 		it->get(block);
 		blocksBytes.insert(blocksBytes.end(), block.begin(), block.begin()+CRI_BLOCK_SIZE);
-//		printhex(blocksBytes, __PRETTY_FUNCTION__);
+		printhex(block, __PRETTY_FUNCTION__);
 		counter++;
+		if(counter % CRI_PER_BLOCK == 0 && counter != 0)
+			blocksBytes.insert(blocksBytes.end(), &zeros[0], &zeros[numPaddingBytes]);
 	}
 //	if(blocksBytes.size() % BLOCK_SIZE != 0){
 //		int numZeros = BLOCK_SIZE*(int)ceil((double)blocksBytes.size()/(double)BLOCK_SIZE)-blocksBytes.size();
@@ -72,25 +67,41 @@ void CRI::makeBytes(vector<byte>& blocksBytes, string function){
 // 	}
 // }
 
+// void CRI::parseBytes(byte blocksBytes[], uint32_t size){
+// 	for(int i = 0; i < size; i += CRI_BLOCK_SIZE){
+//		byte block[CRI_BLOCK_SIZE];
+//		CRIBlock criBlock;
+//		criBlock.parse(block);
+//		if(criBlock.getSize() == 0){
+//			if(i==0)
+//				empty = true;
+//			break;
+//		}
+//		blocks.push_back(criBlock);
+//		empty = false;
+//	}
+//}
+
 void CRI::parseBytes(byte blocksBytes[], uint32_t size){
 	int criCounter = 0;
 	for(int i = 0; i < size; i+=CRI_BLOCK_SIZE){
 		if(criCounter%CRI_PER_BLOCK == 0 && i!=0)
-			i += MAX_BLOCK_DATA_SIZE - CRI_BLOCK_SIZE * CRI_PER_BLOCK + TRAILER_SIZE;
-		criCounter++;
-		byte block[CRI_BLOCK_SIZE];
-		memcpy(block, &blocksBytes[i], CRI_BLOCK_SIZE);
-		CRIBlock criBlock;
-		criBlock.parse(block);
-		if(criBlock.getSize() == 0){
-			if(i==0)
-				empty = true;
-			break;
-		}
-	//	blocks.resize(10);
-		blocks.push_back(criBlock);
-		empty = false;
-	}
+			i += MAX_BLOCK_DATA_SIZE - CRI_BLOCK_SIZE * CRI_PER_BLOCK;// + TRAILER_SIZE;
+ 		criCounter++;
+ 		byte block[CRI_BLOCK_SIZE];
+ 		memcpy(block, &blocksBytes[i], CRI_BLOCK_SIZE);
+ 		CRIBlock criBlock;
+ 		criBlock.parse(block);
+		printhex(block, CRI_BLOCK_SIZE, __PRETTY_FUNCTION__);
+ 		if(criBlock.getSize() == 0){
+ 			if(i==0)
+ 				empty = true;
+ 			break;
+ 		}
+ 	//	blocks.resize(10);
+ 		blocks.push_back(criBlock);
+ 		empty = false;
+ 	}
 }
 
 int CRI::size(){

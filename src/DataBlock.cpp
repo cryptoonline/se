@@ -76,16 +76,17 @@ void DataBlock::removePadding(){
 void DataBlock::parse(byte block[]){
 	memcpy(this->block, block, BLOCK_SIZE);
 //	this->block = block;
-	version = *(version_t*)(block+VERSION_LOC);
+	version = *(version_t*)((this->block)+VERSION_LOC);
+	isBlockEncrypted = true;
+
 	decrypt();
 
-//	byte fidBytes[FILEID_SIZE];
-	memcpy(fidBytes, block+FILEID_LOC, FILEID_SIZE);
+	memcpy(fidBytes, (this->block)+FILEID_LOC, FILEID_SIZE);
 	fileID fid(fidBytes);
 	this->fid = fid;
 
 	removePadding(); //This will populate dataSize
-	isCRI = (bool)(block[CRIBYTE_LOC]);
+	isCRI = (bool)(this->block[CRIBYTE_LOC]);
 }
 
 void DataBlock::update(fileID fid, byte block[], dataSize_t dataSize, bool isCRI){
@@ -104,14 +105,14 @@ void DataBlock::clear(){
 void DataBlock::encrypt(){
 	AES cipher;
 	makeIV();
-//	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = true;
 }
 
 void DataBlock::decrypt(){
 	AES cipher;
 	makeIV();
-//	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = false;
 }
 

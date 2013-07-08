@@ -61,13 +61,14 @@ bool OnlineSession::read(string filename){
 	for(int i = 0; i < numBlocks; i++){
 		DataBlock block(blockIndices[i]);
 		block.parse(&dataBlocksBytes[i*BLOCK_SIZE]);
+//		block.getDecrypted(blockByte);
+//		printhex(blockByte, BLOCK_SIZE, "BLOCK HEX");
 		blocks.push_back(block);
 		if(block.fidMatchCheck(fid)){
 			cout << "Block Matches!" << endl;
+			fileBlocks.push_back(block);
 			byte blockBytes[BLOCK_SIZE];
 			block.getDecrypted(blockBytes);
-			printchars(blockBytes, block.getDataSize(), __PRETTY_FUNCTION__);
-//			fileBlocks.push_back(block);
 			memcpy(&contents[i*MAX_BLOCK_DATA_SIZE], blockBytes, block.getDataSize());
 			if(block.getDataSize() < MAX_BLOCK_DATA_SIZE)
 				lastBlockSize = block.getDataSize();
@@ -76,6 +77,15 @@ bool OnlineSession::read(string filename){
 	printchars(contents, lastBlockSize+(numFileBlocks-1)*MAX_BLOCK_DATA_SIZE, "FILE");
 	cout << filename << " size is " << lastBlockSize + (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE << " last block size is " << lastBlockSize << endl;
 	getchar();
+
+	byte file[(numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize];
+	for(int i = 0; i < fileBlocks.size(); i++){
+		byte block[BLOCK_SIZE];
+		fileBlocks[i].getDecrypted(block);
+		memcpy(&file[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
+	}
+	printchars(file, (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize, "FILE FROM VECTOR");
+
 //	uint32_t lastBlockSize = fileBlocks[numFileBlocks-1].getDataSize();
 //	cout << "Last block size is " << lastBlockSize << endl;
 //	size_t size = numFileBlocks*MAX_BLOCK_DATA_SIZE;
@@ -125,12 +135,12 @@ void OnlineSession::readCRI(PRSubset& prSubset, CRI& cri){
 	byte blocks[numBlocks*BLOCK_SIZE];
 	readD(blockIndices, numBlocks, blocks);
 
-	byte decryptedBlocks[numBlocks*BLOCK_SIZE];
+	byte decryptedBlocks[numBlocks*MAX_BLOCK_DATA_SIZE];
 //	cout << "----------------------------------------CRI----------------------------------------" << endl;   
 	for(int i = 0; i < numBlocks; i++){
 		DataBlock block(blockIndices[i]);
 		block.parse(&blocks[i*BLOCK_SIZE]);
-		block.getDecrypted(&decryptedBlocks[i*BLOCK_SIZE]);
+		block.getDecrypted(&decryptedBlocks[i*MAX_BLOCK_DATA_SIZE]);
 	}
 	for(int i = 0; i < numBlocks; i++)
 		printhex(&decryptedBlocks[i*BLOCK_SIZE], BLOCK_SIZE, "CRI BLOCKS");
