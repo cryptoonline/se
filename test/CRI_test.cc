@@ -117,7 +117,7 @@ TEST(CRIBytesTest, Test1){
 
 	vector<byte> blocksBytesActual;
 
-	int numZeros = MAX_BLOCK_DATA_SIZE-CRI_PER_BLOCK*CRI_BLOCK_SIZE+TRAILER_SIZE;
+	int numZeros = MAX_BLOCK_DATA_SIZE-CRI_PER_BLOCK*CRI_BLOCK_SIZE;//+TRAILER_SIZE;
 	byte zeroArray[numZeros];
 	std::memset(zeroArray, 0, numZeros);
 
@@ -140,7 +140,7 @@ TEST(CRIBytesTest, Test1){
 	int pointer = 0;
 	for(int i = 0; i < 2*CRI_PER_BLOCK+3; i++){
 		if(i % CRI_PER_BLOCK == 0 && i!=0)
-			pointer += MAX_BLOCK_DATA_SIZE - CRI_BLOCK_SIZE * CRI_PER_BLOCK + TRAILER_SIZE;
+			pointer += MAX_BLOCK_DATA_SIZE - CRI_BLOCK_SIZE * CRI_PER_BLOCK;// + TRAILER_SIZE;
 		vector<byte> blockExpected;
 		vector<byte> blockActual;
 		blockExpected.insert(blockExpected.begin(), blocksBytesExpected.begin()+pointer, blocksBytesExpected.begin()+pointer+CRI_BLOCK_SIZE);
