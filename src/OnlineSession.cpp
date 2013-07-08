@@ -67,16 +67,14 @@ bool OnlineSession::read(string filename){
 		if(block.fidMatchCheck(fid)){
 			cout << "Block Matches!" << endl;
 			fileBlocks.push_back(block);
-			byte blockBytes[BLOCK_SIZE];
-			block.getDecrypted(blockBytes);
-			memcpy(&contents[i*MAX_BLOCK_DATA_SIZE], blockBytes, block.getDataSize());
+//			byte blockBytes[BLOCK_SIZE];
+//			block.getDecrypted(blockBytes);
+//			memcpy(&contents[i*MAX_BLOCK_DATA_SIZE], blockBytes, block.getDataSize());
 			if(block.getDataSize() < MAX_BLOCK_DATA_SIZE)
 				lastBlockSize = block.getDataSize();
 		}
 	}
-	printchars(contents, lastBlockSize+(numFileBlocks-1)*MAX_BLOCK_DATA_SIZE, "FILE");
-	cout << filename << " size is " << lastBlockSize + (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE << " last block size is " << lastBlockSize << endl;
-	getchar();
+//	printchars(contents, lastBlockSize+(numFileBlocks-1)*MAX_BLOCK_DATA_SIZE, "FILE");
 
 	byte file[(numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize];
 	for(int i = 0; i < fileBlocks.size(); i++){
@@ -85,6 +83,7 @@ bool OnlineSession::read(string filename){
 		memcpy(&file[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
 	}
 	printchars(file, (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize, "FILE FROM VECTOR");
+	cout << filename << " size is " << lastBlockSize + (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE << " last block size is " << lastBlockSize << endl;
 
 //	uint32_t lastBlockSize = fileBlocks[numFileBlocks-1].getDataSize();
 //	cout << "Last block size is " << lastBlockSize << endl;
