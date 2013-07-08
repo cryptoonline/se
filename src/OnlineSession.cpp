@@ -66,9 +66,9 @@ bool OnlineSession::read(string filename){
 			cout << "Block Matches!" << endl;
 			byte blockBytes[BLOCK_SIZE];
 			block.getDecrypted(blockBytes);
-//			printchars(blockBytes, BLOCK_SIZE, __PRETTY_FUNCTION__);
+			printchars(blockBytes, block.getDataSize(), __PRETTY_FUNCTION__);
 //			fileBlocks.push_back(block);
-			memcpy(&contents[i*MAX_BLOCK_DATA_SIZE], blockBytes, MAX_BLOCK_DATA_SIZE);
+			memcpy(&contents[i*MAX_BLOCK_DATA_SIZE], blockBytes, block.getDataSize());
 			if(block.getDataSize() < MAX_BLOCK_DATA_SIZE)
 				lastBlockSize = block.getDataSize();
 		}
