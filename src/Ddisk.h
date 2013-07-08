@@ -20,18 +20,21 @@
 class Ddisk {
 private:
 	b_index_t numBlocks;
+	b_index_t usedBlocks;
 //	vector<DataBlock> D;
 //	DataBlock D[TOTAL_BLOCKS];
 	DataBlock** D;
+//	byte* zeroBytes;
 	void makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>& emptyBlocks, bool isCRI);
 	void getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks);
-    
+
 public:
 	Ddisk(b_index_t numBlocks = TOTAL_BLOCKS);
 	~Ddisk();
 	void addFile(byte bytes[], size_t size, fileID fid, PRSubset prSubset, bool isCRI = false);
 	void encryptEmptyBlocks();
 	void getBlock(b_index_t index, DataBlock& block);
+	void writeToDisk();
 };
 
 #endif /* defined(__BlindStorage__Ddisk__) */

@@ -107,7 +107,7 @@ TEST_F(DataBlockTest, EmptyBlockTest) {
 	DataBlock block(0);
 	
 	byte emptyBlock[BLOCK_SIZE] = {0};
-	block.encryptIfEmpty(emptyBlock);
+	block.encryptIfEmpty();
 	
 	byte decryptedBlock[BLOCK_SIZE];
 	block.getDecrypted(decryptedBlock);

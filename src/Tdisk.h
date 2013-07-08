@@ -6,6 +6,7 @@
 #ifndef __BlindStorage__Tdisk__
 #define __BlindStorage__Tdisk__
 
+#include <stdio.h>
 #include <stdint.h>
 #include <iostream>
 #include "TBlock.h"
@@ -27,7 +28,7 @@ class Tdisk{
 private:
 	TBlock** T;
 	unordered_map<higherfid_t, CRI> criMap;
-	vector<byte> criBytes;
+	vector<vector<byte> > criBytes;
 
 public:
 	Tdisk();

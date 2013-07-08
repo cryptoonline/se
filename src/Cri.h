@@ -6,6 +6,7 @@
 #ifndef __BlindStorage__CRI__
 #define __BlindStorage__CRI__
 
+#include <stdio.h>
 #include <vector>
 using std::vector;
 
@@ -31,7 +32,7 @@ public:
 	bool isEmpty();
 //	void parseBytes(vector<byte>& blocksBytes);
 	void parseBytes(byte blocksBytes[], uint32_t size);
-	void makeBytes(vector<byte>& blocksBytes);
+	void makeBytes(vector<byte>& blocksBytes, string function);
 	void makeBytes(byte* blockBytes);
 	void addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]);
 	void search(fileID fid, CRIBlock& block);

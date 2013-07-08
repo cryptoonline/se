@@ -31,8 +31,10 @@ public:
 	~BStore();
 
 private:
+	b_index_t totalFileBlocks;
+//	byte* allFileBytes;
 	void readFileNamesFromDirectory(string path, vector<string>& filesList);
-	void readFile(string path, byte contents[], b_index_t numBlocks);
+	void readFile(string path, byte fileBytes[], size_t size);
 	size_t readFileSize(string path);
 	Ddisk D;
 	Tdisk T;

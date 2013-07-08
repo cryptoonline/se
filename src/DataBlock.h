@@ -50,7 +50,7 @@ public:
 
 	bool fidMatchCheck(fileID& fid);
 	bool isOccupied();
-	void encryptIfEmpty(byte emptyBlock[]);
+	void encryptIfEmpty();//byte emptyBlock[]);
 
 private:
 	static b_index_t instanceCounter;
@@ -62,8 +62,8 @@ private:
 
 	bool isBlockEncrypted;
 
-	byte* block;
-
+//	byte* block;
+	byte block[BLOCK_SIZE];
 	dataSize_t dataSize;
 
 	static byte key[AES_KEY_SIZE];

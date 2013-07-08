@@ -31,6 +31,7 @@ void CRI::makeBytes(byte* blocksBytes){
 	for(vector<CRIBlock>::iterator it = blocks.begin(); it != blocks.end(); ++it){
 		byte block[CRI_BLOCK_SIZE];
 		it->get(block);
+		printhex(block, CRI_BLOCK_SIZE, __PRETTY_FUNCTION__);
 		memcpy(&blocksBytes[pointer], block, CRI_BLOCK_SIZE);
 		pointer += CRI_BLOCK_SIZE;
 		if(counter++ % CRI_PER_BLOCK == 0)
@@ -38,25 +39,27 @@ void CRI::makeBytes(byte* blocksBytes){
 	}
 }
 
-void CRI::makeBytes(vector<byte>& blocksBytes){
+void CRI::makeBytes(vector<byte>& blocksBytes, string function){
 	int counter = 0;
 	int numPaddingBytes = MAX_BLOCK_DATA_SIZE - CRI_PER_BLOCK * CRI_BLOCK_SIZE + TRAILER_SIZE;
 	byte zeros[numPaddingBytes];
 	memset(zeros, 0, numPaddingBytes);
+	cout << "Function is " << function << " Time is " << clock() << endl;
 	for(vector<CRIBlock>::iterator it = blocks.begin(); it != blocks.end(); ++it){
 		if(counter % CRI_PER_BLOCK == 0 && counter != 0)
 			blocksBytes.insert(blocksBytes.end(), &zeros[0], &zeros[numPaddingBytes]);
 		vector<byte> block;
 		it->get(block);
 		blocksBytes.insert(blocksBytes.end(), block.begin(), block.begin()+CRI_BLOCK_SIZE);
+//		printhex(blocksBytes, __PRETTY_FUNCTION__);
 		counter++;
 	}
-	if(blocksBytes.size() % BLOCK_SIZE != 0){
-		int numZeros = BLOCK_SIZE*(int)ceil((double)blocksBytes.size()/(double)BLOCK_SIZE)-blocksBytes.size();
-		byte zeros[numZeros];
-		memset(zeros, 0, numZeros);
-		blocksBytes.insert(blocksBytes.end(), &zeros[0], &zeros[numZeros]);
-	}
+//	if(blocksBytes.size() % BLOCK_SIZE != 0){
+//		int numZeros = BLOCK_SIZE*(int)ceil((double)blocksBytes.size()/(double)BLOCK_SIZE)-blocksBytes.size();
+//		byte zeros[numZeros];
+//		memset(zeros, 0, numZeros);
+//		blocksBytes.insert(blocksBytes.end(), &zeros[0], &zeros[numZeros]);
+//	}
 }
 
 // void CRI::parseBytes(vector<byte>& blocksBytes){
@@ -84,6 +87,7 @@ void CRI::parseBytes(byte blocksBytes[], uint32_t size){
 				empty = true;
 			break;
 		}
+	//	blocks.resize(10);
 		blocks.push_back(criBlock);
 		empty = false;
 	}
@@ -94,6 +98,7 @@ int CRI::size(){
 }
 
 void CRI::search(fileID fid, CRIBlock& block){
+	cout << "CRI searching!" << endl;
 	byte lowerFid[LOWERFID_SIZE];
 	fid.getLowerID(lowerFid);
 	search(lowerFid, block);
@@ -101,8 +106,10 @@ void CRI::search(fileID fid, CRIBlock& block){
 
 void CRI::search(byte lowerFid[], CRIBlock& block){
 	for(int i = 0; i < blocks.size(); i++){
-		if(blocks[i].match(lowerFid))
+		if(blocks[i].match(lowerFid)){
 			block = blocks[i];
+			cout << "Match Found" << endl;
+		}
 	}
 }
 

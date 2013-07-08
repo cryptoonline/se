@@ -17,6 +17,7 @@ DataBlock::DataBlock(){
 	index = instanceCounter;
 	instanceCounter++;
 	memset(fidBytes, 0, FILEID_SIZE);
+	memset(block, 0, BLOCK_SIZE);
 	isBlockEncrypted = false;
 }
 
@@ -24,6 +25,7 @@ DataBlock::DataBlock(b_index_t index){
 	version = 0;
 	this->index = index;
 	memset(fidBytes, 0, FILEID_SIZE);
+	memset(block, 0, BLOCK_SIZE);
 	isBlockEncrypted = false;
 }
 
@@ -37,12 +39,12 @@ void DataBlock::setKey(byte key[]){
 
 void DataBlock::make(fileID fid, byte block[], dataSize_t dataSize, bool isCRI, version_t version) {
 	this->fid = fid;
-	byte fidBytes[FILEID_SIZE];
 	this->fid.get(fidBytes);
 	this->isCRI = isCRI;
 	this->version = version;
-	this->block = block;
+//	this->block = block;
 	this->dataSize = dataSize;
+	memcpy(this->block, block, dataSize);
 	addTrailer();
 	encrypt();
 }
@@ -67,17 +69,17 @@ void DataBlock::addPadding(){
 void DataBlock::removePadding(){
 	for(int i = MAX_BLOCK_DATA_SIZE+1; i > 0; i--)
 		if(block[i] == 1){
-			dataSize = i-1;
+			dataSize = i;
 		}
 }
 
 void DataBlock::parse(byte block[]){
-//	memcpy(this->block, block, BLOCK_SIZE);
-	this->block = block;
+	memcpy(this->block, block, BLOCK_SIZE);
+//	this->block = block;
 	version = *(version_t*)(block+VERSION_LOC);
 	decrypt();
 
-	byte fidBytes[FILEID_SIZE];
+//	byte fidBytes[FILEID_SIZE];
 	memcpy(fidBytes, block+FILEID_LOC, FILEID_SIZE);
 	fileID fid(fidBytes);
 	this->fid = fid;
@@ -102,16 +104,14 @@ void DataBlock::clear(){
 void DataBlock::encrypt(){
 	AES cipher;
 	makeIV();
-	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
-//	cipher.ENC_CTR(block, block, dataSize, key, iv);
+//	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = true;
 }
 
 void DataBlock::decrypt(){
 	AES cipher;
 	makeIV();
-	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
-//	cipher.DEC_CTR(block, block, dataSize, key, iv);
+//	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = false;
 }
 
@@ -160,8 +160,7 @@ bool DataBlock::fidMatchCheck(fileID& fid){
 	return !memcmp(thisfidBytes, fidBytes, FILEID_SIZE);
 }
 
-void DataBlock::encryptIfEmpty(byte emptyBlock[]){
-	block = emptyBlock;
+void DataBlock::encryptIfEmpty(){
 	if(!isOccupied()){
 		encrypt();		
 	}

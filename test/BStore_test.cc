@@ -10,6 +10,6 @@
 using std::string;
 
 TEST(PreprocessingTest, Test1){
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/bass-e";
+	string directoryPath = "/Users/naveed/BStore/datasets/testdir";
 	BStore store(directoryPath);
 }

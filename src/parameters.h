@@ -21,12 +21,12 @@ typedef uint32_t prSubsetSize_t;
 typedef uint32_t prSubsetSeed_t;
 typedef uint32_t dataSize_t;
 
-#define TOTAL_BLOCKS (65536)
+#define TOTAL_BLOCKS (1024*256)
 #define BLOCK_SIZE 512
 const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 #define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)
 
-#define TTOTAL_BLOCKS 1024
+#define TTOTAL_BLOCKS (16*16*16*16*16)
 #define TBLOCK_SIZE 10
 
 /* BLOCK FORMAT */
@@ -48,7 +48,7 @@ const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 
 #define CRI_BLOCK_SIZE 36
 #define CRI_PER_BLOCK (MAX_BLOCK_DATA_SIZE / CRI_BLOCK_SIZE)
-#define PRSUBSET_SIZE_LOWER_BOUND 128
+#define PRSUBSET_SIZE_LOWER_BOUND 4
 
 const uint16_t MAX_NO_OF_COLLISIONS = 1024;
 
@@ -58,16 +58,18 @@ const int16_t KEY_SIZE = 16;
 
 const int16_t T_RECORD_BITS = 24;
 
-const uint32_t BIT_MASK = 0x00003FFF;
+const uint32_t BIT_MASK = 0x000FFFFF;
 
 /****************************************AES parameters***********************************/
 #define AES_BLOCK_SIZE 16
 #define AES_KEY_SIZE 16
 
 /****************************************FileNames****************************************/ 
-#define D_KEYFILE "/Users/naveed/BStore/data/keys/D.KEY"
-#define T_KEYFILE "/Users/naveed/BStore/data/keys/T.KEY"
-#define D_FILE "/Users/naveed/BStore/data/D"
-#define T_FILE "/Users/naveed/BStore/data/T" 
+#define D_KEYFILE "data/keys/D.KEY"
+#define T_KEYFILE "data/keys/T.KEY"
+#define FID_HMAC_KEYFILE "data/keys/HASH.KEY"
+#define FID_PRF_KEYFILE "data/keys/PRF.KEY"
+#define D_FILE "data/D"
+#define T_FILE "data/T" 
 
 #endif /* defined(__BlindStorage__parameters__) */

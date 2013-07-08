@@ -134,7 +134,7 @@ TEST(CRIBytesTest, Test1){
 	cri.parseBytes(blocksBytesActual.data(), blocksBytesActual.size());
 	vector<byte> blocksBytesExpected; 
 	blocksBytesExpected.reserve((int)ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE)*BLOCK_SIZE);
-	cri.makeBytes(blocksBytesExpected);
+	cri.makeBytes(blocksBytesExpected, __PRETTY_FUNCTION__);
 
 	bool is_equal = true;
 	int pointer = 0;

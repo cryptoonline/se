@@ -16,14 +16,11 @@
 #include "Tdisk.h"
 #include "Debug.h"
 #include "Cri.h"
-#include "DataStructures.h"
-
-using namespace std;
-using std::reverse_iterator;
+#include "DiskCommunicator.h"
 
 class OnlineSession {
 private:
-//	Communicator communicator;
+	DiskCommunicator dcomm;
 	fileID fid;
 	TBlock tBlock;
 	PRSubset criPRSubset;
@@ -38,15 +35,15 @@ private:
 	void readT(t_index_t TRecordIndex, byte block[]);
 	void writeT(t_index_t TRecordIndex, byte block[]);
 
-	void readD(b_index_t blockIndices[], b_index_t numBlocks, byte[][BLOCK_SIZE]);
-	void writeD(b_index_t blockIndices[], b_index_t numBlocks, byte[][BLOCK_SIZE]);
+	void readD(b_index_t blockIndices[], b_index_t numBlocks, byte blocks[]);
+	void writeD(b_index_t blockIndices[], b_index_t numBlocks, byte blocks[]);
 
-	void parseCRI(PRSubset& prSubset, CRIBlock& block);
+	void readCRI(PRSubset& prSubset, CRI& cri);
 
 public:
 	OnlineSession();
 	~OnlineSession();
-	bool read(string filename, byte* contents);
+	bool read(string filename);
 	void write(string filename, byte contents[], size_t size);
 	void remove(string filename);
 	/*! Use homorphic encryption to support this */

@@ -52,10 +52,10 @@ higherfid_t fileID::getHigherID(){
 }
 
 void fileID::setupKey() {
-	Key key0("keys/fileIDHMACKey", HMAC_KEY_SIZE);
+	Key key0(FID_HMAC_KEYFILE, HMAC_KEY_SIZE);
 	key0.get(hmacKey);
 
-	Key key1("keys/fileIDPRFKey", PRF_KEY_SIZE);
+	Key key1(FID_PRF_KEYFILE, PRF_KEY_SIZE);
 	key1.get(prfKey);
 
 	keyGenerated = true;
