@@ -28,7 +28,10 @@ TEST(OnlineSessionGet, Test1){
 		cout << "Reading file: " << filename << endl;
 //		string filename = "/Users/naveed/BStore/datasets/testdir/test1";
 		OnlineSession session;
-		session.read(filename);
+		byte* file;
+		size_t filesize = session.read(filename, file);
+		printchars(file, filesize, "FILE");
+		delete[] file;
 		}
 //	printchars(contents, size, "File contents");
 

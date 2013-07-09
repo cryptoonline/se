@@ -43,7 +43,7 @@ private:
 public:
 	OnlineSession();
 	~OnlineSession();
-	bool read(string filename);
+	size_t read(string filename, byte*& file);
 	void write(string filename, byte contents[], size_t size);
 	void remove(string filename);
 	/*! Use homorphic encryption to support this */

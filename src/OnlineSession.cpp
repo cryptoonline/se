@@ -15,7 +15,7 @@ OnlineSession::OnlineSession(){
 OnlineSession::~OnlineSession(){
 }
 
-bool OnlineSession::read(string filename){
+size_t OnlineSession::read(string filename, byte*& file){
 	cout << "Reading " << filename << endl;
 	fileID fid(filename);
 	this->fid = fid;
@@ -28,7 +28,7 @@ bool OnlineSession::read(string filename){
 	cout << "TBlock: Size = " << tBlock.getSize() << ", Seed = " << tBlock.getSeed() << endl;
 	this->tBlock = tBlock;
 	if(tBlock.getSize() == 0)
-		return false;
+		return 0;
 
 	PRSubset criPRSubset(tBlock.getSize(), tBlock.getSeed());
 	this->criPRSubset = criPRSubset;
@@ -76,14 +76,17 @@ bool OnlineSession::read(string filename){
 	}
 //	printchars(contents, lastBlockSize+(numFileBlocks-1)*MAX_BLOCK_DATA_SIZE, "FILE");
 
-	byte file[(numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize];
+	size_t filesize = (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize;
+	file = new byte[filesize];
 	for(int i = 0; i < fileBlocks.size(); i++){
 		byte block[BLOCK_SIZE];
 		fileBlocks[i].getDecrypted(block);
 		memcpy(&file[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
 	}
-	printchars(file, (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize, "FILE FROM VECTOR");
-	cout << filename << " size is " << lastBlockSize + (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE << " last block size is " << lastBlockSize << endl;
+
+	return filesize;
+//	printchars(file, (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize, "FILE FROM VECTOR");
+//	cout << filename << " size is " << lastBlockSize + (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE << " last block size is " << lastBlockSize << endl;
 
 //	uint32_t lastBlockSize = fileBlocks[numFileBlocks-1].getDataSize();
 //	cout << "Last block size is " << lastBlockSize << endl;
