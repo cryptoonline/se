@@ -20,6 +20,7 @@ typedef uint32_t higherfid_t;
 typedef uint32_t prSubsetSize_t;
 typedef uint32_t prSubsetSeed_t;
 typedef uint32_t dataSize_t;
+typedef uint32_t criSize_t;
 
 #define TOTAL_BLOCKS (1024*1024)
 #define BLOCK_SIZE 512

@@ -24,6 +24,13 @@ void CRIBlock::make(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]){
 	memcpy(block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), lowerFid, LOWERFID_SIZE);
 }
 
+void CRIBlock::update(prSubsetSize_t size, prSubsetSeed_t seed){
+	this->size = size;
+	this->seed = seed;
+	memcpy(block, static_cast<byte*>(static_cast<void*>(&size)), sizeof(prSubsetSize_t));
+	memcpy(block+sizeof(prSubsetSize_t), static_cast<byte*>(static_cast<void*>(&seed)), sizeof(prSubsetSeed_t));
+}
+
 void CRIBlock::parse(byte block[]){
 	memcpy(this->block, block, CRI_BLOCK_SIZE);
 	size = *(prSubsetSize_t*)(block);

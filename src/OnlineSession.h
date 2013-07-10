@@ -21,6 +21,7 @@
 class OnlineSession {
 private:
 	DiskCommunicator dcomm;
+	string filename;
 	fileID fid;
 	TBlock tBlock;
 	PRSubset criPRSubset;
@@ -43,8 +44,8 @@ private:
 public:
 	OnlineSession();
 	~OnlineSession();
-	size_t read(string filename, byte*& file);
-	void write(string filename, byte contents[], size_t size);
+	int64_t read(string filename, byte*& file, b_index_t numBlocksToRead = 0);
+	void write(byte contents[], size_t size);
 	void remove(string filename);
 	/*! Use homorphic encryption to support this */
 	void rename();

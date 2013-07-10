@@ -44,7 +44,8 @@ void Ddisk::makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>&
 		}
 	}
 
-	dataSize_t sizeOfLastBlock = (dataSize_t)size - (dataSize_t)(size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE;
+	dataSize_t sizeOfLastBlock = (dataSize_t)(size - (size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE);
+//	dataSize_t sizeOfLastBlock = (dataSize_t)size - (dataSize_t)(size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE;
 	cout << "Last block size is " << sizeOfLastBlock << endl;
 	D[emptyBlocks[counter]]->make(fid, &bytes[counter*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock, isCRI); 
 	if(isCRI){

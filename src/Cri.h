@@ -35,9 +35,10 @@ public:
 	void makeBytes(vector<byte>& blocksBytes, string function);
 	void makeBytes(byte* blockBytes);
 	void addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]);
-	void search(fileID fid, CRIBlock& block);
-	void search(byte lowerFid[], CRIBlock& block);
-	int size();
+	void updateFile(prSubsetSize_t size, prSubsetSeed_t seed, uint32_t blockIndex);
+	uint32_t search(fileID fid, CRIBlock& block);
+	uint32_t search(byte lowerFid[], CRIBlock& block);
+	criSize_t size();
 };
 
 #endif /* defined(__BlindStorage__CRI__) */

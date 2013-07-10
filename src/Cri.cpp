@@ -24,6 +24,10 @@ void CRI::addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]){
 	empty = false;
 }
 
+void CRI::updateFile(prSubsetSize_t size, prSubsetSeed_t seed, uint32_t blockIndex){
+	blocks[blockIndex].update(seed, size);
+}
+
 void CRI::makeBytes(byte* blocksBytes){
 	int pointer = 0;
 	for(vector<CRIBlock>::iterator it = blocks.begin(); it != blocks.end(); ++it){
@@ -104,24 +108,26 @@ void CRI::parseBytes(byte blocksBytes[], uint32_t size){
  	}
 }
 
-int CRI::size(){
+criSize_t CRI::size(){
 	return blocks.size() * CRI_BLOCK_SIZE;
 }
 
-void CRI::search(fileID fid, CRIBlock& block){
+uint32_t CRI::search(fileID fid, CRIBlock& block){
 	cout << "CRI searching!" << endl;
 	byte lowerFid[LOWERFID_SIZE];
 	fid.getLowerID(lowerFid);
-	search(lowerFid, block);
+	return search(lowerFid, block);
 }
 
-void CRI::search(byte lowerFid[], CRIBlock& block){
+uint32_t CRI::search(byte lowerFid[], CRIBlock& block){
 	for(int i = 0; i < blocks.size(); i++){
 		if(blocks[i].match(lowerFid)){
 			block = blocks[i];
 			cout << "Match Found" << endl;
+			return i;
 		}
 	}
+	return -1;
 }
 
 bool CRI::isEmpty(){
