@@ -44,7 +44,7 @@ int64_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToR
 		exit(1);
 	}
 
-	if(cri.search(fid, criBlock) == -1)
+	if((criBlockIndex = cri.search(fid, criBlock)) == -1)
 		return -1;
 
 	cout << "CRIBlock: Size = " << criBlock.getSize() << ", Seed = " << criBlock.getSeed() << endl;
@@ -66,10 +66,11 @@ int64_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToR
 	readD(blockIndices, numBlocks, dataBlocksBytes);
 
 //	printhex(dataBlocksBytes, numBlocks*BLOCK_SIZE, "BLOCK BYTES");
-	size_t size = numFileBlocks*MAX_BLOCK_DATA_SIZE;
-	int lastBlockSize = 0;
-	byte contents[size];
-	memset(contents, 0, size);
+//	size_t size = numFileBlocks*MAX_BLOCK_DATA_SIZE;
+		size_t filesize = 0;
+//	int lastBlockSize = 0;
+//	byte contents[size];
+//	memset(contents, 0, size);
 	for(int i = 0; i < numBlocks; i++){
 		DataBlock block(blockIndices[i]);
 		block.parse(&dataBlocksBytes[i*BLOCK_SIZE]);
@@ -82,13 +83,18 @@ int64_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToR
 //			byte blockBytes[BLOCK_SIZE];
 //			block.getDecrypted(blockBytes);
 //			memcpy(&contents[i*MAX_BLOCK_DATA_SIZE], blockBytes, block.getDataSize());
-			if(block.getDataSize() < MAX_BLOCK_DATA_SIZE)
-				lastBlockSize = block.getDataSize();
+			if(block.getDataSize() < MAX_BLOCK_DATA_SIZE){
+//				lastBlockSize = block.getDataSize();
+				filesize += block.getDataSize();
+				break;
+			} else {
+				filesize += block.getDataSize();
+			}
 		}
 	}
 //	printchars(contents, lastBlockSize+(numFileBlocks-1)*MAX_BLOCK_DATA_SIZE, "FILE");
 
-	size_t filesize = (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize;
+//	size_t filesize = (numFileBlocks-1)*MAX_BLOCK_DATA_SIZE + lastBlockSize;
 	file = new byte[filesize];
 	for(int i = 0; i < fileBlocks.size(); i++){
 		byte block[BLOCK_SIZE];
@@ -123,17 +129,18 @@ int64_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToR
 
 void OnlineSession::write(byte contents[], size_t size){
 	byte* previous_file;
-	b_index_t numBlocksToWrite = (b_index_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
+	b_index_t numBlocksToWrite = (b_index_t)ceil(((double)size/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 	size_t previous_size = read(filename, previous_file, numBlocksToWrite);
 
+	byte lowerFid[LOWERFID_SIZE];
+	fid.getLowerID(lowerFid);
+	
 	if(previous_size == 0){
 		PRSubset filePRSubset(numBlocksToWrite*BLOW_UP);
 		this->filePRSubset = filePRSubset;
 
 		PRSubset criPRSubset(1*BLOW_UP);
 		this->criPRSubset = criPRSubset;
-		byte lowerFid[LOWERFID_SIZE];
-		fid.getLowerID(lowerFid);
 		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
 		TBlock tBlock;
 		tBlock.make(criPRSubset.getSize(), criPRSubset.getSeed());
@@ -142,19 +149,40 @@ void OnlineSession::write(byte contents[], size_t size){
 	else if (previous_size == -1){
 		PRSubset filePRSubset(numBlocksToWrite*BLOW_UP);
 		this->filePRSubset = filePRSubset;
-
-
+		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
+		b_index_t criNumBlocks = ((int)ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+		if(criNumBlocks > criPRSubset.getSize())	
+			tBlock.update(criNumBlocks, criPRSubset.getSeed());
+		else
+			tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
+	}
+	else{
+		if(numBlocksToWrite > filePRSubset.getSize())
+			cri.updateFile(numBlocksToWrite, filePRSubset.getSeed(), criBlockIndex);
+		else
+			cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), criBlockIndex);
 	}
 
 	//TODO: This can be optimized by making the blockIndices Array class member
 	b_index_t blockIndices[filePRSubset.getSize()];
 	filePRSubset.get(blockIndices, filePRSubset.getSize());
 
+	//TODO: Update the blocks that are free with new content
+	//TODO: Update the version of the other blocks
+	//TODO: Encrypt all the blocks
+	//TODO: Write T
+	//TODO: Write CRI
+	//TODO: Write D
+	
+	byte blocksBytes[numBlocksToWrite*BLOCK_SIZE];
 	int i = 0;
-	for(; i < numBlocksToWrite - 1; i++)
-		blocks[blockIndices[i]].update(fid, &contents[i*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
+	for(; i < numBlocksToWrite - 1; ++i){
+		blocks[i].update(fid, &contents[i*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
+		blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
+	}
 	dataSize_t sizeOfLastBlock = (dataSize_t)(size - (size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE); 
-	blocks[blockIndices[i]].update(fid, &contents[i*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
+	blocks[i].update(fid, &contents[i*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
+	blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
 
 	
 	delete[] previous_file;
@@ -195,7 +223,8 @@ void OnlineSession::readCRI(PRSubset& prSubset, CRI& cri){
 	for(int i = 0; i < numBlocks; i++){
 		DataBlock block(blockIndices[i]);
 		block.parse(&blocks[i*BLOCK_SIZE]);
-		if(block.fidMatchCheck(criFid))	
+		criBlocks.push_back(block);
+		if(block.fidMatchCheck(criFid))
 			block.getDecrypted(&decryptedBlocks[i*MAX_BLOCK_DATA_SIZE]);
 	}
 	for(int i = 0; i < numBlocks; i++)

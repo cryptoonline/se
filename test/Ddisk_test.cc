@@ -27,9 +27,9 @@ TEST(DdiskTest, Test1){
 
 	fileID fid("DdiskTest");
 	PRSubset prSubset(BLOW_UP*numBlocks, 10);
-	b_index_t subset[BLOW_UP*numBlocks];
+	b_index_t subset[prSubset.getSize()];
 	
-	prSubset.get(subset, BLOW_UP*numBlocks);
+	prSubset.get(subset, prSubset.getSize());
 
 	D.addFile(bytes, numOfBytes, fid, prSubset);
 	D.encryptEmptyBlocks();

@@ -50,8 +50,8 @@ void Tdisk::finalize(Ddisk &D){
 
 		b_index_t numBlocks = ((int)ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 		PRSubset prSubset(numBlocks);
-		b_index_t blockIndices[numBlocks];
-		prSubset.get(blockIndices, numBlocks);
+		b_index_t blockIndices[prSubset.getSize()];
+		prSubset.get(blockIndices, prSubset.getSize());
 		printdec(blockIndices, numBlocks, "Indices");
 		
 		T[higherfid]->make(prSubset.getSize(), prSubset.getSeed());

@@ -32,7 +32,9 @@ private:
 	b_index_t numFileBlocks;
 	vector<DataBlock> blocks;
 	vector<DataBlock> fileBlocks;
-	  
+	vector<DataBlock> criBlocks;
+	uint32_t criBlockIndex;
+	
 	void readT(t_index_t TRecordIndex, byte block[]);
 	void writeT(t_index_t TRecordIndex, byte block[]);
 
