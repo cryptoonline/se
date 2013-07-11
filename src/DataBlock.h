@@ -38,6 +38,7 @@ public:
 	
 	void parse(byte block[]);
 	void update(fileID fid, byte block[], dataSize_t dataSize = MAX_BLOCK_DATA_SIZE, bool isCRI = false);
+	void updateVersion();
 	void clear();
 
 	bool comparefileID(fileID fid);

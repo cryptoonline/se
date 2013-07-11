@@ -46,3 +46,16 @@ void gen_random(byte* s, const int len){
 
 //	s[len] = 0;
 }
+
+size_t readFileSize(string path){
+	struct stat st;
+	stat(path.c_str(), &st);
+	return st.st_size;
+}
+
+void readFile(string path, byte fileBytes[], size_t size){
+	ifstream file(path.c_str());
+	file.seekg(0, std::ios::beg);
+	file.read(reinterpret_cast<char*>(fileBytes), size);
+	file.close();
+}

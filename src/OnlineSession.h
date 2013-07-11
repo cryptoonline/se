@@ -3,8 +3,8 @@
 //  BlindStorage
 //
 
-#ifndef __BlindStorage__Dfile__
-#define __BlindStorage__Dfile__
+#ifndef __BlindStorage__OnlineSession__
+#define __BlindStorage__OnlineSession__
 
 #include <stdint.h>
 #include <iostream>
@@ -23,6 +23,7 @@ private:
 	DiskCommunicator dcomm;
 	string filename;
 	fileID fid;
+	fileID criFid;
 	TBlock tBlock;
 	PRSubset criPRSubset;
 	PRSubset filePRSubset;
@@ -32,7 +33,11 @@ private:
 	b_index_t numFileBlocks;
 	vector<DataBlock> blocks;
 	vector<DataBlock> fileBlocks;
+	vector<uint32_t> updatedFileBlocksIndices;
 	vector<DataBlock> criBlocks;
+	b_index_t previousCriSize;	
+	vector<DataBlock> fileCriBlocks;
+	vector<uint32_t> updatedCriFileBlocksIndices;
 	uint32_t criBlockIndex;
 	
 	void readT(t_index_t TRecordIndex, byte block[]);
@@ -42,12 +47,13 @@ private:
 	void writeD(b_index_t blockIndices[], b_index_t numBlocks, byte blocks[]);
 
 	void readCRI(PRSubset& prSubset, CRI& cri);
+	void writeCRI();
 
 public:
 	OnlineSession();
 	~OnlineSession();
 	int64_t read(string filename, byte*& file, b_index_t numBlocksToRead = 0);
-	void write(byte contents[], size_t size);
+	void write(string filename, byte contents[], size_t size);
 	void remove(string filename);
 	/*! Use homorphic encryption to support this */
 	void rename();

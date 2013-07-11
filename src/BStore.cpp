@@ -87,9 +87,6 @@ void BStore::readFile(string path, byte fileBytes[], size_t size){
 	ifstream file(path.c_str());
 	file.seekg(0, std::ios::beg);
 	file.read(reinterpret_cast<char*>(fileBytes), size);
-	printchars(fileBytes, size, __PRETTY_FUNCTION__);
-
-	cout << "File size is " << size << endl;
 //	for(b_index_t i = 0; i < numBlocks; i++)
 //		file.read(reinterpret_cast<char*>(&contents[i*BLOCK_SIZE]), MAX_BLOCK_DATA_SIZE);
 	file.close();

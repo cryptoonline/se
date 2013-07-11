@@ -94,6 +94,12 @@ void DataBlock::update(fileID fid, byte block[], dataSize_t dataSize, bool isCRI
 	make(fid, block, dataSize, isCRI, version);
 }
 
+void DataBlock::updateVersion(){
+	version++;
+	memcpy(&block[VERSION_LOC], static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
+	encrypt();
+}
+
 void DataBlock::clear(){
 	byte zerofid[FILEID_SIZE] = {0};
 	fileID fid(zerofid);
