@@ -71,6 +71,7 @@ int main(){
 	file[1023] = '\0';
 	DropboxAPI dbapi;
 	dbapi.upload("finalTesting2", file, 1024);
+	dbapi.upload("finalTesting3", file, 1024);
 
 	DropboxAPI dbapi1;
 	char* downloadfile;
