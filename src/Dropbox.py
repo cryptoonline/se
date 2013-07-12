@@ -1,13 +1,13 @@
-'''
-Created on May 1, 2013
-
-@author: Fahad
-'''
+#
+# Dropbox.py
+# BlindStorage
+#
 
 import sys
 import cStringIO
-from dropbox import client, rest, session
+
 # Include the Dropbox SDK libraries
+from dropbox import client, rest, session
 
 class DropboxAPI:
 	client = __import__('dropbox.client')
@@ -53,9 +53,9 @@ class DropboxAPI:
 		folder_metadata = DropboxAPI.client.metadata('/')
 		# print "metadata:", folder_metadata
 		print "Uploaded\n"
-		return;
+		return
 
 	def download(self, filename, fileContents):
 		f, metadata = DropboxAPI.client.get_file_and_metadata('/%s' %filename)
 		# print(metadata)
-		return f.read();
+		return f.read()
