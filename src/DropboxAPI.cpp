@@ -23,16 +23,22 @@ DropboxAPI::~DropboxAPI(){
 	Py_Finalize();
 }
 
-void DropboxAPI::upload(string filenames, char* file, size_t filesize){
+void DropboxAPI::upload(string filenameArray[], uint32_t numFiles, char* file, size_t filesize){
 	char function[] = "upload";
-	
+
+	string filenames = filenameArray[0];
+	for(int i = 1; i < numFiles; i++){
+		filenames = filenames + ":" + filenameArray[i];
+		printf("%s\n", filenames.c_str());
+	}
+
 	char filenamesChars[filenames.size()];
 	memcpy(filenamesChars, filenames.c_str(), filenames.size());
 	
 	pValue = PyObject_CallMethod(pInstance, function, "(ssi)", filenamesChars, file, filesize);
 
 	if(pValue != NULL){
-		printf("Return of call : %d\n", PyInt_AsLong(pValue));
+		printf("Return of call : %lu\n", PyInt_AsLong(pValue));
 		Py_DECREF(pValue);
 	}
 	else{
@@ -40,8 +46,12 @@ void DropboxAPI::upload(string filenames, char* file, size_t filesize){
 	}
 }
 
-void DropboxAPI::download(string filenames, uint32_t numFiles, char* file, size_t filesize){
+void DropboxAPI::download(string filenameArray[], uint32_t numFiles, char* file, size_t filesize){
 	char function[] = "download";
+
+	string filenames = filenameArray[0];
+	for(int i = 1; i < numFiles; i++)
+		filenames = filenames + ":" + filenameArray[i];
 
 	char filenamesChars[filenames.size()];
 	memcpy(filenamesChars, filenames.c_str(), filenames.size());
@@ -53,7 +63,7 @@ void DropboxAPI::download(string filenames, uint32_t numFiles, char* file, size_
 		const char* downloadedFile = PyString_AsString(objectsRepresentation);
 		memcpy(file, downloadedFile, numFiles*filesize);
 		
-		printf("Return of call : %d\n", PyInt_AsLong(pValue));
+		printf("Return of call : %lu\n", PyInt_AsLong(pValue));
 		Py_DECREF(pValue);
 	}
 	else{
@@ -65,11 +75,12 @@ int main(){
 	char file[256*4];
 	memset(file, 'e', 256*4);
 	DropboxAPI dbapi;
-	dbapi.upload("BLOCK23:BLOCK20:BLOCK22:BLOCK21", file, 256);
+	string filenameArray[] = {"BLOCK000", "BLOCK001", "BLOCK002", "BLOCK003"};
+	dbapi.upload(filenameArray, 4, file, 256);
 
 	DropboxAPI dbapi1;
 	char* downloadfile = new char[256*4];
-	dbapi1.download("BLOCK20:BLOCK21:BLOCK23:BLOCK22", 4, downloadfile, 256);
+	dbapi1.download(filenameArray, 4, downloadfile, 256);
 	printf("%s\n", downloadfile);
 //	cout << "Size of the download file is " << downloadsize << endl;
 	delete[] downloadfile;
