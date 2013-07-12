@@ -31,8 +31,8 @@ private:
 public:
 	DropboxAPI();
 	~DropboxAPI();
-	void upload(string filename, char* file, size_t size);
-	size_t download(string filename, char*& file);
+	void upload(string filenames, char* file, size_t filesize);
+	void download(string filenames, uint32_t numFiles, char* file, size_t filesize);
 };
 
 #endif /* defined(__BlindStorage__Dropbox__) */

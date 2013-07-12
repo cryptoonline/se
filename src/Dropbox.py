@@ -5,9 +5,14 @@
 
 import sys
 import cStringIO
-
+import filelike
 # Include the Dropbox SDK libraries
 from dropbox import client, rest, session
+from StringIO import StringIO as SIO
+
+def split_str_into_len(s, l=2):
+	""" Split a string into chunks of length l """
+	return [s[i:i+l] for i in range(0, len(s), l)]
 
 class DropboxAPI:
 	client = __import__('dropbox.client')
@@ -43,19 +48,29 @@ class DropboxAPI:
 		DropboxAPI.client = client.DropboxClient(sess)	
 		print "linked account:", DropboxAPI.client.account_info()
 	
-	def upload(self, filename, fileContents):
-		import filelike
-		from StringIO import StringIO as SIO
-		f = filelike.join([SIO(fileContents)])
-		response = DropboxAPI.client.put_file('/%s' %filename, f)
-		print "uploaded:", response
+	def upload(self, filenames, filesBytes, filesize):
+		files = split_str_into_len(filesBytes, filesize)
+		filenamesList = filenames.split(':')
+		i = 0
+		for filename in filenamesList:
+			f = filelike.join([SIO(files[i])])
+			i = i + 1
+			response = DropboxAPI.client.put_file('/%s' %filename, f)
+			print "uploaded:", response
 
-		folder_metadata = DropboxAPI.client.metadata('/')
-		# print "metadata:", folder_metadata
-		print "Uploaded\n"
+			folder_metadata = DropboxAPI.client.metadata('/')
+			# print "metadata:", folder_metadata
+			print "Uploaded\n"
 		return
 
-	def download(self, filename, fileContents):
-		f, metadata = DropboxAPI.client.get_file_and_metadata('/%s' %filename)
-		# print(metadata)
-		return f.read()
+	def download(self, filenames, filesize):
+		filenamesList = filenames.split(':')
+		filesBytes = ""
+		for filename in filenamesList:
+			print "Downloading file ", filename
+			f, metadata = DropboxAPI.client.get_file_and_metadata('/%s' %filename)
+			filesBytes.join(f.read())
+			print (f.read()), '\n'
+			# print(metadata)
+		return filesBytes
+

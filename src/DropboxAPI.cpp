@@ -23,13 +23,13 @@ DropboxAPI::~DropboxAPI(){
 	Py_Finalize();
 }
 
-void DropboxAPI::upload(string filename, char* file, size_t size){
+void DropboxAPI::upload(string filenames, char* file, size_t filesize){
 	char function[] = "upload";
 	
-	char filenameChars[filename.size()];
-	memcpy(filenameChars, filename.c_str(), filename.size());
+	char filenamesChars[filenames.size()];
+	memcpy(filenamesChars, filenames.c_str(), filenames.size());
 	
-	pValue = PyObject_CallMethod(pInstance, function, "(ss)", filenameChars, file);
+	pValue = PyObject_CallMethod(pInstance, function, "(ssi)", filenamesChars, file, filesize);
 
 	if(pValue != NULL){
 		printf("Return of call : %d\n", PyInt_AsLong(pValue));
@@ -40,44 +40,38 @@ void DropboxAPI::upload(string filename, char* file, size_t size){
 	}
 }
 
-size_t DropboxAPI::download(string filename, char*& file){
+void DropboxAPI::download(string filenames, uint32_t numFiles, char* file, size_t filesize){
 	char function[] = "download";
 
-	char filenameChars[filename.size()];
-	memcpy(filenameChars, filename.c_str(), filename.size());
+	char filenamesChars[filenames.size()];
+	memcpy(filenamesChars, filenames.c_str(), filenames.size());
 	
-	pValue = PyObject_CallMethod(pInstance, function, "(ss)", filenameChars, file);
+	pValue = PyObject_CallMethod(pInstance, function, "(si)", filenamesChars, filesize);
 
 	if(pValue != NULL){
 		PyObject* objectsRepresentation = PyObject_Repr(pValue);
 		const char* downloadedFile = PyString_AsString(objectsRepresentation);
-		string downloadedFileString(downloadedFile);
-		file = new char[downloadedFileString.size()];
-		memcpy(file, downloadedFile, downloadedFileString.size());
-		return downloadedFileString.size();
-	
+		memcpy(file, downloadedFile, numFiles*filesize);
+		
 		printf("Return of call : %d\n", PyInt_AsLong(pValue));
 		Py_DECREF(pValue);
 	}
 	else{
 		PyErr_Print();
-		return 0;
 	}
 }
 
 int main(){
-	char file[1024];
-	memset(file, 'n', 1023);
-	file[1023] = '\0';
+	char file[1024*4];
+	memset(file, 'n', 1024*4);
 	DropboxAPI dbapi;
-	dbapi.upload("finalTesting2", file, 1024);
-	dbapi.upload("finalTesting3", file, 1024);
+	dbapi.upload("BLOCK03:BLOCK00:BLOCK02:BLOCK01", file, 1024);
 
 	DropboxAPI dbapi1;
-	char* downloadfile;
-	size_t downloadsize = dbapi1.download("finalTesting2", downloadfile);
+	char* downloadfile = new char[1024*4];
+	dbapi1.download("BLOCK00:BLOCK01:BLOCK03:BLOCK02", 4, downloadfile, 1024);
 	printf("%s\n", downloadfile);
-	cout << "Size of the download file is " << downloadsize << endl;
+//	cout << "Size of the download file is " << downloadsize << endl;
 	delete[] downloadfile;
 	return 0;
 }
