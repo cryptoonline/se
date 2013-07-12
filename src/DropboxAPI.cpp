@@ -62,14 +62,14 @@ void DropboxAPI::download(string filenames, uint32_t numFiles, char* file, size_
 }
 
 int main(){
-	char file[1024*4];
-	memset(file, 'n', 1024*4);
+	char file[256*4];
+	memset(file, 'e', 256*4);
 	DropboxAPI dbapi;
-	dbapi.upload("BLOCK03:BLOCK00:BLOCK02:BLOCK01", file, 1024);
+	dbapi.upload("BLOCK23:BLOCK20:BLOCK22:BLOCK21", file, 256);
 
 	DropboxAPI dbapi1;
-	char* downloadfile = new char[1024*4];
-	dbapi1.download("BLOCK00:BLOCK01:BLOCK03:BLOCK02", 4, downloadfile, 1024);
+	char* downloadfile = new char[256*4];
+	dbapi1.download("BLOCK20:BLOCK21:BLOCK23:BLOCK22", 4, downloadfile, 256);
 	printf("%s\n", downloadfile);
 //	cout << "Size of the download file is " << downloadsize << endl;
 	delete[] downloadfile;

@@ -49,10 +49,12 @@ class DropboxAPI:
 		print "linked account:", DropboxAPI.client.account_info()
 	
 	def upload(self, filenames, filesBytes, filesize):
+		print filesBytes
 		files = split_str_into_len(filesBytes, filesize)
 		filenamesList = filenames.split(':')
 		i = 0
 		for filename in filenamesList:
+			print files[i], '\n'
 			f = filelike.join([SIO(files[i])])
 			i = i + 1
 			response = DropboxAPI.client.put_file('/%s' %filename, f)
@@ -65,12 +67,13 @@ class DropboxAPI:
 
 	def download(self, filenames, filesize):
 		filenamesList = filenames.split(':')
-		filesBytes = ""
+		filesBytes = ''
 		for filename in filenamesList:
 			print "Downloading file ", filename
 			f, metadata = DropboxAPI.client.get_file_and_metadata('/%s' %filename)
-			filesBytes.join(f.read())
-			print (f.read()), '\n'
-			# print(metadata)
+			data = f.read()
+			print data
+			print(metadata)
+			filesBytes = filesBytes + data
 		return filesBytes
 
