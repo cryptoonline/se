@@ -43,7 +43,7 @@ void Tdisk::finalize(Ddisk &D){
 		vector<byte> emptyVector;
 		criBytes.push_back(emptyVector);
 		cri.makeBytes(criBytes[i], __PRETTY_FUNCTION__);
-		printhex(criBytes[i], "CRI BYTES");
+//		printhex(criBytes[i], "CRI BYTES");
 		byte fidBytes[FILEID_SIZE] = {0};
 		memcpy(fidBytes, static_cast<byte*>(static_cast<void*>(&higherfid)), HIGHERFID_SIZE);
 		fileID fid(fidBytes);

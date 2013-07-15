@@ -49,6 +49,10 @@ private:
 	void readCRI(PRSubset& prSubset, CRI& cri);
 	void writeCRI();
 
+	int retrieveTBlock();
+	int retrieveCRIBlock();
+	void retrieveDBlocks();
+
 public:
 	OnlineSession();
 	~OnlineSession();

@@ -44,7 +44,10 @@ void DataBlock::make(fileID fid, byte block[], dataSize_t dataSize, bool isCRI, 
 	this->version = version;
 //	this->block = block;
 	this->dataSize = dataSize;
+	printhex(block, BLOCK_SIZE, "INPUT");
+	printhex(this->block, BLOCK_SIZE, "BEFORE");
 	memcpy(this->block, block, dataSize);
+	printhex(this->block, BLOCK_SIZE, "AFTER");
 	addTrailer();
 	encrypt();
 }
@@ -111,14 +114,14 @@ void DataBlock::clear(){
 void DataBlock::encrypt(){
 	AES cipher;
 	makeIV();
-	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+//	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = true;
 }
 
 void DataBlock::decrypt(){
 	AES cipher;
 	makeIV();
-	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+//	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = false;
 }
 

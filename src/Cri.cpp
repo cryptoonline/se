@@ -25,7 +25,7 @@ void CRI::addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]){
 }
 
 void CRI::updateFile(prSubsetSize_t size, prSubsetSeed_t seed, uint32_t blockIndex){
-	blocks[blockIndex].update(seed, size);
+	blocks[blockIndex].update(size, seed);
 }
 
 void CRI::makeBytes(byte* blocksBytes){
@@ -48,7 +48,7 @@ void CRI::makeBytes(vector<byte>& blocksBytes, string function){
 		vector<byte> block;
 		it->get(block);
 		blocksBytes.insert(blocksBytes.end(), block.begin(), block.begin()+CRI_BLOCK_SIZE);
-		printhex(block, __PRETTY_FUNCTION__);
+//		printhex(block, __PRETTY_FUNCTION__);
 		counter++;
 		if(counter % CRI_PER_BLOCK == 0 && counter != 0)
 			blocksBytes.insert(blocksBytes.end(), &zeros[0], &zeros[numPaddingBytes]);
@@ -96,7 +96,7 @@ void CRI::parseBytes(byte blocksBytes[], uint32_t size){
  		memcpy(block, &blocksBytes[i], CRI_BLOCK_SIZE);
  		CRIBlock criBlock;
  		criBlock.parse(block);
-		printhex(block, CRI_BLOCK_SIZE, __PRETTY_FUNCTION__);
+//		printhex(block, CRI_BLOCK_SIZE, __PRETTY_FUNCTION__);
  		if(criBlock.getSize() == 0){
  			if(i==0)
  				empty = true;

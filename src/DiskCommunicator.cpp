@@ -39,13 +39,16 @@ DiskCommunicator::~DiskCommunicator(){
 }
 
 void DiskCommunicator::dPut(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks){
-	for(int i = 0; i < numBlocks; i++)
+	for(int i = 0; i < numBlocks; i++){
 		memcpy(&D[blockLocations[i]*BLOCK_SIZE], &blocks[i*BLOCK_SIZE], BLOCK_SIZE);
+//		printhex(&D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE, __PRETTY_FUNCTION__);
+	}
 }
 
 void DiskCommunicator::dGet(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks){
 	for(int i = 0; i < numBlocks; i++){
 		memcpy(&blocks[i*BLOCK_SIZE], &D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE);
+//		printhex(&D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE, __PRETTY_FUNCTION__);
 	}
 }
 
@@ -68,4 +71,30 @@ size_t DiskCommunicator::readFileSize(string path){
 	struct stat st;
 	stat(path.c_str(), &st);
 	return st.st_size;
+}
+
+void DiskCommunicator::writeToDisk(){
+	ofstream fileD(D_FILE, std::ios::binary);
+	fileD.write(reinterpret_cast<char*>(D), DSize);
+	
+	ofstream fileT(T_FILE, std::ios::binary);
+	fileT.write(reinterpret_cast<char*>(T), TSize);
+
+	fileD.close();
+	fileT.close();
+}
+
+void DiskCommunicator::printD(string TAG){
+	for(b_index_t i = 0; i < TOTAL_BLOCKS; i++){
+		cout << "**************************************************" << i << "*************************************************" << endl;;
+		printhex(&D[i*BLOCK_SIZE], BLOCK_SIZE, TAG);
+		printchars(&D[i*BLOCK_SIZE], BLOCK_SIZE, TAG);
+	}
+}
+
+void DiskCommunicator::printT(string TAG){
+	for(t_index_t i = 0; i < TTOTAL_BLOCKS; i++){
+		cout << "**************************************************" << i << "*************************************************" << endl;
+		printhex(&T[i*TBLOCK_SIZE], TBLOCK_SIZE, TAG);
+	}
 }

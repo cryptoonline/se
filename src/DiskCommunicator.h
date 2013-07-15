@@ -14,6 +14,7 @@ using std::memset;
 
 #include <fstream>
 using std::ifstream;
+using std::ofstream;
 
 #include <sys/stat.h>
 
@@ -37,6 +38,11 @@ public:
 	void dGet(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks);
 	void tPut(t_index_t index, byte* block);
 	void tGet(t_index_t index, byte* block);
+
+	void writeToDisk();
+
+	void printD(string TAG);
+	void printT(string TAG);
 };
 
 #endif /*defined(__BlindStorage__DiskCommunicator__)*/

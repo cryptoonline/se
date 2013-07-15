@@ -11,8 +11,8 @@
 #include "./../src/helper.h"
 
 TEST(OnlineSessionRead, Test1){
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
-//	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+//	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	BStore store(directoryPath);
 //	DiskCommunicator dcomm;
 	
@@ -35,18 +35,22 @@ TEST(OnlineSessionRead, Test1){
 }
 
 TEST(OnlineSessionWrite, Test1){
+	cout <<"********************************************************************************************************************************************************************************************************" << endl; 
+	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+	//	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
+//	BStore store(directoryPath);
 	OnlineSession session;
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
 	string filename1 = directoryPath + "1.";
-	string filename2 = directoryPath + "2.";
-	string filename3 = "/Users/naveed/BStore/datasets/testdir/1.";
-	size_t size = readFileSize(filename3);
+	string filename2 = directoryPath + "10.";
+	size_t size = readFileSize(filename1);
 	byte updateFileBytes[size];
-	readFile(filename3, updateFileBytes, size);
-	session.write(filename1, updateFileBytes, size);
+	readFile(filename1, updateFileBytes, size);
+	
+	session.write(filename2, updateFileBytes, size);
 
+	OnlineSession session1;
 	byte* file;
-	size_t filesize = session.read(filename1, file);
+	size_t filesize = session1.read(filename2, file);
 	printchars(file, filesize, "FILE READ");
 	delete[] file;
 }
