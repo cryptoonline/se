@@ -156,8 +156,9 @@ void DataBlock::getDecryptedData(byte data[]){
 }
 
 bool DataBlock::isOccupied(){
-	higherfid_t higherFid = *(higherfid_t*)(fidBytes);
-	return higherFid ? true : false;
+//	higherfid_t higherFid = *(higherfid_t*)(fidBytes);
+//	return higherFid ? true : false;
+	return *(uint64_t*)(fidBytes);
 }
 
 bool DataBlock::fidMatchCheck(fileID& fid){

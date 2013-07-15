@@ -11,8 +11,8 @@
 #include "./../src/helper.h"
 
 TEST(OnlineSessionRead, Test1){
-//	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
-	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+//	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	BStore store(directoryPath);
 //	DiskCommunicator dcomm;
 	
@@ -41,7 +41,7 @@ TEST(OnlineSessionWrite, Test1){
 //	BStore store(directoryPath);
 	OnlineSession session;
 	string filename1 = directoryPath + "1.";
-	string filename2 = directoryPath + "10.";
+	string filename2 = directoryPath + "267.";
 	size_t size = readFileSize(filename1);
 	byte updateFileBytes[size];
 	readFile(filename1, updateFileBytes, size);

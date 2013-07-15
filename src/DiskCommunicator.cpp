@@ -41,7 +41,8 @@ DiskCommunicator::~DiskCommunicator(){
 void DiskCommunicator::dPut(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks){
 	for(int i = 0; i < numBlocks; i++){
 		memcpy(&D[blockLocations[i]*BLOCK_SIZE], &blocks[i*BLOCK_SIZE], BLOCK_SIZE);
-//		printhex(&D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE, __PRETTY_FUNCTION__);
+		printhex(&D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE, __PRETTY_FUNCTION__);
+		printchars(&D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE, __PRETTY_FUNCTION__);
 	}
 }
 

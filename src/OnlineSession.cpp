@@ -145,9 +145,12 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 	else if(retrieveCRIBlock() == 0){
 		PRSubset filePRSubset(numBlocksToWrite);
 		this->filePRSubset = filePRSubset;
-
+		cout << "Size is " << cri.size() << endl;
+		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
 		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
 		b_index_t criNumBlocks = ((int)ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+		cout << "CRIBlock: Size=" << criPRSubset.getSize() << " Seed=" << criPRSubset.getSeed() << endl;
+		cout << "criNumBlocks=" << criNumBlocks << "criPRSubset.getSize()=" << criPRSubset.getSize() << endl;
 		if(criNumBlocks > criPRSubset.getSize())	
 			tBlock.update(criNumBlocks, criPRSubset.getSeed());
 		else
@@ -183,6 +186,10 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 		}
 	}
 
+	if(updatedFileBlocksIndices.size() < numBlocksToWrite){
+		cerr << "Update unsuccessful: Not enought blocks available." << endl;
+		exit(1);
+	}
 	cout << "Update blocks " << updatedFileBlocksIndices.size() << endl;
 
 	byte blocksBytesDecrypted[numBlocksToWrite*BLOCK_SIZE];
