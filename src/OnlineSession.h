@@ -8,6 +8,9 @@
 
 #include <stdint.h>
 #include <iostream>
+#include <algorithm>
+using std::max;
+
 #include "Communicator.h"
 #include "PRSubset.h"
 #include "Ddisk.h"
@@ -51,13 +54,16 @@ private:
 
 	int retrieveTBlock();
 	int retrieveCRIBlock();
-	void retrieveDBlocks();
+	size_t retrieveDBlocks(b_index_t numBlocksToWrite = 0);
+	void extractFileBlocks();
+	
 
 public:
 	OnlineSession();
 	~OnlineSession();
-	int64_t read(string filename, byte*& file, b_index_t numBlocksToRead = 0);
+	size_t read(string filename, byte*& file, b_index_t numBlocksToRead = 0);
 	void write(string filename, byte contents[], size_t size);
+	void update(string filename, byte contents[], size_t size);
 	void remove(string filename);
 	/*! Use homorphic encryption to support this */
 	void rename();
