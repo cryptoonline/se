@@ -23,8 +23,8 @@ using std::ofstream;
 
 class DiskCommunicator{
 private:
-	static byte* T;
-	static byte* D;
+	byte* T;
+	byte* D;
 	size_t TSize;
 	size_t DSize;
 

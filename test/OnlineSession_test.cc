@@ -35,22 +35,55 @@ TEST(OnlineSessionRead, Test1){
 }
 
 TEST(OnlineSessionWrite, Test1){
-	cout <<"********************************************************************************************************************************************************************************************************" << endl; 
-///	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+//	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
 //	BStore store(directoryPath);
-	OnlineSession session;
-	string filename1 = directoryPath + "1.";
-	string filename2 = directoryPath + "267.";
-	size_t size = readFileSize(filename1);
-	byte updateFileBytes[size];
-	readFile(filename1, updateFileBytes, size);
-	
-	session.update(filename2, updateFileBytes, size);
+	while(true){
+		OnlineSession* writeSession = new OnlineSession();;
+		string filenumber;
+		string newfilenumber;
 
-	OnlineSession session1;
-	byte* file;
-	size_t filesize = session1.read(filename2, file);
-	printchars(file, filesize, "FILE READ");
-	delete[] file;
+		cout << "Enter filenumber you want to update (Enter q to quit): ";
+		cin >> filenumber;
+		if(filenumber.compare("q") == 0){
+			cout << "Thank you for using Blind Storage System." << endl;
+			break;
+		}
+
+		cout << "Enter new filenumber (Enter q to quit): ";
+		cin >> newfilenumber;
+		if(newfilenumber.compare("q") == 0){
+			cout << "Thank you for using Blind Storage System." << endl;
+			break;
+		}
+			
+		string filename = directoryPath + filenumber + ".";
+		string newfilename = directoryPath + newfilenumber + ".";
+		
+		size_t size = readFileSize(newfilename);
+		byte updateFileBytes[size];
+		readFile(newfilename, updateFileBytes, size);
+		
+		writeSession->update(filename, updateFileBytes, size);
+		delete writeSession;
+	}
+
+	while(true){
+		string filenumber;
+		cout << "Enter file to read (Enter q to quit): ";
+		cin >> filenumber;
+
+		if(filenumber.compare("q") == 0){
+			cout << "Thank you for using Blind Storage System." << endl;
+			break;
+		}
+
+		string filename = directoryPath + filenumber + ".";
+		OnlineSession* readSession = new OnlineSession();
+		byte* file;
+		size_t filesize = readSession->read(filename, file);
+		printchars(file, filesize, "UPDATED FILE");
+		delete[] file;
+		delete readSession;
+	}
 }

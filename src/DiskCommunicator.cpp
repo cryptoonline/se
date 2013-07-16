@@ -5,8 +5,8 @@
 
 #include "DiskCommunicator.h"
 
-byte* DiskCommunicator::T = NULL;
-byte* DiskCommunicator::D = NULL;
+// byte* DiskCommunicator::T = NULL;
+// byte* DiskCommunicator::D = NULL;
 
 DiskCommunicator::DiskCommunicator(){
 	TSize = readFileSize(T_FILE);
