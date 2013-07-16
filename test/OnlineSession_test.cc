@@ -36,8 +36,8 @@ TEST(OnlineSessionRead, Test1){
 
 TEST(OnlineSessionWrite, Test1){
 	cout <<"********************************************************************************************************************************************************************************************************" << endl; 
-	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
-//	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
+///	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
 //	BStore store(directoryPath);
 	OnlineSession session;
 	string filename1 = directoryPath + "1.";

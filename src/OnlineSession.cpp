@@ -115,7 +115,7 @@ size_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToRe
 }
 
 void OnlineSession::update(string filename, byte contents[], size_t size){
-	b_index_t numBlocksToWrite = (b_index_t)ceil(((double)size/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+	b_index_t numBlocksToWrite = (b_index_t)ceil(((double)size/(double)MAX_BLOCK_DATA_SIZE))*BLOW_UP;
 	this->filename = filename;
 	fileID fid(filename);
 	this->fid = fid;
@@ -158,10 +158,14 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 		retrieveDBlocks(numBlocksToWrite);
 	}
 	else{
-		retrieveDBlocks(numBlocksToWrite);
-		if(numBlocksToWrite > filePRSubset.getSize())
+		if(numBlocksToWrite > filePRSubset.getSize()){
+			PRSubset filePRSubset(numBlocksToWrite, this->filePRSubset.getSeed());
+			this->filePRSubset = filePRSubset;
 			cri.updateFile(numBlocksToWrite, filePRSubset.getSeed(), criBlockIndex);
+			criBlock.make(numBlocksToWrite, filePRSubset.getSeed(), lowerFid);
+		}
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
+		retrieveDBlocks(numBlocksToWrite);
 	}
 	cout << "TBLOCK: Size=" << tBlock.getSize() << ", Seed=" << tBlock.getSeed() << endl;
 	//TODO: This can be optimized by making the blockIndices Array class member

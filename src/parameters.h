@@ -27,7 +27,7 @@ typedef uint32_t criSize_t;
 const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 #define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)
 
-#define TTOTAL_BLOCKS 1
+#define TTOTAL_BLOCKS (16*16*16*16)
 #define TBLOCK_SIZE 10
 
 /* BLOCK FORMAT */
@@ -49,7 +49,7 @@ const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 
 #define CRI_BLOCK_SIZE 36
 #define CRI_PER_BLOCK (MAX_BLOCK_DATA_SIZE / CRI_BLOCK_SIZE)
-#define PRSUBSET_SIZE_LOWER_BOUND 128
+#define PRSUBSET_SIZE_LOWER_BOUND 1
 
 const uint16_t MAX_NO_OF_COLLISIONS = 1024;
 
@@ -59,7 +59,7 @@ const int16_t KEY_SIZE = 16;
 
 const int16_t T_RECORD_BITS = 24;
 
-const uint32_t BIT_MASK = 0x00000000;
+const uint32_t BIT_MASK = 0x0000FFFF;
 
 /****************************************AES parameters***********************************/
 #define AES_BLOCK_SIZE 16
