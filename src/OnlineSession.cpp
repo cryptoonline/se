@@ -114,11 +114,13 @@ size_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToRe
 		memcpy(&file[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
 	}
 
+	printchars(file, filesize, "UPDATED FILE");
+	cout << "Filesize is " << filesize << endl;
 	return filesize;
 }
 
 void OnlineSession::update(string filename, byte contents[], size_t size){
-	b_index_t numBlocksToWrite = (b_index_t)ceil(((double)size/(double)MAX_BLOCK_DATA_SIZE))*BLOW_UP;
+	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)size/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 	this->filename = filename;
 	fileID fid(filename);
 	this->fid = fid;
@@ -173,7 +175,7 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 			criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
 		}
 		else{
-		//	criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
+			criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
 		}
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
 		cout << "CRI: Size=" << criPRSubset.getSize() << " Seed=" << criPRSubset.getSeed() << endl;
@@ -191,7 +193,7 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 	cout << "Number blocks to write " << numBlocksToWrite << " Updated fileblock size is " << updatedFileBlocksIndices.size() << endl;
 	cout << "Total data blocks read are " << blocks.size() << endl;
 		
-	for(int i = 0; updatedFileBlocksIndices.size() < numBlocksToWrite/BLOW_UP; i++){
+	for(int i = 0; i < blocks.size() && updatedFileBlocksIndices.size() < numBlocksToWrite/BLOW_UP; i++){
 		if(!(blocks[i].isOccupied()))
 			updatedFileBlocksIndices.push_back(i);
 	}
@@ -208,29 +210,33 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 	int i = 0;
 	int j = 0;
 	cout << "Number of blocks to be written are " << numBlocksToWrite << endl;
-	for(; i < blocks.size() - 1; ++i){
+	dataSize_t sizeOfLastBlock = (dataSize_t)(size - (size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE);
+	cout << "Size of the last block is " << sizeOfLastBlock << endl;
+	for(; i < blocks.size(); ++i){
 		
-		if( i == updatedFileBlocksIndices[j]){
+		if(i == updatedFileBlocksIndices[j]){
 			cout << "Updating block " << i << " with Index " << updatedFileBlocksIndices[j] << endl;
-			blocks[i].update(fid, &contents[j*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
+			if(j < (numBlocksToWrite/BLOW_UP) - 1)
+				blocks[i].update(fid, &contents[j*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
+			else
+				blocks[i].update(fid, &contents[j*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);				
 			j++;
 		}
 		else
 			blocks[i].updateVersion();
 		blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
-		blocks[i].getDecrypted(&blocksBytesDecrypted[i*MAX_BLOCK_DATA_SIZE]);
+		blocks[i].getDecrypted(&blocksBytesDecrypted[i*blocks[i].getDataSize()]);
 	}
-	cout << "Updating last block " << i << " with Index " << updatedFileBlocksIndices[i] << endl;
-	dataSize_t sizeOfLastBlock = (dataSize_t)(size - (size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE);
-	if( i == updatedFileBlocksIndices[j]){
-		blocks[i].update(fid, &contents[j*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
-		j++;
-	}
-	else
-		blocks[i].updateVersion();
-	blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
+//	cout << "Updating last block " << i << " with Index " << updatedFileBlocksIndices[i] << endl;
+//	if(i == updatedFileBlocksIndices[j]){
+//		blocks[i].update(fid, &contents[j*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
+//		j++;
+//	}
+//	else
+//		blocks[i].updateVersion();
+//	blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
 	
-	blocks[i].getDecrypted(&blocksBytesDecrypted[i*MAX_BLOCK_DATA_SIZE]);
+//	blocks[i].getDecrypted(&blocksBytesDecrypted[i*MAX_BLOCK_DATA_SIZE]);
 
 	printchars(blocksBytesDecrypted, size, "UPDATED FILE");
 //	for(int i = 0; i < numBlocksToWrite; i++)
@@ -349,7 +355,7 @@ void OnlineSession::writeCRI(){
 	byte encryptedBlocks[criPRSubset.getSize()*BLOCK_SIZE];
 	memset(encryptedBlocks, 0, criPRSubset.getSize()*BLOCK_SIZE);
 
-	for(int i = 0; updatedCriFileBlocksIndices.size() < numBlocks; i++)
+	for(int i = 0; i < criBlocks.size() && updatedCriFileBlocksIndices.size() < numBlocks; i++)
 		if(!(criBlocks[i].isOccupied()))
 			updatedCriFileBlocksIndices.push_back(i);
 
@@ -358,7 +364,7 @@ void OnlineSession::writeCRI(){
 	for(; i < criBlocks.size() - 1; i++){
 		cout << "Updating CRI block " << i << endl;
 		if( i == updatedCriFileBlocksIndices[j]){
-			criBlocks[i].update(criFid, &criBytes[j*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
+			criBlocks[i].update(criFid, &criBytes[j*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE, true);
 			j++;
 		}
 		else
@@ -368,7 +374,7 @@ void OnlineSession::writeCRI(){
 	cout << "Updating last CRI block " << i << endl;
 	dataSize_t sizeOfLastBlock = (dataSize_t)ceil(cri.size()-(cri.size()/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE);
 	if( i == updatedCriFileBlocksIndices[i] ){
-		criBlocks[i].update(criFid, &criBytes[j*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
+		criBlocks[i].update(criFid, &criBytes[j*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock, true);
 		j++;
 	}
 	else

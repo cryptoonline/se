@@ -18,6 +18,7 @@ DataBlock::DataBlock(){
 	instanceCounter++;
 	memset(fidBytes, 0, FILEID_SIZE);
 	memset(block, 0, BLOCK_SIZE);
+	dataSize = 0;
 	isBlockEncrypted = false;
 }
 
@@ -26,6 +27,7 @@ DataBlock::DataBlock(b_index_t index){
 	this->index = index;
 	memset(fidBytes, 0, FILEID_SIZE);
 	memset(block, 0, BLOCK_SIZE);
+	dataSize = 0;
 	isBlockEncrypted = false;
 }
 
@@ -95,6 +97,7 @@ void DataBlock::parse(byte block[]){
 void DataBlock::update(fileID fid, byte block[], dataSize_t dataSize, bool isCRI){
 	version++;
 	make(fid, block, dataSize, isCRI, version);
+	memset(this->block+dataSize+1, 0, MAX_BLOCK_DATA_SIZE-dataSize); //Zeros the bytes of the previous block
 }
 
 void DataBlock::updateVersion(){
