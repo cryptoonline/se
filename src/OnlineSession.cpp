@@ -58,14 +58,9 @@ size_t OnlineSession::retrieveDBlocks(b_index_t numBlocksToWrite){
 			cout << "Block Matches!" << endl;
 			fileBlocks.push_back(block);
 			updatedFileBlocksIndices.push_back(i);
-			if(block.getDataSize() < MAX_BLOCK_DATA_SIZE){
-				filesize += block.getDataSize();
-				break;
-			} else {
-				filesize += block.getDataSize();
+			filesize += block.getDataSize();
 			}
 		}
-	}
 
 	return filesize;
 }
@@ -168,20 +163,19 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 		retrieveDBlocks(filePRSubset.getSize());
 	}
 	else{
-		if(numBlocksToWrite > filePRSubset.getSize()){
-			PRSubset filePRSubset(numBlocksToWrite, this->filePRSubset.getSeed());
-			this->filePRSubset = filePRSubset;
-			cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), criBlockIndex);
-			criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
-		}
-		else{
-			criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
-		}
+		cout << "Num blocks to write are " << numBlocksToWrite << " CriBlock size is " << criBlock.getSize() << endl;
+		b_index_t maxNumBlocks = max(numBlocksToWrite, criBlock.getSize());
+		PRSubset filePRSubset(maxNumBlocks, criBlock.getSeed());
+		this->filePRSubset = filePRSubset;
+		cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), criBlockIndex);
+		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
 		cout << "CRI: Size=" << criPRSubset.getSize() << " Seed=" << criPRSubset.getSeed() << endl;
 		cout << "Tblock: Size = " << tBlock.getSize() << " Seed=" << tBlock.getSeed() << endl;
+		
 		retrieveDBlocks(filePRSubset.getSize());
 	}
+
 	cout << "TBLOCK: Size=" << tBlock.getSize() << ", Seed=" << tBlock.getSeed() << endl;
 	//TODO: This can be optimized by making the blockIndices Array class member
 	b_index_t blockIndices[filePRSubset.getSize()];
@@ -193,11 +187,16 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 	cout << "Number blocks to write " << numBlocksToWrite << " Updated fileblock size is " << updatedFileBlocksIndices.size() << endl;
 	cout << "Total data blocks read are " << blocks.size() << endl;
 		
+	if(updatedFileBlocksIndices.size() > numBlocksToWrite/BLOW_UP)
+		for(int i = numBlocksToWrite/BLOW_UP; i < updatedFileBlocksIndices.size(); i++)
+			blocks[updatedFileBlocksIndices[i]].clear();
+
+	cout << "Blocks size is " << blocks.size() << endl;
 	for(int i = 0; i < blocks.size() && updatedFileBlocksIndices.size() < numBlocksToWrite/BLOW_UP; i++){
 		if(!(blocks[i].isOccupied()))
 			updatedFileBlocksIndices.push_back(i);
 	}
-	
+
 
 	if(updatedFileBlocksIndices.size() < numBlocksToWrite/BLOW_UP){
 		cerr << "Update unsuccessful: Not enought blocks available." << endl;
@@ -218,7 +217,7 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 			cout << "Updating block " << i << " with Index " << updatedFileBlocksIndices[j] << endl;
 			if(j < (numBlocksToWrite/BLOW_UP) - 1)
 				blocks[i].update(fid, &contents[j*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
-			else
+			else if( j == numBlocksToWrite/BLOW_UP - 1)
 				blocks[i].update(fid, &contents[j*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);				
 			j++;
 		}

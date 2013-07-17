@@ -107,11 +107,19 @@ void DataBlock::updateVersion(){
 }
 
 void DataBlock::clear(){
+	printhex(this->block, BLOCK_SIZE, __PRETTY_FUNCTION__);
+/* This function needs to be followed by updateVersion */	
 	byte zerofid[FILEID_SIZE] = {0};
 	fileID fid(zerofid);
-
-	byte zeroBlock[BLOCK_SIZE] = {0};
-	update(fid, zeroBlock, MAX_BLOCK_DATA_SIZE, false);
+	this->fid = fid;
+	this->fid.get(fidBytes);
+	isCRI = false;
+	dataSize = 0;
+	memset(block, 0, BLOCK_SIZE-sizeof(version_t));
+//	memcpy(&block[VERSION_LOC], static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
+	printhex(this->block, BLOCK_SIZE, __PRETTY_FUNCTION__);
+//	encrypt();
+	
 }
 
 void DataBlock::encrypt(){
