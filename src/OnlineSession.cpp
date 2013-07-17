@@ -51,6 +51,8 @@ size_t OnlineSession::retrieveDBlocks(b_index_t numBlocksToWrite){
 	readD(blockIndices, numBlocks, dataBlocksBytes);
 
 	for(int i = 0; i < numBlocks; i++){
+		/* After reading the final file block i.e. one that have data less than MAX_BLOCK_DATA_SIZE the loop can be broken
+		 * but only for read. For update we need to process all the blocks */
 		DataBlock block(blockIndices[i]);
 		block.parse(&dataBlocksBytes[i*BLOCK_SIZE]);
 		blocks.push_back(block);
@@ -58,12 +60,7 @@ size_t OnlineSession::retrieveDBlocks(b_index_t numBlocksToWrite){
 			cout << "Block Matches!" << endl;
 			fileBlocks.push_back(block);
 			updatedFileBlocksIndices.push_back(i);
-			if(block.getDataSize() < MAX_BLOCK_DATA_SIZE){
-				filesize += block.getDataSize();
-				break;
-			} else {
-				filesize += block.getDataSize();
-			}
+			filesize += block.getDataSize();
 		}
 	}
 
@@ -168,18 +165,15 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 		retrieveDBlocks(filePRSubset.getSize());
 	}
 	else{
-		if(numBlocksToWrite > filePRSubset.getSize()){
-			PRSubset filePRSubset(numBlocksToWrite, this->filePRSubset.getSeed());
-			this->filePRSubset = filePRSubset;
-			cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), criBlockIndex);
-			criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
-		}
-		else{
-			criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
-		}
+		numBlocksToWrite = max(numBlocksToWrite, criBlock.getSize());
+		PRSubset filePRSubset(numBlocksToWrite, criBlock.getSeed());
+		this->filePRSubset = filePRSubset;
+		cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), criBlockIndex);
+		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
 		cout << "CRI: Size=" << criPRSubset.getSize() << " Seed=" << criPRSubset.getSeed() << endl;
 		cout << "Tblock: Size = " << tBlock.getSize() << " Seed=" << tBlock.getSeed() << endl;
+		cout << "Retrieving " << filePRSubset.getSize() << " blocks." << endl;
 		retrieveDBlocks(filePRSubset.getSize());
 	}
 	cout << "TBLOCK: Size=" << tBlock.getSize() << ", Seed=" << tBlock.getSeed() << endl;
