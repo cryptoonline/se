@@ -11,8 +11,8 @@
 #include "./../src/helper.h"
 
 TEST(OnlineSessionRead, Test1){
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
-//	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+//	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	BStore store(directoryPath);
 //	DiskCommunicator dcomm;
 	
@@ -35,8 +35,8 @@ TEST(OnlineSessionRead, Test1){
 }
 
 TEST(OnlineSessionWrite, Test1){
-//	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
+	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+//	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
 //	BStore store(directoryPath);
 	while(true){
 		OnlineSession* writeSession = new OnlineSession();;
@@ -62,6 +62,7 @@ TEST(OnlineSessionWrite, Test1){
 		
 		size_t size = readFileSize(newfilename);
 		byte updateFileBytes[size];
+		memset(updateFileBytes, 0, size);
 		readFile(newfilename, updateFileBytes, size);
 		
 		writeSession->update(filename, updateFileBytes, size);

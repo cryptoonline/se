@@ -39,26 +39,11 @@ void CRI::makeBytes(byte* blocksBytes){
 }
 
 void CRI::makeBytes(vector<byte>& blocksBytes, string function){
-	int counter = 0;
-	int numPaddingBytes = MAX_BLOCK_DATA_SIZE - CRI_PER_BLOCK * CRI_BLOCK_SIZE;// + TRAILER_SIZE;
-	byte zeros[numPaddingBytes];
-	memset(zeros, 0, numPaddingBytes);
-	cout << "Function is " << function << " Time is " << clock() << endl;
 	for(vector<CRIBlock>::iterator it = blocks.begin(); it != blocks.end(); ++it){
 		vector<byte> block;
 		it->get(block);
 		blocksBytes.insert(blocksBytes.end(), block.begin(), block.begin()+CRI_BLOCK_SIZE);
-//		printhex(block, __PRETTY_FUNCTION__);
-		counter++;
-		if(counter % CRI_PER_BLOCK == 0 && counter != 0)
-			blocksBytes.insert(blocksBytes.end(), &zeros[0], &zeros[numPaddingBytes]);
 	}
-//	if(blocksBytes.size() % BLOCK_SIZE != 0){
-//		int numZeros = BLOCK_SIZE*(int)ceil((double)blocksBytes.size()/(double)BLOCK_SIZE)-blocksBytes.size();
-//		byte zeros[numZeros];
-//		memset(zeros, 0, numZeros);
-//		blocksBytes.insert(blocksBytes.end(), &zeros[0], &zeros[numZeros]);
-//	}
 }
 
 // void CRI::parseBytes(vector<byte>& blocksBytes){
@@ -87,11 +72,11 @@ void CRI::makeBytes(vector<byte>& blocksBytes, string function){
 //}
 
 void CRI::parseBytes(byte blocksBytes[], uint32_t size){
-	int criCounter = 0;
+//	int criCounter = 0;
 	for(int i = 0; i < size; i+=CRI_BLOCK_SIZE){
-		if(criCounter%CRI_PER_BLOCK == 0 && i!=0)
-			i += MAX_BLOCK_DATA_SIZE - CRI_BLOCK_SIZE * CRI_PER_BLOCK;// + TRAILER_SIZE;
- 		criCounter++;
+//		if(criCounter%CRI_PER_BLOCK == 0 && i!=0)
+//			i += MAX_BLOCK_DATA_SIZE - CRI_BLOCK_SIZE * CRI_PER_BLOCK;// + TRAILER_SIZE;
+ //		criCounter++;
  		byte block[CRI_BLOCK_SIZE];
  		memcpy(block, &blocksBytes[i], CRI_BLOCK_SIZE);
  		CRIBlock criBlock;

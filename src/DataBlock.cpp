@@ -44,11 +44,11 @@ void DataBlock::make(fileID fid, byte block[], dataSize_t dataSize, bool isCRI, 
 	this->version = version;
 //	this->block = block;
 	this->dataSize = dataSize;
-	printhex(block, BLOCK_SIZE, "INPUT");
+	printhex(block, dataSize, "INPUT");
 	printhex(this->block, BLOCK_SIZE, "BEFORE");
 	memcpy(this->block, block, dataSize);
-	printhex(this->block, BLOCK_SIZE, "AFTER");
 	addTrailer();
+	printhex(this->block, BLOCK_SIZE, "AFTER");
 	encrypt();
 }
 
@@ -70,7 +70,7 @@ void DataBlock::addPadding(){
 }
 
 void DataBlock::removePadding(){
-	for(int i = MAX_BLOCK_DATA_SIZE+1; i > 0; i--)
+	for(int i = MAX_BLOCK_DATA_SIZE; i > 0; i--)
 		if(block[i] == 1){
 			dataSize = i;
 		}
