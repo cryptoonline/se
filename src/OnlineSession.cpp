@@ -78,8 +78,9 @@ int OnlineSession::retrieveCRIBlock(){
 	readCRI(criPRSubset, cri);
 	
 	if(cri.isEmpty()){
-		std::cerr << "CRI shouldn't be empty at this point:" << __FILE__ << ":" << __LINE__ << endl;
-		exit(1);	
+		return 0;
+//		std::cerr << "CRI shouldn't be empty at this point:" << __FILE__ << ":" << __LINE__ << endl;
+//		exit(1);	
 	}
 
 	criBlockIndex = cri.search(fid, criBlock);
@@ -274,7 +275,35 @@ void OnlineSession::remove(string filename){
 	else if(retrieveCRIBlock() == 0)
 		cout << "File not found." << endl;
 	else{
+		retrieveDBlocks();
+
+		cri.updateFile(0, 0, criBlockIndex);
+//		if(cri.size() - CRI_BLOCK_SIZE == 0)
+			tBlock.update(0,0);
+//		else
+//			tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
 		
+		byte blockBytes[filePRSubset.getSize()*BLOCK_SIZE];
+		memset(blockBytes, 0, filePRSubset.getSize()*BLOCK_SIZE);
+		for(int i = 0; i < blocks.size(); i++){
+			if(blocks[i].fidMatchCheck(this->fid)){
+				blocks[i].clear();
+			}
+			blocks[i].updateVersion();
+			blocks[i].getEncrypted(&blockBytes[i*BLOCK_SIZE]);
+		}
+		b_index_t blockIndices[filePRSubset.getSize()];
+		filePRSubset.get(blockIndices, filePRSubset.getSize());
+
+		writeD(blockIndices, filePRSubset.getSize(), blockBytes);
+
+		byte tBlockBytes[TBLOCK_SIZE];
+		tBlock.getEncrypted(tBlockBytes);
+		writeT(fid.getHigherID(), tBlockBytes);
+
+		writeCRI();
+
+		dcomm.writeToDisk();
 	}
 }
 

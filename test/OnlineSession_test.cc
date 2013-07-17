@@ -89,3 +89,27 @@ TEST(OnlineSessionWrite, Test1){
 		delete readSession;
 	}
 }
+
+TEST(OnlineSessionRemove, Test1){
+	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+	OnlineSession sessionDelete;
+	string filename1 = directoryPath + "1" + ".";
+	string filename2 = directoryPath + "2" + ".";
+	sessionDelete.remove(filename1);
+
+	OnlineSession sessionRead0;
+	byte* file;
+	size_t filesize = sessionRead0.read(filename1, file);
+	printchars(file, filesize, "DELETED FILE");
+
+	OnlineSession sessionWrite;
+	size_t filesizeRead = readFileSize(filename2);
+	byte updateFileBytes[filesizeRead];
+	readFile(filename2, updateFileBytes, filesizeRead);
+	sessionWrite.update(filename1, updateFileBytes, filesizeRead);
+
+	OnlineSession sessionRead1;
+	byte* file1;
+	size_t filesizeRead1 = sessionRead1.read(filename1, file);
+	printchars(file, filesizeRead1, "UPDATED FILE");
+}
