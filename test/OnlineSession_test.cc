@@ -97,27 +97,27 @@ TEST(OnlineSessionRemove, Test1){
 	string filename2 = directoryPath + "207" + ".";
 	sessionDelete.remove(filename1);
 
-	OnlineSession sessionRead0;
-	byte* file;
-	size_t filesize = sessionRead0.read(filename1, file);
-	byte expectedFile[filesize];
-	memset(expectedFile, 0, filesize);
-	EXPECT_TRUE(0 == memcmp(file, expectedFile, filesize));
-	printchars(file, filesize, "DELETED FILE");
-	delete[] file;
+	OnlineSession session0;
+	byte* file0;
+	size_t filesize0 = session0.read(filename1, file0);
+	byte expectedFile[filesize0];
+	memset(expectedFile, 0, filesize0);
+	EXPECT_TRUE(0 == memcmp(file0, expectedFile, filesize0));
+	printchars(file0, filesize0, "DELETED FILE");
+	delete[] file0;
 
-	OnlineSession sessionWrite;
-	size_t filesizeRead = readFileSize(filename2);
-	byte updateFileBytes[filesizeRead];
-	readFile(filename2, updateFileBytes, filesizeRead);
-	sessionWrite.update(filename1, updateFileBytes, filesizeRead);
+	OnlineSession session1;
+	size_t filesize1 = readFileSize(filename2);
+	byte updateFileBytes[filesize1];
+	readFile(filename2, updateFileBytes, filesize1);
+	session1.update(filename1, updateFileBytes, filesize1);
 
-	OnlineSession sessionRead1;
-	byte* file1;
-	size_t filesizeRead1 = sessionRead1.read(filename1, file1);
-	printchars(file1, filesizeRead1, "UPDATED DELTED FILE");
-	EXPECT_TRUE(0 == memcmp(file1, updateFileBytes, filesizeRead));
-	delete[] file1;
+	OnlineSession session2;
+	byte* file2;
+	size_t filesize2 = session2.read(filename1, file2);
+	printchars(file2, filesize2, "UPDATED DELTED FILE");
+	EXPECT_TRUE(0 == memcmp(file2, updateFileBytes, filesize2));
+	delete[] file2;
 
 	while(true){
 		cout << "Enter filenumber (Enter q to quit): ";
@@ -130,9 +130,9 @@ TEST(OnlineSessionRemove, Test1){
 		string filename = directoryPath + filenumber + ".";
 		cout << "Reading file: " << filename << endl;
 		OnlineSession session;
-		byte* file3;
-		size_t filesize1 = session.read(filename, file3);
-		printchars(file3, filesize1, "FILE");
-		delete[] file3;
+		byte* file;
+		size_t filesize = session.read(filename, file);
+		printchars(file, filesize, "FILE");
+		delete[] file;
 	}
 }
