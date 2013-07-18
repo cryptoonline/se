@@ -16,11 +16,11 @@
 #include "Tdisk.h"
 #include "boost/filesystem.hpp"
 
-#include "tr1/unordered_map"
-using std::tr1::unordered_map;
+//#include "tr1/unordered_map"
+//using std::tr1::unordered_map;
 
-#include "tr1/unordered_set"
-using std::tr1::unordered_set;
+//#include "tr1/unordered_set"
+//using std::tr1::unordered_set;
 
 using namespace std;
 
@@ -28,6 +28,8 @@ class BStore{
 public:
 	BStore();
 	BStore(string directoryPath);
+	void add(string filename, byte fileBytes[], size_t size);
+	void finalize();
 	~BStore();
 
 private:

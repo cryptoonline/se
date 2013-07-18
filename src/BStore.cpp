@@ -5,7 +5,7 @@
 
 #include "BStore.h"
 
-BStore::BStore(){
+BStore::BStore():D(TOTAL_BLOCKS){
 	totalFileBlocks = 0;
 }
 
@@ -56,6 +56,22 @@ BStore::BStore(string directoryPath): D(TOTAL_BLOCKS){
 	cout << "Writing D to disk." << endl;
 	D.writeToDisk();
 	cout << "Writing T to disk." << endl;
+	T.writeToDisk();
+}
+
+void BStore::add(string filename, byte fileBytes[], size_t size){
+	b_index_t numBlocks = (b_index_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
+	fileID fid(filename);
+	PRSubset prSubset(numBlocks*BLOW_UP);
+	T.addFile(fid, prSubset);
+	D.addFile(fileBytes, size, fid, prSubset); 
+}
+
+void BStore::finalize(){
+	T.finalize(D);
+	D.encryptEmptyBlocks();
+
+	D.writeToDisk();
 	T.writeToDisk();
 }
 

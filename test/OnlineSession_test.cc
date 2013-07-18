@@ -13,7 +13,7 @@
 TEST(OnlineSessionRead, Test1){
 	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
 //	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
-	BStore store(directoryPath);
+//	BStore store(directoryPath);
 //	DiskCommunicator dcomm;
 	
 	while(true){
@@ -32,6 +32,40 @@ TEST(OnlineSessionRead, Test1){
 		printchars(file, filesize, "FILE");
 		delete[] file;
 		}
+}
+
+TEST(OnlineSessionReadwithFileBStore, Test1){
+	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+	BStore store;
+
+	int numFiles = 12;
+	string filenumbers[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9" , "10", "267", "207"};
+	for(int i = 0; i < numFiles; i++){
+		string filename = directoryPath + filenumbers[i] + ".";
+		size_t size = readFileSize(filename);
+		byte fileBytes[size];
+		readFile(filename, fileBytes, size);
+		store.add(filename, fileBytes, size);
+	}
+	store.finalize();
+
+	while(true){
+		cout << "Enter filenumber (Enter q to quit): ";
+		string filenumber;
+		cin >> filenumber;
+		if(filenumber.compare("q") == 0){
+			cout << "Thank you for using Blind Storage System." << endl;
+			break;
+		}
+		string filename = directoryPath + filenumber + ".";
+		cout << "Reading file: " << filename << endl;
+		OnlineSession session;
+		byte* file;
+		size_t filesize = session.read(filename, file);
+		printchars(file, filesize, "FILE");
+		delete[] file;
+		}
+	
 }
 
 TEST(OnlineSessionWrite, Test1){
