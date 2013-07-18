@@ -100,6 +100,10 @@ TEST(OnlineSessionRemove, Test1){
 	OnlineSession sessionRead0;
 	byte* file;
 	size_t filesize = sessionRead0.read(filename1, file);
+	byte expectedFile[filesize];
+	memset(expectedFile, 0, filesize);
+	EXPECT_TRUE(0 == memcmp(file, expectedFile, filesize));
+
 	printchars(file, filesize, "DELETED FILE");
 
 	OnlineSession sessionWrite;
@@ -111,5 +115,6 @@ TEST(OnlineSessionRemove, Test1){
 	OnlineSession sessionRead1;
 	byte* file1;
 	size_t filesizeRead1 = sessionRead1.read(filename1, file);
-	printchars(file, filesizeRead1, "UPDATED FILE");
+	printchars(file, filesizeRead1, "UPDATED DELTED FILE");
+	EXPECT_TRUE(0 == memcmp(file1, updateFileBytes, filesizeRead));
 }

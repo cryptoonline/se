@@ -285,12 +285,19 @@ void OnlineSession::remove(string filename){
 		
 		byte blockBytes[filePRSubset.getSize()*BLOCK_SIZE];
 		memset(blockBytes, 0, filePRSubset.getSize()*BLOCK_SIZE);
+
 		for(int i = 0; i < blocks.size(); i++){
+			byte decryptedBlock[BLOCK_SIZE];
+			blocks[i].getDecrypted(decryptedBlock);
+			printhex(decryptedBlock, BLOCK_SIZE, "BEFORE");
 			if(blocks[i].fidMatchCheck(this->fid)){
 				blocks[i].clear();
 			}
 			blocks[i].updateVersion();
 			blocks[i].getEncrypted(&blockBytes[i*BLOCK_SIZE]);
+			byte decryptedBlockAfter[BLOCK_SIZE];
+			blocks[i].getDecrypted(decryptedBlockAfter);
+			printhex(decryptedBlockAfter, BLOCK_SIZE, "AFTER");
 		}
 		b_index_t blockIndices[filePRSubset.getSize()];
 		filePRSubset.get(blockIndices, filePRSubset.getSize());
@@ -302,7 +309,6 @@ void OnlineSession::remove(string filename){
 		writeT(fid.getHigherID(), tBlockBytes);
 
 		writeCRI();
-
 		dcomm.writeToDisk();
 	}
 }
