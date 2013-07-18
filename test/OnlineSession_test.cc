@@ -93,8 +93,8 @@ TEST(OnlineSessionWrite, Test1){
 TEST(OnlineSessionRemove, Test1){
 	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
 	OnlineSession sessionDelete;
-	string filename1 = directoryPath + "1" + ".";
-	string filename2 = directoryPath + "2" + ".";
+	string filename1 = directoryPath + "2" + ".";
+	string filename2 = directoryPath + "207" + ".";
 	sessionDelete.remove(filename1);
 
 	OnlineSession sessionRead0;
@@ -103,8 +103,8 @@ TEST(OnlineSessionRemove, Test1){
 	byte expectedFile[filesize];
 	memset(expectedFile, 0, filesize);
 	EXPECT_TRUE(0 == memcmp(file, expectedFile, filesize));
-
 	printchars(file, filesize, "DELETED FILE");
+	delete[] file;
 
 	OnlineSession sessionWrite;
 	size_t filesizeRead = readFileSize(filename2);
@@ -114,7 +114,25 @@ TEST(OnlineSessionRemove, Test1){
 
 	OnlineSession sessionRead1;
 	byte* file1;
-	size_t filesizeRead1 = sessionRead1.read(filename1, file);
-	printchars(file, filesizeRead1, "UPDATED DELTED FILE");
+	size_t filesizeRead1 = sessionRead1.read(filename1, file1);
+	printchars(file1, filesizeRead1, "UPDATED DELTED FILE");
 	EXPECT_TRUE(0 == memcmp(file1, updateFileBytes, filesizeRead));
+	delete[] file1;
+
+	while(true){
+		cout << "Enter filenumber (Enter q to quit): ";
+		string filenumber;
+		cin >> filenumber;
+		if(filenumber.compare("q") == 0){
+			cout << "Thank you for using Blind Storage System." << endl;
+			break;
+		}
+		string filename = directoryPath + filenumber + ".";
+		cout << "Reading file: " << filename << endl;
+		OnlineSession session;
+		byte* file3;
+		size_t filesize1 = session.read(filename, file3);
+		printchars(file3, filesize1, "FILE");
+		delete[] file3;
+	}
 }

@@ -278,10 +278,10 @@ void OnlineSession::remove(string filename){
 		retrieveDBlocks();
 
 		cri.updateFile(0, 0, criBlockIndex);
-//		if(cri.size() - CRI_BLOCK_SIZE == 0)
+		if(cri.size() == 0)
 			tBlock.update(0,0);
-//		else
-//			tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
+		else
+			tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
 		
 		byte blockBytes[filePRSubset.getSize()*BLOCK_SIZE];
 		memset(blockBytes, 0, filePRSubset.getSize()*BLOCK_SIZE);
