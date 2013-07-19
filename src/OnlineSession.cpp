@@ -272,7 +272,6 @@ void OnlineSession::remove(string filename){
 
 void OnlineSession::readT(t_index_t TRecordIndex, byte block[]){
 	dcomm.tGet(TRecordIndex, block);
-	printhex(block, TBLOCK_SIZE, __PRETTY_FUNCTION__);
 }
 
 void OnlineSession::writeT(t_index_t TRecordIndex, byte block[]){

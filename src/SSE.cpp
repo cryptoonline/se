@@ -14,6 +14,9 @@ SSE::SSE(){
 		setupKey();	
 }
 
+SSE::~SSE(){
+}
+
 void SSE::setupKey(){
 	Key hmacKey(SSE_HMAC_KEYFILE, HMAC_KEY_SIZE);
 	hmacKey.get(docHashKey);
@@ -35,8 +38,10 @@ void SSE::indexgen(string directoryPath){
 			memcpy(&docList[counter*sizeof(docid_t)], static_cast<byte*>(static_cast<void*>(&documentID)), sizeof(docid_t));
 			counter++;
 		}
+		printhex(docList, set.size()*sizeof(docid_t), "DOC LIST");
 		store.add(keyword, docList, set.size()*sizeof(docid_t));
 	}
+	store.finalize();
 }
 
 docid_t SSE::getDocNameHash(string& docname){
@@ -62,10 +67,11 @@ void SSE::genPlainIndex(string directoryPath) {
 //		string fileName = boost::filesystem::canonical(dir->path()).string();
 		string fileName = dir->path().string();
 		if(boost::filesystem::is_regular(dir->status())) {
-//			cout << "[FILE] " << fileName << endl;
+			cout << "[FILE] " << fileName << endl;
 			fileCount++;
 			docid_t hash = getDocNameHash(fileName);
 			hash &= 0x7FFFFFFFFFFFFFFFL;
+			cout << "Hash is " << hash << "." << endl;
 			ifstream input(fileName.c_str());
 			string getcontent;
 			boost::tokenizer<> tok(getcontent);
@@ -123,7 +129,7 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs){
 	if(size == 0)
 		return false;
 	
-	for(b_index_t i = 0; i < size; i++)
+	for(b_index_t i = 0; i < size; i+=sizeof(docid_t))
 		docIDs.push_back(*(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]));
 	
 	if(docIDsBytes)

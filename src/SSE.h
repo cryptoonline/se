@@ -48,6 +48,7 @@ class SSE{
 
 public:
 	SSE();
+	~SSE();
 	void indexgen(string directoryPath);
 	void remove(string document);
 	void add(string path);

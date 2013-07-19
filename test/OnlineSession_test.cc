@@ -13,7 +13,7 @@
 TEST(OnlineSessionRead, Test1){
 	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
 //	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
-//	BStore store(directoryPath);
+	BStore store(directoryPath);
 //	DiskCommunicator dcomm;
 	
 	while(true){

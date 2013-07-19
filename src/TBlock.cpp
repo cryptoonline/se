@@ -13,7 +13,6 @@ TBlock::TBlock(){
 	size = 0;
 	seed = 0;
 	index = instanceCounter;
-	cout << "Index is " << index;
 	instanceCounter++;
 	isBlockEncrypted = false;
 }
