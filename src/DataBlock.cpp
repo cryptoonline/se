@@ -46,11 +46,8 @@ void DataBlock::make(fileID fid, byte block[], dataSize_t dataSize, bool isCRI, 
 	this->version = version;
 //	this->block = block;
 	this->dataSize = dataSize;
-	printhex(block, dataSize, "INPUT");
-	printhex(this->block, BLOCK_SIZE, "BEFORE");
 	memcpy(this->block, block, dataSize);
 	addTrailer();
-	printhex(this->block, BLOCK_SIZE, "AFTER");
 	encrypt();
 }
 
@@ -107,7 +104,6 @@ void DataBlock::updateVersion(){
 }
 
 void DataBlock::clear(){
-	printhex(this->block, BLOCK_SIZE, __PRETTY_FUNCTION__);
 /* This function needs to be followed by updateVersion */	
 	byte zerofid[FILEID_SIZE] = {0};
 	fileID fid(zerofid);
@@ -117,7 +113,6 @@ void DataBlock::clear(){
 	dataSize = 0;
 	memset(block, 0, BLOCK_SIZE-sizeof(version_t));
 //	memcpy(&block[VERSION_LOC], static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
-	printhex(this->block, BLOCK_SIZE, __PRETTY_FUNCTION__);
 //	encrypt();
 	
 }

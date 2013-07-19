@@ -33,32 +33,11 @@ void Ddisk::makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>&
 	int32_t counter = 0;
 	for(; counter < requiredNumBlocks - 1; counter++){
 		D[emptyBlocks[counter]]->make(fid, &bytes[counter*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE, isCRI);
-		if(isCRI){
-			byte b[BLOCK_SIZE];
-			D[emptyBlocks[counter]]->getDecrypted(b);
-			printhex(b, BLOCK_SIZE, "CRI BLOCK IN DATABLOCK");
-		} else{
-			byte b[BLOCK_SIZE];
-			D[emptyBlocks[counter]]->getDecrypted(b);
-			printhex(b, BLOCK_SIZE, "DATABLOCK");
-		}
 	}
 
 	dataSize_t sizeOfLastBlock = (dataSize_t)(size - (size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE);
 //	dataSize_t sizeOfLastBlock = (dataSize_t)size - (dataSize_t)(size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE;
-	cout << "Last block size is " << sizeOfLastBlock << endl;
 	D[emptyBlocks[counter]]->make(fid, &bytes[counter*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock, isCRI); 
-	if(isCRI){
-		byte b[BLOCK_SIZE];
-		D[emptyBlocks[counter]]->getDecrypted(b);
-		printhex(b, BLOCK_SIZE, "CRIBLOCK");
-//		D[emptyBlocks[counter]]->getEncrypted(b);
-//		printhex(b, BLOCK_SIZE, "CRI BLOCK IN DATABLOCK ENCRYPTED");
-	} else{
-		byte b[BLOCK_SIZE];
-		D[emptyBlocks[counter]]->getDecrypted(b);
-		printhex(b, BLOCK_SIZE, "DATABLOCK");
-	}
 }
 
 void Ddisk::getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks){
@@ -73,8 +52,6 @@ void Ddisk::getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks){
 }
 
 void Ddisk::addFile(byte bytes[], size_t size, fileID fid, PRSubset prSubset, bool isCRI){
-	if(isCRI)
-		printhex(bytes, size, "CRI Bytes in Ddisk");
 	vector<b_index_t> emptyBlocks;
 	getEmptyBlocks(prSubset, emptyBlocks);
 	if(emptyBlocks.size()*MAX_BLOCK_DATA_SIZE < size){

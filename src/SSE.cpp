@@ -1,48 +1,70 @@
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include "SHA256bit.h"
-#include <boost/filesystem.hpp>
-#include <boost/tokenizer.hpp>
+//
+// Searchable Encryption
+// SSE.cpp
+//
 
 #include "SSE.h"
 
-using std::cout;
-using std::endl;
-using std::ifstream;
-
-docid_t SSE::docNameHash(string & doc){
-	SHA256bit hash;
-	hash.keyGen();
-	unsigned char* fileNameHash = hash.doFinal(doc);
-	docid_t result = *(uint64_t*)fileNameHash;
-	return result;
-}
+byte SSE::docHashKey[SSE_DIGEST_SIZE] = {0};
+bool SSE::hashKeyGenerated = false;
 
 SSE::SSE(){
 	// TODO: construct and initialize BStore object
+	if(!hashKeyGenerated)
+		setupKey();	
 }
 
-void SSE::indexGen(string path)
-{
-	cout << "[PATH] " << path << endl;
+void SSE::setupKey(){
+	Key hmacKey(SSE_HMAC_KEYFILE, HMAC_KEY_SIZE);
+	hmacKey.get(docHashKey);
+	hashKeyGenerated = true;
+}
 
-	// OPTIONAL: Print progress
+void SSE::indexgen(string directoryPath){
+	
+	genPlainIndex(directoryPath);
+
+	for(unordered_map<string, unordered_set<docid_t> >::iterator itmap = map.begin(); itmap != map.end(); ++itmap){
+		const string& keyword = itmap->first; //filename in BStore
+		unordered_set<docid_t>& set = itmap->second;
+		
+		byte docList[set.size()*sizeof(docid_t)];
+		uint32_t counter = 0;
+		for(unordered_set<docid_t>::iterator itset = set.begin(); itset != set.end(); ++itset){
+			docid_t documentID = *itset;
+			memcpy(&docList[counter*sizeof(docid_t)], static_cast<byte*>(static_cast<void*>(&documentID)), sizeof(docid_t));
+			counter++;
+		}
+		store.add(keyword, docList, set.size()*sizeof(docid_t));
+	}
+}
+
+docid_t SSE::getDocNameHash(string& docname){
+	HashMAC hash;
+	hash.setKey(docHashKey);
+	byte hashMacBytes[SSE_DIGEST_SIZE];
+	hash.doFinal(docname, hashMacBytes);
+	return *(uint64_t*)hashMacBytes;
+}
+
+void SSE::genPlainIndex(string directoryPath) {
+	cout << "[PATH] " << directoryPath << endl;
+
+	/* OPTIONAL: Print progress */
 	int fileSum = 0, fileCount = 0;
-	for(boost::filesystem::recursive_directory_iterator end, dir(path); dir != end; ++dir) {
+	for(boost::filesystem::recursive_directory_iterator end, dir(directoryPath); dir != end; ++dir) {
 		if(boost::filesystem::is_regular(dir->status())) {
 			fileSum++;
 		}
 	}
 
-	for(boost::filesystem::recursive_directory_iterator end, dir(path); dir != end; ++dir) {
+	for(boost::filesystem::recursive_directory_iterator end, dir(directoryPath); dir != end; ++dir) {
 //		string fileName = boost::filesystem::canonical(dir->path()).string();
 		string fileName = dir->path().string();
 		if(boost::filesystem::is_regular(dir->status())) {
 //			cout << "[FILE] " << fileName << endl;
 			fileCount++;
-			docid_t hash = docNameHash(fileName);
+			docid_t hash = getDocNameHash(fileName);
 			hash &= 0x7FFFFFFFFFFFFFFFL;
 			ifstream input(fileName.c_str());
 			string getcontent;
@@ -80,12 +102,7 @@ void SSE::indexGen(string path)
 	}
 	cout << "[DONE] Estimated map size: " << mapSize << endl;
 
-
-	// TODO: call BStore with the map
-	store = new BStore(map);
-
 	// TODO: copy all documents to DocumentStore, rename each file to its docId
-
 }
 
 void SSE::remove(string document){
@@ -98,16 +115,20 @@ void SSE::add(string path){
 	
 }
 
-bool SSE::search(string keyword, vector<docid_t>& docs){
-	vector<unsigned char> docIDBytes;
-	bool fileExists = store->read(keyword, docIDBytes);
-	if(!fileExists)
+bool SSE::search(string keyword, vector<docid_t>& docIDs){
+	OnlineSession session;
+	byte* docIDsBytes;
+	b_index_t size = session.read(keyword, docIDsBytes);
+
+	if(size == 0)
 		return false;
-	for(int i = 0; i < docIDBytes.size()/8; i++){
-		docs.push_back(*(docid_t*)(&docIDBytes[i*8]));
-	}
+	
+	for(b_index_t i = 0; i < size; i++)
+		docIDs.push_back(*(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]));
+	
+	if(docIDsBytes)
+		delete[] docIDsBytes;
+
 	return true;
-	// call BStore.get(keyword)
-	// convert byte array to array of uint64_t
 	// TODO: check for file with filename docNameHash(document) in
 }

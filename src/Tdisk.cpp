@@ -52,18 +52,13 @@ void Tdisk::finalize(Ddisk &D){
 		PRSubset prSubset(numBlocks);
 		b_index_t blockIndices[prSubset.getSize()];
 		prSubset.get(blockIndices, prSubset.getSize());
-		printdec(blockIndices, numBlocks, "Indices");
 		
 		T[higherfid]->make(prSubset.getSize(), prSubset.getSeed());
 
 		byte tblock[TBLOCK_SIZE];
 		T[higherfid]->getDecrypted(tblock);
-		cout << "Higher FID" << higherfid << endl;
-		printhex(tblock, TBLOCK_SIZE, "TBLOCK");
-//		printhex(criBytes, __PRETTY_FUNCTION__);
 		byte fidBytesRet[FILEID_SIZE];
 		fid.get(fidBytesRet);
-		cout << "CRI Bytes size is " << cri.size() << endl;
 		D.addFile(criBytes[i].data(), cri.size(), fid, prSubset, true);
 		i++;
 		}			 
