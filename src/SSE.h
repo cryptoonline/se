@@ -50,8 +50,8 @@ public:
 	SSE();
 	~SSE();
 	void indexgen(string directoryPath);
-	void remove(string document);
-	void add(string path);
+	void remove(string docName);
+	void add(string docName);
 	bool search(string keyword, vector<docid_t>& docIDs);
 
 private:
