@@ -9,6 +9,7 @@
 
 #include "./../src/parameters.h"
 #include "./../src/SSE.h"
+#include "./../src/sse_parameters.h"
 
 void deletefile(string file);
 

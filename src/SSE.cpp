@@ -38,7 +38,7 @@ void SSE::indexgen(string directoryPath){
 			memcpy(&docList[counter*sizeof(docid_t)], static_cast<byte*>(static_cast<void*>(&documentID)), sizeof(docid_t));
 			counter++;
 		}
-		printhex(docList, set.size()*sizeof(docid_t), "DOC LIST");
+//		printhex(docList, set.size()*sizeof(docid_t), "DOC LIST");
 		store.add(keyword, docList, set.size()*sizeof(docid_t));
 	}
 	store.finalize();
@@ -129,7 +129,7 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs){
 	if(size == 0)
 		return false;
 	
-	for(b_index_t i = 0; i < size; i+=sizeof(docid_t))
+	for(b_index_t i = 0; i < size/sizeof(docid_t); i++)
 		docIDs.push_back(*(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]));
 	
 	if(docIDsBytes)
