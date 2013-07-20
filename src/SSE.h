@@ -48,6 +48,7 @@ using std::tr1::unordered_set;
 #include "HashMAC.h" 
 #include "Key.h"
 #include "FileStore.h"
+#include "helper.h"
 
 #define CHECK_BIT(var, pos) ((var) & (1<<(pos)))
 
@@ -62,19 +63,26 @@ public:
 	bool search(string keyword, vector<docid_t>& docIDs);
 
 private:
-	static byte docHashKey[SSE_DIGEST_SIZE];
-	static bool hashKeyGenerated;
-	void genPlainIndex(string directoryPath);
-	
+	unordered_map<string, unordered_set<docid_t> > map;
+
 	BStore store;
 	FileStore fstore;
-	docid_t getDocNameHash(string& docname);
-	void setupKey();
-
-	void getKeywords(byte docBytes[], size_t size, vector<string>& keywords);
 	
+	static bool hashKeyGenerated;
+	static byte docHashKey[SSE_DIGEST_SIZE];
+	
+	void genPlainIndex(string directoryPath);
+	
+	docid_t getDocNameHash(string& docname);
+	void getKeywords(byte docBytes[], size_t size, unordered_set<string>& keywords);
+	uint32_t findDocID(byte* docIDs, size_t size, docid_t docID);
+	void addDocID(byte*& docIDs, size_t size, docid_t docID);
+	void deleteDocID(byte* docIDs, size_t size, uint32_t docIDIndex);
+
+	void storefile(string filename, docid_t docID);
+	
+	void setupKey();
 //	map from keywords to fileNames
-	unordered_map<string, unordered_set<docid_t> > map;
 	
 	// TODO: have a BStore object inside
 	// TODO: function to index individual files (refactor indexGen)

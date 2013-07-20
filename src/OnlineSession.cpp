@@ -131,7 +131,7 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
 		this->tBlock = tBlock;
 	
-		oldFileSize = retrieveDBlocks(filePRSubset.getSize());
+		retrieveDBlocks(filePRSubset.getSize());
 	}
 	else if(retrieveCRIBlock() == 0){
 		PRSubset filePRSubset(numBlocksToWrite);
@@ -146,7 +146,7 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 		}
 		else
 			tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
-		oldFileSize = retrieveDBlocks(filePRSubset.getSize());
+		retrieveDBlocks(filePRSubset.getSize());
 	}
 	else{
 		b_index_t maxNumBlocks = max(numBlocksToWrite, criBlock.getSize());

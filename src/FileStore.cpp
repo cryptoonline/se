@@ -11,21 +11,27 @@ FileStore::FileStore(){
 FileStore::~FileStore(){
 }
 
-size_t FileStore::get(string filename, byte contents[]){
+size_t FileStore::get(string filename, byte*& contents){
+//	filename = FILESTORE_PATH + filename;
 	std::ifstream in(filename.c_str(), std::ios::binary);
 	size_t size = readFileSize(filename.c_str());
+	contents = new byte[size]; /* Function calling this method should manage this memory*/
 	in.read(reinterpret_cast<char*>(contents), size);
 	in.close();
 	return size;
 }
 
 void FileStore::put(string filename, byte contents[], size_t size){
+	filename = FILESTORE_PATH + filename;
 	ofstream out(filename.c_str(), std::ios::binary);
 	out.write(reinterpret_cast<char*>(contents), size);
 	out.close();
 }
 
 void FileStore::copy(string srcPath, string dstPath){
+	srcPath = FILESTORE_PATH + srcPath;
+	dstPath = FILESTORE_PATH + dstPath;
+
 	std::ifstream src(srcPath.c_str(), std::ios::binary);
 	std::ofstream dst(dstPath.c_str(), std::ios::binary);
 
@@ -35,22 +41,19 @@ void FileStore::copy(string srcPath, string dstPath){
 	dst.close();
 }
 
-void FileStore::remove(string path){
-	if(std::remove(path.c_str()) != 0)
-		cout << "Error deleting file " << path << endl;
+void FileStore::remove(string filename){
+	filename = FILESTORE_PATH + filename;
+
+	if(std::remove(filename.c_str()) != 0)
+		cout << "Error deleting file " << filename << endl;
 	else
 		cout << "File successfully delete." << endl;
 }
 
-bool FileStore::isFilePresent(string path){
-	if( access(path.c_str(), F_OK) != -1 )
+bool FileStore::isFilePresent(string filename){
+	filename = FILESTORE_PATH + filename;
+	if( access(filename.c_str(), F_OK) != -1 )
 		return true;
 	else
 		return false;
-}
-
-size_t FileStore::readFileSize(string path){
-	struct stat st;
-	stat(path.c_str(), &st);
-	return st.st_size;
 }

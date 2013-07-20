@@ -20,20 +20,20 @@ using std::ofstream;
 
 #include <sys/stat.h>
 
+#include "helper.h"
 #include "sse_parameters.h"
 
 class FileStore {
 private:
-	size_t readFileSize(string path);
 
 public:
 	FileStore();
 	~FileStore();
-	size_t get(string filename, byte contents[]);
+	size_t get(string filename, byte*& contents);
 	void put(string filename, byte contents[], size_t size);
 	void copy(string srcPath, string dstPath);
-	void remove(string path);
-	bool isFilePresent(string path);
+	void remove(string filename);
+	bool isFilePresent(string filename);
 };
 
 #endif /* defined(__SearchableEncryption__FileStore__) */
