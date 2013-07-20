@@ -72,31 +72,3 @@ void DiskCommunicator::tGet(t_index_t index, byte* block){
 		cout << T_FILE << " could not be mapped." << endl;
 	}
 }
-
-void DiskCommunicator::loadFile(string filename, byte* input, size_t size){
-	ifstream file(filename.c_str());
-	file.seekg(0, std::ios::beg);
-	file.read(reinterpret_cast<char*>(input), size);
-	file.close();
-}
-
-size_t DiskCommunicator::readFileSize(string path){
-	struct stat st;
-	stat(path.c_str(), &st);
-	return st.st_size;
-}
-
-void DiskCommunicator::printD(string TAG){
-	for(b_index_t i = 0; i < TOTAL_BLOCKS; i++){
-		cout << "**************************************************" << i << "*************************************************" << endl;;
-		printhex(&D[i*BLOCK_SIZE], BLOCK_SIZE, TAG);
-		printchars(&D[i*BLOCK_SIZE], BLOCK_SIZE, TAG);
-	}
-}
-
-void DiskCommunicator::printT(string TAG){
-	for(t_index_t i = 0; i < TTOTAL_BLOCKS; i++){
-		cout << "**************************************************" << i << "*************************************************" << endl;
-		printhex(&T[i*TBLOCK_SIZE], TBLOCK_SIZE, TAG);
-	}
-}
