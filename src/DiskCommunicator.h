@@ -25,16 +25,16 @@ using std::ios;
 #include "parameters.h"
 #include "Debug.h"
 
-#define DSize (TOTAL_BLOCKS*BLOCK_SIZE)
-#define TSize (TTOTAL_BLOCKS*TBLOCK_SIZE)
-
 class DiskCommunicator{
 private:
-	boost::iostreams::mapped_file_source DSource;
-	boost::iostreams::mapped_file_sink DSink;
-	boost::iostreams::mapped_file_source TSource;
-	boost::iostreams::mapped_file_sink TSink;
+	byte* T;
+	byte* D;
+	size_t TSize;
+	size_t DSize;
 
+	size_t readFileSize(string filename);
+	void loadFile(string filename, byte* input, size_t size);
+	
 public:
 	DiskCommunicator();
 	~DiskCommunicator();
@@ -42,6 +42,11 @@ public:
 	void dGet(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks);
 	void tPut(t_index_t index, byte* block);
 	void tGet(t_index_t index, byte* block);
+
+//	void writeToDisk();
+
+	void printD(string TAG);
+	void printT(string TAG);
 };
 
 #endif /*defined(__BlindStorage__DiskCommunicator__)*/
