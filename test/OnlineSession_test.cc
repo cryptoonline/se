@@ -197,6 +197,64 @@ TEST(OnlineSessionUpdate, Test1){
 	}
 }
 
+TEST(OnlineSessionUpdate, Test2){
+//	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+	cout << "This is updated test." << endl;
+	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
+//	BStore store(directoryPath);
+	while(true){
+		OnlineSession* writeSession = new OnlineSession();;
+		string filenumber;
+		string newfilenumber;
+
+		cout << "Enter filenumber you want to update (Enter q to quit): ";
+		cin >> filenumber;
+		if(filenumber.compare("q") == 0){
+			cout << "Thank you for using Blind Storage System." << endl;
+			break;
+		}
+
+		string filename = directoryPath + filenumber + ".";
+		
+		byte* file;
+		size_t filesize = writeSession->updateRead(filename, file, 0);
+	
+		cout << "File size retrieved is " << filesize << endl;
+	
+//		memcpy(updatedContents, updateFileBytes, size);
+//		memcpy(&updatedContents[size], file, filesize);
+
+		memset(file+filesize/2, 0, filesize/2);
+		printchars(file, filesize/2, "EXPECTED FILE");
+		
+		writeSession->updateWrite(filename, file, filesize/2);
+		
+		if(file)
+			delete[] file;		
+		
+		delete writeSession;
+	}
+
+	while(true){
+		string filenumber;
+		cout << "Enter file to read (Enter q to quit): ";
+		cin >> filenumber;
+
+		if(filenumber.compare("q") == 0){
+			cout << "Thank you for using Blind Storage System." << endl;
+			break;
+		}
+
+		string filename = directoryPath + filenumber + ".";
+		OnlineSession* readSession = new OnlineSession();
+		byte* file;
+		size_t filesize = readSession->read(filename, file);
+		printchars(file, filesize, "UPDATED FILE");
+		delete[] file;
+		delete readSession;
+	}
+}
+
 TEST(OnlineSessionRemove, Test1){
 	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
 	OnlineSession sessionDelete;

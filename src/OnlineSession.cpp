@@ -106,8 +106,7 @@ size_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToRe
 }
 
 size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContentSize){
-	b_index_t numBlocksToUpdate = (b_index_t)(ceil((double)newContentSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
-	b_index_t numBlocksToWrite = numBlocksToUpdate;
+	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)newContentSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 	this->filename = filename;
 	fileID fid(filename);
 	this->fid = fid;
@@ -150,8 +149,7 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 		oldFileSize = retrieveDBlocks(filePRSubset.getSize());
 	}
 	else{
-		numBlocksToWrite = criBlock.getSize() + numBlocksToUpdate * BLOW_UP;
-	//	b_index_t maxNumBlocks = max(numBlocksToWrite, criBlock.getSize());
+		b_index_t maxNumBlocks = max(numBlocksToWrite, criBlock.getSize());
 		PRSubset filePRSubset(numBlocksToWrite, criBlock.getSeed());
 		this->filePRSubset = filePRSubset;
 		cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), criBlockIndex);
