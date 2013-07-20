@@ -77,7 +77,7 @@ TEST(OnlineSessionWrite, Test1){
 		string filenumber;
 		string newfilenumber;
 
-		cout << "Enter filenumber you want to update (Enter q to quit): ";
+		cout << "Enter filenumber you want to write (Enter q to quit): ";
 		cin >> filenumber;
 		if(filenumber.compare("q") == 0){
 			cout << "Thank you for using Blind Storage System." << endl;
@@ -100,7 +100,7 @@ TEST(OnlineSessionWrite, Test1){
 		memset(updateFileBytes, 0, size);
 		readFile(newfilename, updateFileBytes, size);
 		
-		writeSession->update(filename, updateFileBytes, size);
+		writeSession->write(filename, updateFileBytes, size);
 		delete writeSession;
 	}
 
@@ -275,7 +275,7 @@ TEST(OnlineSessionRemove, Test1){
 	size_t filesize1 = readFileSize(filename2);
 	byte updateFileBytes[filesize1];
 	readFile(filename2, updateFileBytes, filesize1);
-	session1.update(filename1, updateFileBytes, filesize1);
+	session1.write(filename1, updateFileBytes, filesize1);
 
 	OnlineSession session2;
 	byte* file2;

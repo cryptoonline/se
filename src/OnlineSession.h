@@ -62,10 +62,9 @@ public:
 	OnlineSession();
 	~OnlineSession();
 	size_t read(string filename, byte*& file, b_index_t numBlocksToRead = 0);
-	void write(string filename, byte contents[], size_t size);
 	size_t updateRead(string filename, byte*& file, size_t newContentSize);
 	void updateWrite(string filename, byte updatedFile[], size_t updatedFileSize);
-	void update(string filename, byte contents[], size_t size);
+	void write(string filename, byte contents[], size_t size);
 	void remove(string filename);
 	/*! Use homorphic encryption to support this */
 	void rename();

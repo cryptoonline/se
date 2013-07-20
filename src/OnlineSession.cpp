@@ -219,7 +219,7 @@ void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t upda
 	dcomm.writeToDisk();
 }
 
-void OnlineSession::update(string filename, byte contents[], size_t size){
+void OnlineSession::write(string filename, byte contents[], size_t size){
 	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)size/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 	this->filename = filename;
 	fileID fid(filename);
