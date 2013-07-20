@@ -15,8 +15,12 @@ using std::memset;
 #include <fstream>
 using std::ifstream;
 using std::ofstream;
+using std::ios_base;
+using std::ios;
 
 #include <sys/stat.h>
+
+#include <boost/iostreams/device/mapped_file.hpp>
 
 #include "parameters.h"
 #include "Debug.h"
@@ -39,7 +43,7 @@ public:
 	void tPut(t_index_t index, byte* block);
 	void tGet(t_index_t index, byte* block);
 
-	void writeToDisk();
+//	void writeToDisk();
 
 	void printD(string TAG);
 	void printT(string TAG);

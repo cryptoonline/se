@@ -22,7 +22,7 @@ typedef uint32_t prSubsetSeed_t;
 typedef uint32_t dataSize_t;
 typedef uint32_t criSize_t;
 
-#define TOTAL_BLOCKS (1024*1024*2)
+#define TOTAL_BLOCKS (1024*1024)
 #define BLOCK_SIZE 96
 const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 #define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)

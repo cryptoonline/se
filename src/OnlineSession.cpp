@@ -216,7 +216,7 @@ void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t upda
 
 	writeCRI();	
 
-	dcomm.writeToDisk();
+//	dcomm.writeToDisk();
 }
 
 void OnlineSession::write(string filename, byte contents[], size_t size){
@@ -317,7 +317,7 @@ void OnlineSession::write(string filename, byte contents[], size_t size){
 
 	writeCRI();	
 
-	dcomm.writeToDisk();
+//	dcomm.writeToDisk();
 }
 
 void OnlineSession::remove(string filename){
@@ -362,7 +362,7 @@ void OnlineSession::remove(string filename){
 		writeT(fid.getHigherID(), tBlockBytes);
 
 		writeCRI();
-		dcomm.writeToDisk();
+//		dcomm.writeToDisk();
 	}
 }
 
@@ -387,6 +387,9 @@ void OnlineSession::readCRI(PRSubset& prSubset, CRI& cri){
 	/* Request additional BLOW_UP number of blocks in case the CRI requires more blocks. */
 	b_index_t numBlocks = prSubset.getSize();
 	b_index_t blockIndices[numBlocks];
+
+	cout << "Num blocks are " << numBlocks << endl;
+	
 	prSubset.get(blockIndices, numBlocks);
 
 	byte blocks[numBlocks*BLOCK_SIZE];

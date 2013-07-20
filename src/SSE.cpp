@@ -126,7 +126,7 @@ void SSE::remove(string docName){
 		fstore.remove(boost::lexical_cast<string>(docID & 0x7FFFFFFFFFFFFFFFL));
 		/* Entries from Index will be delete using lazy delete*/
 	}
-	else if (fstore.isFilePresent(boost::lexical_cast<string>(docID | 0xFFFFFFFFFFFFFFFFL))){
+	else if (fstore.isFilePresent(boost::lexical_cast<string>(docID | 0x8000000000000000L))){
 //	else if (fstore.isFilePresent(boost::lexical_cast<string>(docID))){
 		byte* doc;
 		size_t size = fstore.get(docName, doc);
@@ -152,7 +152,7 @@ void SSE::remove(string docName){
 			delete[] docIDs;
 		}
 		
-		fstore.remove(boost::lexical_cast<string>(docID | 0xFFFFFFFFFFFFFFFFL));
+		fstore.remove(boost::lexical_cast<string>(docID | 0x8000000000000000L));
 
 		delete[] doc;
 	}
@@ -163,7 +163,7 @@ void SSE::remove(string docName){
 }
 
 void SSE::add(string docName){
-	docid_t docID = getDocNameHash(docName) | 0xFFFFFFFFFFFFFFFFL;
+	docid_t docID = getDocNameHash(docName) | 0x8000000000000000L;
 	byte* doc;
 	size_t size = fstore.get(docName, doc);
 
