@@ -27,13 +27,6 @@ using std::ios;
 
 class DiskCommunicator{
 private:
-	byte* T;
-	byte* D;
-	size_t TSize;
-	size_t DSize;
-
-	size_t readFileSize(string filename);
-	void loadFile(string filename, byte* input, size_t size);
 	
 public:
 	DiskCommunicator();
@@ -42,8 +35,6 @@ public:
 	void dGet(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks);
 	void tPut(t_index_t index, byte* block);
 	void tGet(t_index_t index, byte* block);
-
-//	void writeToDisk();
 
 	void printD(string TAG);
 	void printT(string TAG);
