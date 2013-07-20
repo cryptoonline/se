@@ -105,6 +105,122 @@ size_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToRe
 	return filesize;
 }
 
+size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContentSize){
+	b_index_t numBlocksToUpdate = (b_index_t)(ceil((double)newContentSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+	b_index_t numBlocksToWrite = numBlocksToUpdate;
+	this->filename = filename;
+	fileID fid(filename);
+	this->fid = fid;
+
+	byte lowerFid[LOWERFID_SIZE];
+	this->fid.getLowerID(lowerFid);
+
+	size_t oldFileSize = 0;
+
+	if(retrieveTBlock() == 0){
+		PRSubset filePRSubset(numBlocksToWrite);
+		this->filePRSubset = filePRSubset;
+
+		PRSubset criPRSubset(1*BLOW_UP);
+		this->criPRSubset = criPRSubset;
+
+		readCRI(this->criPRSubset, this->cri);
+		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);	
+		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
+		
+		TBlock tBlock(fid.getHigherID());
+		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
+		this->tBlock = tBlock;
+	
+		oldFileSize = retrieveDBlocks(filePRSubset.getSize());
+	}
+	else if(retrieveCRIBlock() == 0){
+		PRSubset filePRSubset(numBlocksToWrite);
+		this->filePRSubset = filePRSubset;
+		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
+		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
+		b_index_t criNumBlocks = (b_index_t)(ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+		if(criNumBlocks > criPRSubset.getSize()){	
+			PRSubset criPRSubset(criNumBlocks, this->criPRSubset.getSeed());
+			this->criPRSubset = criPRSubset;
+			tBlock.update(this->criPRSubset.getSize(), this->criPRSubset.getSeed());
+		}
+		else
+			tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
+		oldFileSize = retrieveDBlocks(filePRSubset.getSize());
+	}
+	else{
+		numBlocksToWrite = criBlock.getSize() + numBlocksToUpdate * BLOW_UP;
+	//	b_index_t maxNumBlocks = max(numBlocksToWrite, criBlock.getSize());
+		PRSubset filePRSubset(numBlocksToWrite, criBlock.getSeed());
+		this->filePRSubset = filePRSubset;
+		cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), criBlockIndex);
+		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), lowerFid);
+		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
+		oldFileSize = retrieveDBlocks(filePRSubset.getSize());
+	}
+	
+	file = new byte[oldFileSize];
+	memset(file, 0, oldFileSize);
+	for(int i = 0; i < fileBlocks.size(); i++){
+		byte block[BLOCK_SIZE];
+		memset(block, 0, BLOCK_SIZE);
+		fileBlocks[i].getDecrypted(block);
+		memcpy(&file[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
+	}
+
+	return oldFileSize;
+}
+
+void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t updatedFileSize){
+	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)updatedFileSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);	
+
+	b_index_t blockIndices[filePRSubset.getSize()];	
+	filePRSubset.get(blockIndices, filePRSubset.getSize());
+
+	byte blocksBytes[filePRSubset.getSize()*BLOCK_SIZE];
+	memset(blocksBytes, 0, filePRSubset.getSize()*BLOCK_SIZE);
+		
+	if(updatedFileBlocksIndices.size() > numBlocksToWrite/BLOW_UP)
+		for(int i = numBlocksToWrite/BLOW_UP; i < updatedFileBlocksIndices.size(); i++)
+			blocks[updatedFileBlocksIndices[i]].clear();
+
+	for(int i = 0; i < blocks.size() && updatedFileBlocksIndices.size() < numBlocksToWrite/BLOW_UP; i++)
+		if(!(blocks[i].isOccupied()))
+			updatedFileBlocksIndices.push_back(i);
+
+	if(updatedFileBlocksIndices.size() < numBlocksToWrite/BLOW_UP){
+		cerr << "Update unsuccessful: Not enought blocks available." << endl;
+		exit(1);
+	}
+
+	int i = 0;	int j = 0;
+	dataSize_t sizeOfLastBlock = (dataSize_t)(updatedFileSize - (updatedFileSize/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE);
+	for(; i < blocks.size(); ++i){
+		
+		if(i == updatedFileBlocksIndices[j]){
+			if(j < (numBlocksToWrite/BLOW_UP) - 1)
+				blocks[i].update(fid, &updatedFile[j*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
+			else if( j == numBlocksToWrite/BLOW_UP - 1)
+				blocks[i].update(fid, &updatedFile[j*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);				
+			j++;
+		}
+		else
+			blocks[i].updateVersion();
+		blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
+	}
+	
+	writeD(blockIndices, filePRSubset.getSize(), blocksBytes);
+	
+	byte tBlockBytes[TBLOCK_SIZE];
+	tBlock.getEncrypted(tBlockBytes);
+	writeT(fid.getHigherID(), tBlockBytes);
+
+	writeCRI();	
+
+	dcomm.writeToDisk();
+}
+
 void OnlineSession::update(string filename, byte contents[], size_t size){
 	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)size/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 	this->filename = filename;
@@ -194,29 +310,11 @@ void OnlineSession::update(string filename, byte contents[], size_t size){
 			blocks[i].updateVersion();
 		blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
 	}
-//	cout << "Updating last block " << i << " with Index " << updatedFileBlocksIndices[i] << endl;
-//	if(i == updatedFileBlocksIndices[j]){
-//		blocks[i].update(fid, &contents[j*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
-//		j++;
-//	}
-//	else
-//		blocks[i].updateVersion();
-//	blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
 	
-//	blocks[i].getDecrypted(&blocksBytesDecrypted[i*MAX_BLOCK_DATA_SIZE]);
-
-//	for(int i = 0; i < numBlocksToWrite; i++)
-//		printhex(&blocksBytes[i*BLOCK_SIZE], BLOCK_SIZE, "BLOCKS");
-
-//	dcomm.printD("ORIGINAL BLOCKS");
 	writeD(blockIndices, filePRSubset.getSize(), blocksBytes);
-//	dcomm.printD("MODIFIED BLOCKS");
+	
 	byte tBlockBytes[TBLOCK_SIZE];
 	tBlock.getEncrypted(tBlockBytes);
-
-//	byte tBlockBytesDecrypted[TBLOCK_SIZE];
-//	tBlock.getDecrypted(tBlockBytesDecrypted);
-//	printhex(tBlockBytesDecrypted, TBLOCK_SIZE, "TBLOCK DECRYPTED");
 	writeT(fid.getHigherID(), tBlockBytes);
 
 	writeCRI();	

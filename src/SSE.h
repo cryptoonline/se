@@ -26,8 +26,12 @@ using std::vector;
 using std::ifstream;
 
 #include <algorithm>
+
+#include <string>
+
 #include <boost/filesystem.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <tr1/unordered_map>
 using std::tr1::unordered_map;
@@ -43,6 +47,9 @@ using std::tr1::unordered_set;
 #include "BStore.h"
 #include "HashMAC.h" 
 #include "Key.h"
+#include "FileStore.h"
+
+#define CHECK_BIT(var, pos) ((var) & (1<<(pos)))
 
 class SSE{
 
@@ -60,8 +67,11 @@ private:
 	void genPlainIndex(string directoryPath);
 	
 	BStore store;
+	FileStore fstore;
 	docid_t getDocNameHash(string& docname);
 	void setupKey();
+
+	void getKeywords(byte docBytes[], size_t size, vector<string>& keywords);
 	
 //	map from keywords to fileNames
 	unordered_map<string, unordered_set<docid_t> > map;

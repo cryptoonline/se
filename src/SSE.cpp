@@ -111,14 +111,39 @@ void SSE::genPlainIndex(string directoryPath) {
 	// TODO: copy all documents to DocumentStore, rename each file to its docId
 }
 
-void SSE::remove(string document){
+void SSE::remove(string docName){
+	docid_t hash = getDocNameHash(docName);
 	
+	if(fstore.isFilePresent(boost::lexical_cast<string>(hash & 0x7FFFFFFFFFFFFFFFL))){
+		fstore.remove(docName);
+		/* Entries from Index will be delete using lazy delete*/
+	}
+	else if (fstore.isFilePresent(boost::lexical_cast<string>(hash | 0xFFFFFFFFFFFFFFFFL))){
+		byte* doc;
+		size_t size = fstore.get(docName, doc);
+	
+		vector<string> keywords;
+		getKeywords(doc, size, keywords);
+
+		for(int32_t i = 0; i < keywords.size(); i++){
+			OnlineSession session;
+			byte* docIDs;
+			size_t size = session.read(keywords[i], docIDs);
+			delete[] docIDs;
+		}
+		
+		fstore.remove(docName);
+
+		delete[] doc;
+	}
+	else{
+		cout << "File not found!" << endl;
+	}
 	// TODO: delete docNameHash(document) from DocumentStore
 }
 
 void SSE::add(string path){
-	// TODO
-	
+
 }
 
 bool SSE::search(string keyword, vector<docid_t>& docIDs){
@@ -137,4 +162,16 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs){
 
 	return true;
 	// TODO: check for file with filename docNameHash(document) in
+}
+
+void SSE::getKeywords(byte docBytes[], size_t size, vector<string>& keywords){
+	string content(reinterpret_cast<char*>(&docBytes));
+	boost::tokenizer<> tok(content);
+
+	tok.assign(content.begin(), content.end());
+	for(boost::tokenizer<>::iterator it = tok.begin(); it != tok.end(); ++it){
+		string keyword(*it);
+		std::transform(keyword.begin(), keyword.end(), keyword.begin(), ::tolower);
+		keywords.push_back(keyword);
+	}
 }
