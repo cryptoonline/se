@@ -6,69 +6,62 @@
 #include "DiskCommunicator.h"
 
 DiskCommunicator::DiskCommunicator(){
+	DSource.open(D_FILE, DSize);
+	DSink.open(D_FILE, DSize);
+
+	TSource.open(T_FILE, TTOTAL_BLOCKS*TBLOCK_SIZE);
+	TSink.open(T_FILE, TSize);
 }
 
 DiskCommunicator::~DiskCommunicator(){
+	
+	if(DSource.is_open())
+		DSource.close();
+
+	if(DSink.is_open())
+		DSink.close();
+
+	if(TSource.is_open())
+		TSource.close();
+
+	if(TSink.is_open())
+		TSink.close();
 }
 
 void DiskCommunicator::dPut(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks){
-	boost::iostreams::mapped_file_sink file;
-	file.open(D_FILE, TOTAL_BLOCKS*BLOCK_SIZE);
-
-	if(file.is_open()){
-		byte* D = (byte*)file.data();
-		
+	if(DSink.is_open()){
+		byte* D = (byte*)DSink.data();
 		for(int32_t i = 0; i < numBlocks; i++)
 			memcpy(D+blockLocations[i]*BLOCK_SIZE, &blocks[i*BLOCK_SIZE], BLOCK_SIZE);
-		
-		file.close();
 	}
-	else{
+	else
 		cout << D_FILE << " could not be mapped." << endl;
-	}
 }
 
 void DiskCommunicator::dGet(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks){
-	boost::iostreams::mapped_file_source file;
-	file.open(D_FILE, TOTAL_BLOCKS*BLOCK_SIZE);
-
-	if(file.is_open()){
-		byte* D = (byte*)file.data();
-		
+	if(DSource.is_open()){
+		byte* D = (byte*)DSource.data();
 		for(int32_t i = 0; i < numBlocks; i++)
 			memcpy(&blocks[i*BLOCK_SIZE], D+blockLocations[i]*BLOCK_SIZE, BLOCK_SIZE);
-		
-		file.close();
 	}
-	else {
+	else 
 		cout << D_FILE << " could not be mapped." << endl;
-	}
 }
 
 void DiskCommunicator::tPut(t_index_t index, byte* block){
-	boost::iostreams::mapped_file_sink file;
-	file.open(T_FILE, TTOTAL_BLOCKS*TBLOCK_SIZE);
-
-	if(file.is_open()){
-		byte* T = (byte*)file.data();
+	if(TSink.is_open()){
+		byte* T = (byte*)TSink.data();
 		memcpy(T+index*TBLOCK_SIZE, block, TBLOCK_SIZE);
-		file.close();
 	}
-	else{
+	else
 		cout << T_FILE << " could not be mapped." << endl;
-	}
 }
 
 void DiskCommunicator::tGet(t_index_t index, byte* block){
-	boost::iostreams::mapped_file_source file;
-	file.open(T_FILE, TTOTAL_BLOCKS*TBLOCK_SIZE);
-
-	if(file.is_open()){
-		byte* T = (byte*)file.data();
+	if(TSource.is_open()){
+		byte* T = (byte*)TSource.data();
 		memcpy(block, T+index*TBLOCK_SIZE, TBLOCK_SIZE);
-		file.close();
 	}
-	else{
+	else
 		cout << T_FILE << " could not be mapped." << endl;
-	}
 }

@@ -25,9 +25,16 @@ using std::ios;
 #include "parameters.h"
 #include "Debug.h"
 
+#define DSize (TOTAL_BLOCKS*BLOCK_SIZE)
+#define TSize (TTOTAL_BLOCKS*TBLOCK_SIZE)
+
 class DiskCommunicator{
 private:
-	
+	boost::iostreams::mapped_file_source DSource;
+	boost::iostreams::mapped_file_sink DSink;
+	boost::iostreams::mapped_file_source TSource;
+	boost::iostreams::mapped_file_sink TSink;
+
 public:
 	DiskCommunicator();
 	~DiskCommunicator();
