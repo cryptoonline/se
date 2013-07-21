@@ -19,7 +19,7 @@ Tdisk::~Tdisk(){
 	delete[] T;
 }
 
-void Tdisk::addFile(fileID fid, PRSubset prSubset){
+void Tdisk::addFile(fileID fid, size_t filesize, PRSubset prSubset){
   higherfid_t higherfid = fid.getHigherID();
 	byte lowerID[LOWERFID_SIZE];
 	fid.getLowerID(lowerID);
@@ -27,7 +27,7 @@ void Tdisk::addFile(fileID fid, PRSubset prSubset){
 		CRI cri(higherfid);
 		criMap.insert(std::make_pair<higherfid_t, CRI>(higherfid, cri));
 	}
-	criMap[higherfid].addFile(prSubset.getSize(), prSubset.getSeed(), lowerID);
+	criMap[higherfid].addFile(prSubset.getSize(), prSubset.getSeed(), filesize, lowerID);
 }
 
 void Tdisk::finalize(Ddisk &D){

@@ -11,5 +11,6 @@ using std::string;
 
 TEST(PreprocessingTest, Test1){
 	string directoryPath = "/Users/naveed/BStore/datasets/testdir";
-	BStore store(directoryPath);
+	BStore* store = new BStore(directoryPath);
+	delete store;
 }

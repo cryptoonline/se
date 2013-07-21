@@ -24,8 +24,8 @@ public:
 	CRIBlock();
 	~CRIBlock();
 	
-	void make(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]);
-	void update(prSubsetSize_t size, prSubsetSeed_t seed);
+	void make(prSubsetSize_t size, prSubsetSeed_t seed, size_t filesize, byte lowerFid[]);
+	void update(prSubsetSize_t size, prSubsetSeed_t seed, size_t filesize);
 	void parse(byte block[]);
 
 	void get(byte block[]);
@@ -35,10 +35,13 @@ public:
 
 	prSubsetSize_t getSize();
 	prSubsetSeed_t getSeed();
+	size_t getFileSize();
 
 private:
 	prSubsetSize_t size;
 	prSubsetSeed_t seed;
+	size_t filesize;
+
 	byte lowerFid[LOWERFID_SIZE];
 
 	byte block[CRI_BLOCK_SIZE];

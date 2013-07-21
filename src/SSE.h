@@ -50,7 +50,13 @@ using std::tr1::unordered_set;
 #include "FileStore.h"
 #include "helper.h"
 
+#include <boost/functional/hash.hpp>
+
 #define CHECK_BIT(var, pos) ((var) & (1<<(pos)))
+
+typedef struct{
+	size_t operator() (const std::string &str) const {return boost::hash<string>()(str);}
+} stringhash;
 
 class SSE{
 
@@ -63,7 +69,7 @@ public:
 	bool search(string keyword, vector<docid_t>& docIDs);
 
 private:
-	unordered_map<string, unordered_set<docid_t> > map;
+	unordered_map<string, unordered_set<docid_t>, stringhash> map;
 
 	BStore store;
 	FileStore fstore;
@@ -74,7 +80,7 @@ private:
 	void genPlainIndex(string directoryPath);
 	
 	docid_t getDocNameHash(string& docname);
-	void getKeywords(byte docBytes[], size_t size, unordered_set<string>& keywords);
+	void getKeywords(byte docBytes[], size_t size, unordered_set<string, stringhash>& keywords);
 	uint32_t findDocID(byte* docIDs, size_t size, docid_t docID);
 	void addDocID(byte*& docIDs, size_t size, docid_t docID);
 	void deleteDocID(byte* docIDs, size_t size, uint32_t docIDIndex);

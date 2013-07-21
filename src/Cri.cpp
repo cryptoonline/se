@@ -17,15 +17,15 @@ CRI::CRI(higherfid_t higherfid){
 CRI::~CRI(){
 }
 
-void CRI::addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]){
+void CRI::addFile(prSubsetSize_t size, prSubsetSeed_t seed, size_t filesize, byte lowerFid[]){
 	CRIBlock block;
-	block.make(size, seed, lowerFid);
+	block.make(size, seed, filesize, lowerFid);
 	blocks.push_back(block);
 	empty = false;
 }
 
-void CRI::updateFile(prSubsetSize_t size, prSubsetSeed_t seed, uint32_t blockIndex){
-	blocks[blockIndex].update(size, seed);
+void CRI::updateFile(prSubsetSize_t size, prSubsetSeed_t seed, size_t filesize, uint32_t blockIndex){
+	blocks[blockIndex].update(size, seed, filesize);
 }
 
 void CRI::makeBytes(byte* blocksBytes){

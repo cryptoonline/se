@@ -13,7 +13,7 @@
 TEST(DdiskTest, Test1){
 	srand(clock());
 
-	Ddisk D;
+	Ddisk* D = new Ddisk();
 	size_t numOfBytes = MAX_BLOCK_DATA_SIZE*5;
 //	size_t numByteswithTrailer = numOfBytes+BLOCK_SIZE-MAX_BLOCK_DATA_SIZE;
 	byte bytes[numOfBytes];
@@ -31,8 +31,8 @@ TEST(DdiskTest, Test1){
 	
 	prSubset.get(subset, prSubset.getSize());
 
-	D.addFile(bytes, numOfBytes, fid, prSubset);
-	D.encryptEmptyBlocks();
+	D->addFile(bytes, numOfBytes, fid, prSubset);
+	D->encryptEmptyBlocks();
 	
 	byte blockData[BLOCK_SIZE];
 
@@ -42,9 +42,10 @@ TEST(DdiskTest, Test1){
 	b_index_t index = random % numBlocks;
 	DataBlock block(index);
 	cout << "Index " << index << " Random is " << random << " numBlocks " << numBlocks << endl;
-	D.getBlock(subset[index], block);
+	D->getBlock(subset[index], block);
 	block.getDecrypted(blockData);
 	printhex(blockData, BLOCK_SIZE, "Actual");
 	printhex(&bytes[index*MAX_BLOCK_DATA_SIZE], BLOCK_SIZE, "Expected");
+	delete D;
 	ASSERT_TRUE(0 == std::memcmp(blockData, &bytes[index*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE));
 }

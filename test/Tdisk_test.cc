@@ -10,7 +10,7 @@
 #include "./../src/parameters.h"
 
 TEST(TdiskTest, Test1){
-	Tdisk T;
+	Tdisk* T = new Tdisk();
 	
 //	srand(clock());
 //	byte fidBytesArray[512][FILEID_SIZE];
@@ -29,18 +29,18 @@ TEST(TdiskTest, Test1){
 	PRSubset prSubset(1024, 10);
 	cout << "PRSubset size is " << prSubset.getSize() << " seed is " << prSubset.getSeed() << endl;
 
-	T.addFile(fid, prSubset);
+	T->addFile(fid, 10, prSubset);
 	
 //	byte fidBytess[FILEID_SIZE] = {0x02, 0x00, 0x00, 0x00, 0x11, 0x11};
 //	fileID fid2(fidBytess);
 
 //	T.addFile(fid2, prSubset);
 
-	Ddisk D;
-	T.finalize(D);
-	D.encryptEmptyBlocks();
+	Ddisk* D = new Ddisk();
+	T->finalize(*D);
+	D->encryptEmptyBlocks();
 	TBlock block;	
-	T.getBlock(1, block);
+	T->getBlock(1, block);
 	cout << "TBlock size is " << block.getSize() << " seed is " << block.getSeed() << endl;
 
 	byte blockData[TBLOCK_SIZE];

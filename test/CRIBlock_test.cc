@@ -20,13 +20,15 @@ TEST(CRIBlockTest, make){
 	srand(clock());
 	prSubsetSize_t size = rand();
 	prSubsetSeed_t seed = rand();
-	
-	block.make(size, seed, lowerFid);
+	size_t filesize = rand();
+
+	block.make(size, seed, filesize, lowerFid);
 
 	byte blockExpected[CRI_BLOCK_SIZE];
 	memcpy(blockExpected, static_cast<byte*>(static_cast<void*>(&size)), sizeof(prSubsetSize_t));
 	memcpy(blockExpected+sizeof(prSubsetSize_t), static_cast<byte*>(static_cast<void*>(&seed)), sizeof(prSubsetSeed_t));
-	memcpy(blockExpected+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), lowerFid, LOWERFID_SIZE);
+	memcpy(blockExpected+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), static_cast<byte*>(static_cast<void*>(&filesize)), sizeof(size_t));
+	memcpy(blockExpected+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t)+sizeof(size_t), lowerFid, LOWERFID_SIZE);
 
 	byte blockActual[CRI_BLOCK_SIZE];
 	block.get(blockActual);

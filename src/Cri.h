@@ -34,8 +34,8 @@ public:
 	void parseBytes(byte blocksBytes[], uint32_t size);
 	void makeBytes(vector<byte>& blocksBytes, string function);
 	void makeBytes(byte* blockBytes);
-	void addFile(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]);
-	void updateFile(prSubsetSize_t size, prSubsetSeed_t seed, uint32_t blockIndex);
+	void addFile(prSubsetSize_t size, prSubsetSeed_t seed, size_t filesize, byte lowerFid[]);
+	void updateFile(prSubsetSize_t size, prSubsetSeed_t seed, size_t filesize, uint32_t blockIndex);
 	uint32_t search(fileID fid, CRIBlock& block);
 	uint32_t search(byte lowerFid[], CRIBlock& block);
 	criSize_t size();

@@ -16,6 +16,8 @@ TEST(CRITest, Search_True){
 	
 	prSubsetSize_t size = rand();
 	prSubsetSeed_t seed = rand();
+	size_t filesize = rand();
+
 	byte lowerFid[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
 										 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D,
 										 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 
@@ -26,7 +28,7 @@ TEST(CRITest, Search_True){
 										 				 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 
 										 				 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B};
 
-	cri.addFile(size, seed, lowerFid);
+	cri.addFile(size, seed, filesize, lowerFid);
 
 	CRIBlock block;
 	cri.search(lowerFidSearchKey, block);
@@ -44,6 +46,8 @@ TEST(CRITest, Search_False){
 	
 	prSubsetSize_t size = rand();
 	prSubsetSeed_t seed = rand();
+	size_t filesize = rand();
+
 	byte lowerFid[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
 										 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D,
 										 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 
@@ -54,8 +58,8 @@ TEST(CRITest, Search_False){
 										 				 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 
 										 				 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x11};
 
-	cri.addFile(size, seed, lowerFid);
-
+	cri.addFile(size, seed, filesize, lowerFid);
+	
 	CRIBlock block;
 	cri.search(lowerFidSearchKey, block);
 	byte blockBytes[CRI_BLOCK_SIZE];
@@ -72,6 +76,8 @@ TEST(CRITest, Search_MultipleCRIEntriesCase){
 	
 	prSubsetSize_t size = rand();
 	prSubsetSeed_t seed = rand();
+	size_t filesize = rand();
+
 	byte lowerFid[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
 										 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D,
 										 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 
@@ -86,7 +92,7 @@ TEST(CRITest, Search_MultipleCRIEntriesCase){
 
 	for(int i = 0; i < 255; i++){
 		lowerFid[LOWERFID_SIZE-1] = i;
-		cri.addFile(size, seed, lowerFid);
+		cri.addFile(size, seed, filesize, lowerFid);
 	}
 
 	CRIBlock block;

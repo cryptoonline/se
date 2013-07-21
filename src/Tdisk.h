@@ -33,7 +33,7 @@ private:
 public:
 	Tdisk();
 	~Tdisk();
-	void addFile(fileID fid, PRSubset prSubset);
+	void addFile(fileID fid, size_t filesize, PRSubset prSubset);
 	void finalize(Ddisk &D);
 	void upload();
 	void getBlock(t_index_t index, TBlock& block);

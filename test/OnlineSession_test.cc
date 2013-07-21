@@ -13,7 +13,8 @@
 TEST(OnlineSessionRead, Test1){
 	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
 //	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
-	BStore store(directoryPath);
+	BStore* store = new BStore(directoryPath);
+	delete store;
 //	DiskCommunicator dcomm;
 	
 	while(true){
@@ -36,7 +37,7 @@ TEST(OnlineSessionRead, Test1){
 
 TEST(OnlineSessionReadwithFileBStore, Test1){
 	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
-	BStore store;
+	BStore* store = new BStore();
 
 	int numFiles = 12;
 	string filenumbers[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9" , "10", "267", "207"};
@@ -45,9 +46,9 @@ TEST(OnlineSessionReadwithFileBStore, Test1){
 		size_t size = readFileSize(filename);
 		byte fileBytes[size];
 		readFile(filename, fileBytes, size);
-		store.add(filename, fileBytes, size);
+		store->add(filename, fileBytes, size);
 	}
-	store.finalize();
+	store->finalize();
 
 	while(true){
 		cout << "Enter filenumber (Enter q to quit): ";
@@ -65,7 +66,7 @@ TEST(OnlineSessionReadwithFileBStore, Test1){
 		printchars(file, filesize, "FILE");
 		delete[] file;
 		}
-	
+	delete store;	
 }
 
 TEST(OnlineSessionWrite, Test1){

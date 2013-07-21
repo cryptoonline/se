@@ -27,7 +27,7 @@ void SSE::indexgen(string directoryPath){
 	
 	genPlainIndex(directoryPath);
 
-	for(unordered_map<string, unordered_set<docid_t> >::iterator itmap = map.begin(); itmap != map.end(); ++itmap){
+	for(unordered_map<string, unordered_set<docid_t>, stringhash >::iterator itmap = map.begin(); itmap != map.end(); ++itmap){
 		const string& keyword = itmap->first; //filename in BStore
 		unordered_set<docid_t>& set = itmap->second;
 		
@@ -67,12 +67,12 @@ void SSE::genPlainIndex(string directoryPath) {
 //		string fileName = boost::filesystem::canonical(dir->path()).string();
 		string fileName = dir->path().string();
 		if(boost::filesystem::is_regular(dir->status())) {
-			cout << "[FILE] " << fileName << endl;
+//			cout << "[FILE] " << fileName << endl;
 			fileCount++;
 			docid_t docID = getDocNameHash(fileName);
 
 			docID &= 0x7FFFFFFFFFFFFFFFL;
-			cout << "Hash is " << docID << "." << endl;
+//			cout << "Hash is " << docID << "." << endl;
 			
 			/* Put file contents, FileStore is responsible for enryption and decryption of data files*/
 			storefile(fileName, docID);
@@ -87,7 +87,7 @@ void SSE::genPlainIndex(string directoryPath) {
 					string keyword(*beg);
 					// OPTIONAL: convert keywords to lower case
 					std::transform(keyword.begin(), keyword.end(), keyword.begin(), ::tolower);
-					cout << "[KWRD] " << keyword << endl;
+//					cout << "[KWRD] " << keyword << endl;
 					// Possible optimization: memorize docID of fileName
 					// add keyword --> fileName to the map
 					map[keyword].insert(docID);
@@ -103,7 +103,7 @@ void SSE::genPlainIndex(string directoryPath) {
 
 	// OPTIONAL: Estimate map size
 	uint64_t mapSize = 0;
-	for(unordered_map<string, unordered_set<docid_t> >::iterator itmap = map.begin(); itmap != map.end(); ++itmap) {
+	for(unordered_map<string, unordered_set<docid_t> , stringhash>::iterator itmap = map.begin(); itmap != map.end(); ++itmap) {
 		const string & keyword = itmap->first;
 		mapSize += keyword.size();
 		unordered_set<docid_t> & set = itmap->second;
@@ -133,10 +133,10 @@ void SSE::remove(string docName){
 		cout << "File size is " << size << endl;
 		printhex(doc, size, "DOC");
 
-		unordered_set<string> keywords;
+		unordered_set<string, stringhash> keywords;
 		getKeywords(doc, size, keywords);
 
-		for(unordered_set<string>::iterator it = keywords.begin(); it != keywords.end(); ++it){
+		for(unordered_set<string, stringhash>::iterator it = keywords.begin(); it != keywords.end(); ++it){
 			string keyword = *it;
 			OnlineSession session;
 			byte* docIDs;
@@ -170,22 +170,25 @@ void SSE::add(string docName){
 	cout << "Adding file " << docName << endl;
 	printchars(doc, size, "File being added");
 
-	unordered_set<string> keywords;
+	unordered_set<string, stringhash> keywords;
 	getKeywords(doc, size, keywords);
 
 	remove(docName);
 
 	cout << "Adding keywords " << endl;
-	for(unordered_set<string>::iterator it = keywords.begin(); it != keywords.end(); ++it){
+	for(unordered_set<string, stringhash>::iterator it = keywords.begin(); it != keywords.end(); ++it){
 		string keyword = *it;
 
 		cout << "Add " << keyword << endl;
 		OnlineSession session;
 		byte* docIDs;
 		size_t size = session.updateRead(keyword, docIDs, sizeof(docid_t));
-		addDocID(docIDs, size, docID);
-		session.updateWrite(keyword, docIDs, size + sizeof(docid_t));
-		delete[] docIDs;
+	//	addDocID(docIDs, size, docID);
+		byte updatedDocIDs[size+sizeof(docid_t)];
+		memcpy(updatedDocIDs, docIDs, size);
+		memcpy(&updatedDocIDs[size], static_cast<byte*>(static_cast<void*>(&docID)), sizeof(docid_t));
+		session.updateWrite(keyword, updatedDocIDs, size + sizeof(docid_t));
+//		delete[] docIDs;
 	}
 
 	fstore.put(boost::lexical_cast<string>(docID), doc, size);
@@ -206,14 +209,14 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs){
 
 	cout << "No. of documents with keyword " << docIDs.size() << endl;
 
-	if(docIDsBytes)
-		delete[] docIDsBytes;
+//	if(docIDsBytes)
+//		delete[] docIDsBytes;
 
 	return true;
 	// TODO: check for file with filename docNameHash(document) in
 }
 
-void SSE::getKeywords(byte docBytes[], size_t size, unordered_set<string>& keywords){
+void SSE::getKeywords(byte docBytes[], size_t size, unordered_set<string, stringhash>& keywords){
 	string content(reinterpret_cast<char*>(docBytes), size);
 	cout << "Content is " << content << endl;
 	boost::tokenizer<> tok(content);
@@ -238,7 +241,7 @@ void SSE::addDocID(byte*& docIDs, size_t size, docid_t docID){
 	byte* updatedDocIDs = new byte[size+sizeof(docid_t)];
 	memcpy(updatedDocIDs, docIDs, size);
 	memcpy(&updatedDocIDs[size], static_cast<byte*>(static_cast<void*>(&docID)), sizeof(docid_t));
-	delete[] docIDs;
+//	delete[] docIDs;
 	docIDs = updatedDocIDs;
 }
 

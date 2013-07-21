@@ -8,6 +8,7 @@
 CRIBlock::CRIBlock(){
 	size = 0;
 	seed = 0;
+	filesize = 0;
 	memset(lowerFid, 0, LOWERFID_SIZE);
 	memset(block, 0, CRI_BLOCK_SIZE);
 }
@@ -15,27 +16,32 @@ CRIBlock::CRIBlock(){
 CRIBlock::~CRIBlock(){
 }
 
-void CRIBlock::make(prSubsetSize_t size, prSubsetSeed_t seed, byte lowerFid[]){
+void CRIBlock::make(prSubsetSize_t size, prSubsetSeed_t seed, size_t filesize, byte lowerFid[]){
 	this->size = size;
 	this->seed = seed;
+	this->filesize = filesize;
 	memcpy(this->lowerFid, lowerFid, LOWERFID_SIZE);	
 	memcpy(block, static_cast<byte*>(static_cast<void*>(&size)), sizeof(prSubsetSize_t));
 	memcpy(block+sizeof(prSubsetSize_t), static_cast<byte*>(static_cast<void*>(&seed)), sizeof(prSubsetSeed_t));
-	memcpy(block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), lowerFid, LOWERFID_SIZE);
+	memcpy(block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), static_cast<byte*>(static_cast<void*>(&filesize)), sizeof(size_t));
+	memcpy(block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t)+sizeof(size_t), lowerFid, LOWERFID_SIZE);
 }
 
-void CRIBlock::update(prSubsetSize_t size, prSubsetSeed_t seed){
+void CRIBlock::update(prSubsetSize_t size, prSubsetSeed_t seed, size_t filesize){
 	this->size = size;
 	this->seed = seed;
+	this->filesize = filesize;
 	memcpy(block, static_cast<byte*>(static_cast<void*>(&size)), sizeof(prSubsetSize_t));
 	memcpy(block+sizeof(prSubsetSize_t), static_cast<byte*>(static_cast<void*>(&seed)), sizeof(prSubsetSeed_t));
+	memcpy(block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), static_cast<byte*>(static_cast<void*>(&filesize)), sizeof(size_t));
 }
 
 void CRIBlock::parse(byte block[]){
 	memcpy(this->block, block, CRI_BLOCK_SIZE);
 	size = *(prSubsetSize_t*)(block);
 	seed = *(prSubsetSeed_t*)(block+sizeof(prSubsetSize_t));
-	memcpy(lowerFid, block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t), LOWERFID_SIZE);
+	filesize = *(size_t*)(block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t));
+	memcpy(lowerFid, block+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t)+sizeof(size_t), LOWERFID_SIZE);
 }
 
 void CRIBlock::get(byte block[]){
@@ -56,4 +62,8 @@ prSubsetSize_t CRIBlock::getSize(){
 
 prSubsetSeed_t CRIBlock::getSeed(){
 	return seed;
+}
+
+size_t CRIBlock::getFileSize(){
+	return filesize;
 }
