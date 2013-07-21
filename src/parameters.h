@@ -24,8 +24,10 @@ typedef uint32_t criSize_t;
 
 #define TOTAL_BLOCKS (1024*1024)
 #define BLOCK_SIZE 256
-const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
-#define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)
+#define TRAILER_SIZE 34 //size of version is 2 bytes
+#define MAX_BLOCK_DATA_SIZE (BLOCK_SIZE-TRAILER_SIZE)
+// #define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)
+// const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 
 #define TTOTAL_BLOCKS (256*256)
 //const uint32_t BIT_MASK = 0x0000000F;

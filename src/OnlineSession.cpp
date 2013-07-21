@@ -184,8 +184,6 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t updatedFileSize){
 	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)updatedFileSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 
-	printhex(updatedFile, updatedFileSize, "Updated File");
-
 	b_index_t blockIndices[filePRSubset.getSize()];	
 	filePRSubset.get(blockIndices, filePRSubset.getSize());
 

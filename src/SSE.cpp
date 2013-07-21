@@ -32,13 +32,15 @@ void SSE::indexgen(string directoryPath){
 		unordered_set<docid_t>& set = itmap->second;
 		
 		byte docList[set.size()*sizeof(docid_t)];
+		
 		uint32_t counter = 0;
 		for(unordered_set<docid_t>::iterator itset = set.begin(); itset != set.end(); ++itset){
 			docid_t documentID = *itset;
 			memcpy(&docList[counter*sizeof(docid_t)], static_cast<byte*>(static_cast<void*>(&documentID)), sizeof(docid_t));
 			counter++;
 		}
-//		printhex(docList, set.size()*sizeof(docid_t), "DOC LIST");
+
+		printhex(docList, set.size()*sizeof(docid_t), keyword);
 		store.add(keyword, docList, set.size()*sizeof(docid_t));
 	}
 	store.finalize();
@@ -131,7 +133,7 @@ void SSE::remove(string docName){
 		byte* doc;
 		size_t size = fstore.get(docName, doc);
 		cout << "File size is " << size << endl;
-		printhex(doc, size, "DOC");
+//		printhex(doc, size, "DOC");
 
 		unordered_set<string, stringhash> keywords;
 		getKeywords(doc, size, keywords);
@@ -141,9 +143,14 @@ void SSE::remove(string docName){
 			OnlineSession session;
 			byte* docIDs;
 			size_t size = session.updateRead(keyword, docIDs, 0);
-			cout << "Updating keyword " << keyword << endl;
-			cout << "Number of files containing keyword \"" << keyword << "\" are " << size << endl << " " << size - sizeof(docid_t) << endl;
+//			cout << "Updating keyword " << keyword << endl;
+//			cout << "Number of files containing keyword \"" << keyword << "\" are " << size << endl << " " << size - sizeof(docid_t) << endl;
 			uint32_t docIDtoRemove = findDocID(docIDs, size, docID);
+			if(docIDtoRemove == 0){
+				std::cerr << "File present in filestore but is not present in BStore." << endl;
+				std::cerr << "This is probably due to the files stored from previoius runs. Try again after deleting files from previous runs." << endl;
+				exit(1);
+			}
 			printhex(docIDs, size, "DocIDs BEFORE");
 			deleteDocID(docIDs, size, docIDtoRemove);
 			printhex(docIDs, size, "DocIDs AFTER");
@@ -183,12 +190,15 @@ void SSE::add(string docName){
 		OnlineSession session;
 		byte* docIDs;
 		size_t size = session.updateRead(keyword, docIDs, sizeof(docid_t));
-	//	addDocID(docIDs, size, docID);
+		cout << "Size is " << size << endl;
+//		addDocID(docIDs, size, docID);
+		printhex(docIDs, size, "BEFORE");
 		byte updatedDocIDs[size+sizeof(docid_t)];
 		memcpy(updatedDocIDs, docIDs, size);
 		memcpy(&updatedDocIDs[size], static_cast<byte*>(static_cast<void*>(&docID)), sizeof(docid_t));
+		printhex(updatedDocIDs, size+sizeof(docid_t), "AFTER");
 		session.updateWrite(keyword, updatedDocIDs, size + sizeof(docid_t));
-//		delete[] docIDs;
+		delete[] docIDs;
 	}
 
 	fstore.put(boost::lexical_cast<string>(docID), doc, size);
@@ -201,16 +211,17 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs){
 	byte* docIDsBytes;
 	b_index_t size = session.read(keyword, docIDsBytes);
 
+	printhex(docIDsBytes, size, keyword);
+
 	if(size == 0)
 		return false;
 	
-	for(b_index_t i = 0; i < size/sizeof(docid_t); i++)
+	for(int32_t i = 0; i < size/sizeof(docid_t); i++)
 		docIDs.push_back(*(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]));
 
 	cout << "No. of documents with keyword " << docIDs.size() << endl;
 
-//	if(docIDsBytes)
-//		delete[] docIDsBytes;
+	delete[] docIDsBytes;
 
 	return true;
 	// TODO: check for file with filename docNameHash(document) in
@@ -247,7 +258,7 @@ void SSE::addDocID(byte*& docIDs, size_t size, docid_t docID){
 
 void SSE::deleteDocID(byte* docIDs, size_t size, uint32_t docIDIndex){
 //	std::copy(docIDs + docIDIndex, docIDs + size, docIDs + docIDIndex - sizeof(docid_t));
-	int32_t i = docIDIndex;
+	uint32_t i = docIDIndex;
 	for(; i < size-sizeof(docid_t); i++)
 		docIDs[i] = docIDs[i+sizeof(docid_t)];
 	memset(&docIDs[i], 0, sizeof(docid_t));

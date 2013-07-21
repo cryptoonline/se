@@ -40,6 +40,7 @@ void DataBlock::setKey(byte key[]){
 }
 
 void DataBlock::make(fileID fid, byte block[], dataSize_t dataSize, bool isCRI, version_t version) {
+//	cout << "Datasize is " << dataSize << endl;
 	this->fid = fid;
 	this->fid.get(fidBytes);
 	this->isCRI = isCRI;
@@ -69,10 +70,12 @@ void DataBlock::addPadding(){
 }
 
 void DataBlock::removePadding(){
-	for(int i = MAX_BLOCK_DATA_SIZE; i > 0; i--)
+	for(int i = MAX_BLOCK_DATA_SIZE; i > 0; i--){
 		if(block[i] == 1){
 			dataSize = i;
+			break;
 		}
+	}
 }
 
 void DataBlock::parse(byte block[]){
@@ -120,14 +123,14 @@ void DataBlock::clear(){
 void DataBlock::encrypt(){
 	AES cipher;
 	makeIV();
-	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+//	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = true;
 }
 
 void DataBlock::decrypt(){
 	AES cipher;
 	makeIV();
-	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+//	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = false;
 }
 

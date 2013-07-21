@@ -44,10 +44,12 @@ void DiskCommunicator::dPut(b_index_t* blockLocations, b_index_t numBlocks, byte
 
 	if(file.is_open()){
 		byte* D = (byte*)file.data();
-		
-		for(int32_t i = 0; i < numBlocks; i++)
+				
+		for(int32_t i = 0; i < numBlocks; i++){
+			printhex(&blocks[i*BLOCK_SIZE], BLOCK_SIZE, "INPUT");
 			memcpy(D+blockLocations[i]*BLOCK_SIZE, &blocks[i*BLOCK_SIZE], BLOCK_SIZE);
-		
+			printhex(D+blockLocations[i]*BLOCK_SIZE, BLOCK_SIZE, "WRITTEN");
+		}
 		file.close();
 	}
 	else{
@@ -70,9 +72,10 @@ void DiskCommunicator::dGet(b_index_t* blockLocations, b_index_t numBlocks, byte
 	if(file.is_open()){
 		byte* D = (byte*)file.data();
 		
-		for(int32_t i = 0; i < numBlocks; i++)
+		for(int32_t i = 0; i < numBlocks; i++){
 			memcpy(&blocks[i*BLOCK_SIZE], D+blockLocations[i]*BLOCK_SIZE, BLOCK_SIZE);
-		
+//			printhex(&blocks[i*BLOCK_SIZE], BLOCK_SIZE, "READ"); 
+		}
 		file.close();
 	}
 	else {
