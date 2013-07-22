@@ -22,8 +22,8 @@ typedef uint32_t prSubsetSeed_t;
 typedef uint32_t dataSize_t;
 typedef uint32_t criSize_t;
 
-#define TOTAL_BLOCKS (1024*1024*2)
-#define BLOCK_SIZE 256
+#define TOTAL_BLOCKS (1024*1024*4)
+#define BLOCK_SIZE 512
 #define TRAILER_SIZE 34 //size of version is 2 bytes
 #define MAX_BLOCK_DATA_SIZE (BLOCK_SIZE-TRAILER_SIZE)
 // #define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)
