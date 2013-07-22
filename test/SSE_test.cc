@@ -20,7 +20,7 @@ TEST(SSEReadTest, Test1){
 //	deletefile(T_FILE);
 
 	SSE sse;
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/";
 
 //	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	sse.indexgen(directoryPath);

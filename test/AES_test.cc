@@ -5,6 +5,7 @@
 // AES CTR test vectors source: http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
 //
 
+#include <cstring>
 #include "./../src/AES.h"
 #include "./../src/helper.h"
 #include "./../src/Debug.h"

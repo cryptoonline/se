@@ -14,6 +14,7 @@
 #include <vector>
 using std::vector;
 
+#include <cstring>
 using std::memset;
 using std::memcpy;
 

@@ -10,6 +10,8 @@
 using std::string;
 using std::cout;
 using std::endl;
+
+#include <cstring>
 using std::memset;
 
 #include <fstream>

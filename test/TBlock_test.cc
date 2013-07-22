@@ -5,6 +5,8 @@
 
 #include "gtest/gtest.h"
 
+#include <cstring>
+
 #include "./../src/TBlock.h"
 #include "./../src/Key.h"
 #include "./../src/parameters.h"
