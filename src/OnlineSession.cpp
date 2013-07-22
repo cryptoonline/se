@@ -157,6 +157,7 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 		retrieveDBlocks(filePRSubset.getSize());
 	}
 	else{
+		oldFileSize = criBlock.getFileSize();
 		size_t updatedFileSize = criBlock.getFileSize() + newContentSize;
 		numBlocksToWrite = (b_index_t)(ceil((double)updatedFileSize/(double)MAX_BLOCK_DATA_SIZE))*BLOW_UP;
 		PRSubset filePRSubset(numBlocksToWrite, criBlock.getSeed());
@@ -164,7 +165,7 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 		cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), updatedFileSize, criBlockIndex);
 		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), updatedFileSize, lowerFid);
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
-		oldFileSize = retrieveDBlocks(filePRSubset.getSize());
+		retrieveDBlocks(filePRSubset.getSize());
 		cout << "No. of blocks retrieved are " << filePRSubset.getSize() << endl; 
 		cout << "No. of blocks are " << criBlock.getSize() << endl;
 	}
