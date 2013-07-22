@@ -6,6 +6,10 @@
 #include "FileStore.h"
 
 FileStore::FileStore(){
+	if(isFilePresent(FILESTORE_PATH)){
+		std::cerr << "Error: Filestore doesn't exist." << endl;
+		exit(1);
+	}
 }
 
 FileStore::~FileStore(){

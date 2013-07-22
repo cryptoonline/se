@@ -64,7 +64,7 @@ void SSE::genPlainIndex(string directoryPath) {
 //			cout << "[FILE] " << fileName << endl;
 			fileCount++;
 			docid_t docID = getDocNameHash(fileName);
-	//		CLEAR_BIT(docID, 0);
+			CLEAR_BIT(docID, 0);
 			
 			/* Put file contents, FileStore is responsible for enryption and decryption of data files*/
 			storefile(fileName, docID);

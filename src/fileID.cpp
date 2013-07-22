@@ -28,9 +28,7 @@ fileID::fileID(string filename) {
 	higherID = prf.encrypt(mac, TTOTAL_BLOCKS-1);
 
 	if(higherID == 0){
-		cerr << "Error: Higher ID can't be zero. This event occurs with negligeable probability (1/TTBLOCK_SIZE). " << __FILE__ << ":" << __LINE__ << endl;
 		higherID = 1;
-		//		exit(1);
 	}
 
 	memcpy(ID, static_cast<byte*>(static_cast<void*>(&higherID)), HIGHERFID_SIZE);
