@@ -11,7 +11,7 @@
 #include "./../src/helper.h"
 
 TEST(OnlineSessionRead, Test1){
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+	string directoryPath = "datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
 //	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	BStore* store = new BStore(directoryPath);
 	delete store;
@@ -36,7 +36,7 @@ TEST(OnlineSessionRead, Test1){
 }
 
 TEST(OnlineSessionReadwithFileBStore, Test1){
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+	string directoryPath = "datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
 	BStore* store = new BStore();
 
 	int numFiles = 12;
@@ -71,7 +71,7 @@ TEST(OnlineSessionReadwithFileBStore, Test1){
 
 TEST(OnlineSessionWrite, Test1){
 //	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
+	string directoryPath = "datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
 //	BStore store(directoryPath);
 	while(true){
 		OnlineSession* writeSession = new OnlineSession();;
@@ -128,7 +128,7 @@ TEST(OnlineSessionWrite, Test1){
 TEST(OnlineSessionUpdate, Test1){
 //	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	cout << "This is updated test." << endl;
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
+	string directoryPath = "datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
 //	BStore store(directoryPath);
 	while(true){
 		OnlineSession* writeSession = new OnlineSession();;
@@ -201,7 +201,7 @@ TEST(OnlineSessionUpdate, Test1){
 TEST(OnlineSessionUpdate, Test2){
 //	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	cout << "This is updated test." << endl;
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
+	string directoryPath = "datasets/email/enron_mail_20110402/maildir/mann-k/inbox/" ;
 //	BStore store(directoryPath);
 	while(true){
 		OnlineSession* writeSession = new OnlineSession();;
@@ -257,7 +257,7 @@ TEST(OnlineSessionUpdate, Test2){
 }
 
 TEST(OnlineSessionRemove, Test1){
-	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+	string directoryPath = "datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
 	OnlineSession sessionDelete;
 	string filename1 = directoryPath + "2" + ".";
 	string filename2 = directoryPath + "207" + ".";
