@@ -85,6 +85,9 @@ private:
 	
 	docid_t getDocNameHash(string docname);
 
+	bool retrieveIndex0(string keyword, vector<docid_t>& docIDs);
+	bool retrieveIndex1(string keywords, vector<docid_t>& docIDs);
+
 	void getKeywords(byte docBytes[], size_t size, unordered_set<string, stringhash>& keywords);
 	uint32_t findDocID(byte* docIDs, size_t size, docid_t docID);
 	void addDocID(byte*& docIDs, size_t size, docid_t docID);

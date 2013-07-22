@@ -35,7 +35,7 @@ void SSE::indexgen(string directoryPath){
 			counter++;
 		}
 
-		store.add(keyword, docList, set.size()*sizeof(docid_t));
+		store.add(boost::lexical_cast<string>(0)+keyword, docList, set.size()*sizeof(docid_t));
 	}
 	store.finalize();
 }
@@ -64,7 +64,7 @@ void SSE::genPlainIndex(string directoryPath) {
 //			cout << "[FILE] " << fileName << endl;
 			fileCount++;
 			docid_t docID = getDocNameHash(fileName);
-			CLEAR_BIT(docID, 0);
+	//		CLEAR_BIT(docID, 0);
 			
 			/* Put file contents, FileStore is responsible for enryption and decryption of data files*/
 			storefile(fileName, docID);
@@ -131,7 +131,7 @@ void SSE::remove(string docName){
 		getKeywords(doc, size, keywords);
 
 		for(unordered_set<string, stringhash>::iterator it = keywords.begin(); it != keywords.end(); ++it){
-			string keyword = *it;
+			string keyword = boost::lexical_cast<string>(1) + *it;
 			OnlineSession session;
 			byte* docIDs;
 			size_t size = session.updateRead(keyword, docIDs, -sizeof(docid_t));
@@ -178,7 +178,7 @@ void SSE::add(string docName){
 
 //	cout << "Adding keywords " << endl;
 	for(unordered_set<string, stringhash>::iterator it = keywords.begin(); it != keywords.end(); ++it){
-		string keyword = *it;
+		string keyword = boost::lexical_cast<string>(1) + *it;
 
 //		cout << "Add " << keyword << endl;
 		OnlineSession session;
@@ -201,24 +201,59 @@ void SSE::add(string docName){
 }
 
 bool SSE::search(string keyword, vector<docid_t>& docIDs){
+	bool docsFound = false;
+
+	bool docsFoundInitial = retrieveIndex0(boost::lexical_cast<string>(0)+keyword, docIDs);
+	
+	bool docsFoundUpdate = retrieveIndex1(boost::lexical_cast<string>(1)+keyword, docIDs);
+
+	if(docsFoundInitial || docsFoundUpdate)
+		return true;
+}
+
+bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 	OnlineSession session;
 	byte* docIDsBytes;
-	b_index_t size = session.read(keyword, docIDsBytes);
 
-	printhex(docIDsBytes, size, keyword);
+	size_t size = session.updateRead(keyword, docIDsBytes, 0);
+	vector<byte> updatedDocIDsVector;
+	updatedDocIDsVector.reserve(size);
 
 	if(size == 0)
 		return false;
-	
-	for(int32_t i = 0; i < size/sizeof(docid_t); i++)
-		docIDs.push_back(*(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]));
 
-//	cout << "No. of documents with keyword " << docIDs.size() << endl;
+	for(int32_t i = 0; i < size/sizeof(docid_t); i++){
+		docid_t docID = *(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]);
+		if(fstore.isFilePresent(boost::lexical_cast<string>(docID))){
+			docIDs.push_back(docID);
+			updatedDocIDsVector.insert(updatedDocIDsVector.end(), &docIDsBytes[i*sizeof(docid_t)], &docIDsBytes[i*sizeof(docid_t)+sizeof(docid_t)+1]);
+		}
+	}
+
+	byte updatedDocIDs[updatedDocIDsVector.size()];
+	std::copy(updatedDocIDsVector.begin(), updatedDocIDsVector.end(), updatedDocIDs);
+
+	session.updateWrite(keyword, updatedDocIDs, size);
 
 	delete[] docIDsBytes;
 
 	return true;
-	// TODO: check for file with filename docNameHash(document) in
+}
+
+bool SSE::retrieveIndex1(string keyword, vector<docid_t>& docIDs){
+	OnlineSession session;
+	byte* docIDsBytes;
+	size_t size = session.read(keyword, docIDsBytes);
+
+	if(size == 0)
+		return false;
+
+	for(int32_t i = 0; i < size/sizeof(docid_t); i++)
+		docIDs.push_back(*(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]));
+
+	delete[] docIDsBytes;
+
+	return true;
 }
 
 void SSE::getKeywords(byte docBytes[], size_t size, unordered_set<string, stringhash>& keywords){
