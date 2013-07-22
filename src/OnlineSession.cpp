@@ -113,8 +113,11 @@ size_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToRe
 	return filesize;
 }
 
-size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContentSize){
-	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)newContentSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+size_t OnlineSession::updateRead(string filename, byte*& file, int64_t bytesToAdd){
+	b_index_t numBlocksToWrite = 0;
+	if(bytesToAdd >= 0)
+		numBlocksToWrite = (b_index_t)(ceil((double)bytesToAdd/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+	
 	this->filename = filename;
 	fileID fid(filename);
 	this->fid = fid;
@@ -125,6 +128,11 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 	size_t oldFileSize = 0;
 
 	if(retrieveTBlock() == 0){
+		if(bytesToAdd < 0){
+			std::cerr << "Error: Reducing filesize of the file that doesn't exists in BStore. (TBLOCK NOT FOUND)" << endl;
+			exit(1);
+		}
+
 		PRSubset filePRSubset(numBlocksToWrite);
 		this->filePRSubset = filePRSubset;
 
@@ -132,8 +140,8 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 		this->criPRSubset = criPRSubset;
 
 		readCRI(this->criPRSubset, this->cri);
-		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), newContentSize, lowerFid);	
-		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), newContentSize, lowerFid);
+		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), bytesToAdd, lowerFid);	
+		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), bytesToAdd, lowerFid);
 		
 		TBlock tBlock(fid.getHigherID());
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
@@ -142,10 +150,15 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 		retrieveDBlocks(filePRSubset.getSize());
 	}
 	else if(retrieveCRIBlock() == 0){
+		if(bytesToAdd < 0){
+			std::cerr << "Error: Reducing filesize of the file that doesn't exists in BStore. (TBLOCK FOUND BUT CRI NOT FOUND)" << endl;
+			exit(1);
+		}
+
 		PRSubset filePRSubset(numBlocksToWrite);
 		this->filePRSubset = filePRSubset;
-		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), newContentSize, lowerFid);
-		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), newContentSize, lowerFid);
+		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), bytesToAdd, lowerFid);
+		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), bytesToAdd, lowerFid);
 		b_index_t criNumBlocks = (b_index_t)(ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 		if(criNumBlocks > criPRSubset.getSize()){	
 			PRSubset criPRSubset(criNumBlocks, this->criPRSubset.getSeed());
@@ -158,16 +171,21 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t newContent
 	}
 	else{
 		oldFileSize = criBlock.getFileSize();
-		size_t updatedFileSize = criBlock.getFileSize() + newContentSize;
-		numBlocksToWrite = (b_index_t)(ceil((double)updatedFileSize/(double)MAX_BLOCK_DATA_SIZE))*BLOW_UP;
+		size_t updatedFileSize = criBlock.getFileSize() + bytesToAdd;
+		
+		if(bytesToAdd < 0)
+			numBlocksToWrite = (b_index_t)(ceil((double)oldFileSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+		else
+			numBlocksToWrite = (b_index_t)(ceil((double)updatedFileSize/(double)MAX_BLOCK_DATA_SIZE))*BLOW_UP;
+
 		PRSubset filePRSubset(numBlocksToWrite, criBlock.getSeed());
 		this->filePRSubset = filePRSubset;
 		cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), updatedFileSize, criBlockIndex);
 		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), updatedFileSize, lowerFid);
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
 		retrieveDBlocks(filePRSubset.getSize());
-		cout << "No. of blocks retrieved are " << filePRSubset.getSize() << endl; 
-		cout << "No. of blocks are " << criBlock.getSize() << endl;
+//		cout << "No. of blocks retrieved are " << filePRSubset.getSize() << endl; 
+//		cout << "No. of blocks are " << criBlock.getSize() << endl;
 	}
 	
 	file = new byte[oldFileSize];
@@ -337,10 +355,12 @@ void OnlineSession::remove(string filename){
 	fileID fid(filename);
 	this->fid = fid;
 
-	if(retrieveTBlock() == 0)
-		cout << "File not found." << endl;
-	else if(retrieveCRIBlock() == 0)
-		cout << "File not found." << endl;
+	if(retrieveTBlock() == 0){
+//		cout << "File not found." << endl;
+	}
+	else if(retrieveCRIBlock() == 0){
+//		cout << "File not found." << endl;
+	}
 	else{
 		retrieveDBlocks();
 
@@ -400,7 +420,7 @@ void OnlineSession::readCRI(PRSubset& prSubset, CRI& cri){
 	b_index_t numBlocks = prSubset.getSize();
 	b_index_t blockIndices[numBlocks];
 
-	cout << "Num blocks are " << numBlocks << endl;
+//	cout << "Num blocks are " << numBlocks << endl;
 	
 	prSubset.get(blockIndices, numBlocks);
 

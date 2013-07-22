@@ -8,12 +8,12 @@
 
 #include "HashMAC.h"
 
-byte HashMAC::key[HMAC_KEY_SIZE];
+//byte HashMAC::key[HMAC_KEY_SIZE];
 
 void HashMAC::keyGen(byte key[]){
 	AutoSeededRandomPool prng;
-  prng.GenerateBlock(this->key, HMAC_KEY_SIZE);
-	memcpy(key, this->key, HMAC_KEY_SIZE);
+  prng.GenerateBlock(key, HMAC_KEY_SIZE);
+//	memcpy(key, this->key, HMAC_KEY_SIZE);
 }
 
 void HashMAC::setKey(byte key[]){

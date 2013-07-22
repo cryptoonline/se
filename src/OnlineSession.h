@@ -8,6 +8,9 @@
 
 #include <stdint.h>
 #include <iostream>
+
+#include <csignal>
+
 #include <algorithm>
 using std::max;
 
@@ -62,7 +65,7 @@ public:
 	OnlineSession();
 	~OnlineSession();
 	size_t read(string filename, byte*& file, b_index_t numBlocksToRead = 0);
-	size_t updateRead(string filename, byte*& file, size_t newContentSize);
+	size_t updateRead(string filename, byte*& file, int64_t bytesToAdd);
 	void updateWrite(string filename, byte updatedFile[], size_t updatedFileSize);
 	void write(string filename, byte contents[], size_t size);
 	void remove(string filename);

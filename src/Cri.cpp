@@ -98,7 +98,6 @@ criSize_t CRI::size(){
 }
 
 uint32_t CRI::search(fileID fid, CRIBlock& block){
-	cout << "CRI searching!" << endl;
 	byte lowerFid[LOWERFID_SIZE];
 	fid.getLowerID(lowerFid);
 	return search(lowerFid, block);
@@ -108,7 +107,6 @@ uint32_t CRI::search(byte lowerFid[], CRIBlock& block){
 	for(int i = 0; i < blocks.size(); i++){
 		if(blocks[i].match(lowerFid)){
 			block = blocks[i];
-			cout << "Match Found" << endl;
 			return i;
 		}
 	}

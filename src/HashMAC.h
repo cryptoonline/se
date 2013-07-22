@@ -49,7 +49,7 @@ using CryptoPP::SecByteBlock;
 
 class HashMAC {
 private:
-	static byte key[];
+	byte key[HMAC_KEY_SIZE];
     
 public: 
 	void keyGen(byte key[]);

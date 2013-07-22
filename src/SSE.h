@@ -32,6 +32,7 @@ using std::ifstream;
 #include <boost/filesystem.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/cstdint.hpp>
 
 #include <tr1/unordered_map>
 using std::tr1::unordered_map;
@@ -52,7 +53,8 @@ using std::tr1::unordered_set;
 
 #include <boost/functional/hash.hpp>
 
-#define CHECK_BIT(var, pos) ((var) & (1<<(pos)))
+#define SET_BIT(var, pos) ( (var) |= 1ULL << (pos) )
+#define CLEAR_BIT(var, pos) ( (var) &= ~(1ULL << (pos)) )
 
 typedef struct{
 	size_t operator() (const std::string &str) const {return boost::hash<string>()(str);}
@@ -74,12 +76,15 @@ private:
 	BStore store;
 	FileStore fstore;
 	
-	static bool hashKeyGenerated;
-	static byte docHashKey[SSE_DIGEST_SIZE];
-	
+	bool hashKeyGenerated;
+	byte docHashKey[HMAC_KEY_SIZE];
+
+	HashMAC hashMac;
+
 	void genPlainIndex(string directoryPath);
 	
-	docid_t getDocNameHash(string& docname);
+	docid_t getDocNameHash(string docname);
+
 	void getKeywords(byte docBytes[], size_t size, unordered_set<string, stringhash>& keywords);
 	uint32_t findDocID(byte* docIDs, size_t size, docid_t docID);
 	void addDocID(byte*& docIDs, size_t size, docid_t docID);

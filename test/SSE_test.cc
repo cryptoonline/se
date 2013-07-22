@@ -28,23 +28,6 @@ TEST(SSEReadTest, Test1){
 	readDocs(sse);
 }
 
-TEST(SSERemoveTest, Test1){
-	SSE sse;
-
-	while(1){
-		string filename;
-		cout << "Enter filename to delete (Enter q to quit): ";
-		cin >> filename;
-
-		if(filename.compare("q") == 0)
-			break;
-
-		sse.remove(filename);
-	}
-	
-	readDocs(sse);
-}
-
 TEST(SSEAddTest, Test1){
 	SSE sse;
 	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
@@ -60,6 +43,38 @@ TEST(SSEAddTest, Test1){
 		sse.add(directoryPath + filename);
 	}
 
+	readDocs(sse);
+}
+
+TEST(SSERemoveTest, Test1){
+	SSE sse;
+
+	string directoryPath = "/Users/naveed/BStore/datasets/email/enron_mail_20110402/maildir/mann-k/inbox/";
+
+	while(1){
+		string filename;
+		cout << "Enter fiename of the file to be added: (Enter q to quit): ";
+		cin >> filename;
+
+		if(filename.compare("q") == 0)
+			break;
+
+		sse.add(directoryPath + filename + ".");
+	}
+
+	readDocs(sse);
+
+	while(1){
+		string filename;
+		cout << "Enter filename to delete (Enter q to quit): ";
+		cin >> filename;
+
+		if(filename.compare("q") == 0)
+			break;
+
+		sse.remove(directoryPath + filename + ".");
+	}
+	
 	readDocs(sse);
 }
 
