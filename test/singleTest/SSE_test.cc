@@ -21,9 +21,9 @@ TEST(SSEReadTest, Test1){
 //	deletefile(T_FILE);
 
 	SSE sse;
-	string directoryPath = "datasets/email/enron_mail_20110402/maildir/cuilla-m/";
+//	string directoryPath = "datasets/email/enron_mail_20110402/maildir/arnold-j/";
 
-//	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	sse.indexgen(directoryPath);
 
 	readDocs(sse);

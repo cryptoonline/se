@@ -56,7 +56,7 @@ typedef uint32_t criSize_t;
 
 const uint16_t MAX_NO_OF_COLLISIONS = 1024;
 
-const uint16_t BLOW_UP = 16;
+const uint16_t BLOW_UP = 4;
 
 const int16_t KEY_SIZE = 16;
 
