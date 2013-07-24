@@ -21,7 +21,7 @@ void SSE::setupKey(){
 void SSE::indexgen(string directoryPath){
 	
 	genPlainIndex(directoryPath);
-
+	double duration = 0;
 	for(unordered_map<string, unordered_set<docid_t>, stringhash >::iterator itmap = map.begin(); itmap != map.end(); ++itmap){
 		const string& keyword = itmap->first; //filename in BStore
 		unordered_set<docid_t>& set = itmap->second;
@@ -34,10 +34,14 @@ void SSE::indexgen(string directoryPath){
 			memcpy(&docList[counter*sizeof(docid_t)], static_cast<byte*>(static_cast<void*>(&documentID)), sizeof(docid_t));
 			counter++;
 		}
-
+		clock_t startTime = clock();
 		store.add(boost::lexical_cast<string>(0)+keyword, docList, set.size()*sizeof(docid_t));
+		duration = duration + (double)(clock() - startTime)/(double)CLOCKS_PER_SEC;
 	}
+	clock_t startTime = clock();
 	store.finalize();
+	duration = duration + (double)(clock() - startTime)/(double)CLOCKS_PER_SEC;
+	cout << "indexgen took " << duration << " second." << endl;
 }
 
 docid_t SSE::getDocNameHash(string docname){
@@ -201,6 +205,7 @@ void SSE::add(string docName){
 }
 
 bool SSE::search(string keyword, vector<docid_t>& docIDs){
+
 	bool docsFound = false;
 
 	bool docsFoundInitial = retrieveIndex0(boost::lexical_cast<string>(0)+keyword, docIDs);

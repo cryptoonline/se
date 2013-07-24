@@ -11,6 +11,7 @@
 #include "./../../src/parameters.h"
 #include "./../../src/SSE.h"
 #include "./../../src/sse_parameters.h"
+#include <fstream>
 
 void readDocs(SSE &sse);
 void deletefile(string file);
@@ -20,10 +21,11 @@ TEST(SSEReadTest, Test1){
 //	deletefile(D_FILE);
 //	deletefile(T_FILE);
 
+	cout << sizeof(streamoff) << endl;
 	SSE sse;
-//	string directoryPath = "datasets/email/enron_mail_20110402/maildir/arnold-j/";
-
-	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
+	string directoryPath = "datasets/email/enron_mail_20110402_withoutheaders/maildir/mann-k/inbox";	
+//	string directoryPath = "/Users/naveed/Desktop/Projects/Code/enron_mail_20110402_withoutheaders/maildir/dasovich-j/";
+//	string directoryPath = "/Users/naveed/BStore/datasets/testdir/";
 	sse.indexgen(directoryPath);
 
 	readDocs(sse);
@@ -104,11 +106,11 @@ void readDocs(SSE &sse){
 		if(sse.search(keyword, docIDs)){
 			cout << "Search took " << ((double)(clock() - starttime)/CLOCKS_PER_SEC) << "." << endl;
 
-//			cout << "*************************************************docIDs***************************************************" << endl; 
-//			for(int i = 0; i < docIDs.size(); i++)
-//				cout << docIDs[i] << "\t";
-//			cout << endl;
-//			cout << "*************************************************docIDs***************************************************" << endl; 
+			cout << "*************************************************docIDs***************************************************" << endl; 
+			for(int i = 0; i < docIDs.size(); i++)
+				cout << docIDs[i] << "\t";
+			cout << endl;
+			cout << "*************************************************docIDs***************************************************" << endl; 
 		}
 		else
 			cout << "No files with keyword " << keyword << " found." << endl;

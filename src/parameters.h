@@ -22,8 +22,9 @@ typedef uint32_t prSubsetSeed_t;
 typedef uint32_t dataSize_t;
 typedef uint32_t criSize_t;
 
-#define TOTAL_BLOCKS (1024*1024*4)
-#define BLOCK_SIZE 512
+#define MAX_DISK_FILESIZE (1024*1024*1024)
+#define TOTAL_BLOCKS (1024*512)
+#define BLOCK_SIZE 2048
 #define TRAILER_SIZE 34 //size of version is 2 bytes
 #define MAX_BLOCK_DATA_SIZE (BLOCK_SIZE-TRAILER_SIZE)
 // #define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)
@@ -56,7 +57,7 @@ typedef uint32_t criSize_t;
 
 const uint16_t MAX_NO_OF_COLLISIONS = 1024;
 
-const uint16_t BLOW_UP = 4;
+const uint16_t BLOW_UP = 8;
 
 const int16_t KEY_SIZE = 16;
 
