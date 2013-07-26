@@ -123,14 +123,14 @@ void DataBlock::clear(){
 void DataBlock::encrypt(){
 	AES cipher;
 	makeIV();
-//	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = true;
 }
 
 void DataBlock::decrypt(){
 	AES cipher;
 	makeIV();
-//	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = false;
 }
 

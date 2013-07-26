@@ -216,24 +216,24 @@ bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 	byte* docIDsBytes;
 
 	size_t size = session.updateRead(keyword, docIDsBytes, 0);
-	vector<byte> updatedDocIDsVector;
-	updatedDocIDsVector.reserve(size);
 
 	if(size == 0)
 		return false;
 
+	byte updatedDocIDsBytes[size];
+	memset(updatedDocIDsBytes, 0, size);
+
+	int32_t j = 0;
 	for(int32_t i = 0; i < size/sizeof(docid_t); i++){
 		docid_t docID = *(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]);
 		if(fstore.isFilePresent(boost::lexical_cast<string>(docID))){
 			docIDs.push_back(docID);
-			updatedDocIDsVector.insert(updatedDocIDsVector.end(), &docIDsBytes[i*sizeof(docid_t)], &docIDsBytes[i*sizeof(docid_t)+sizeof(docid_t)+1]);
+			memcpy(&updatedDocIDsBytes[j*sizeof(docid_t)], &docIDsBytes[i*sizeof(docid_t)], sizeof(docid_t));
+			j++;
 		}
 	}
 
-	byte updatedDocIDs[updatedDocIDsVector.size()];
-	std::copy(updatedDocIDsVector.begin(), updatedDocIDsVector.end(), updatedDocIDs);
-
-	session.updateWrite(keyword, updatedDocIDs, size);
+	session.updateWrite(keyword, updatedDocIDsBytes, size);
 
 	delete[] docIDsBytes;
 
