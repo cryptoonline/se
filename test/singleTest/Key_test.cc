@@ -6,8 +6,8 @@
 #include <cstring>
 
 #include "gtest/gtest.h"
-#include "./../src/Key.h"
-#include "./../src/Debug.h"
+#include "./../../src/Key.h"
+#include "./../../src/Debug.h"
 
 using std::cout;
 
@@ -30,8 +30,8 @@ TEST(KeyAccess, KeySize16) {
 	Key key("KeyTest16Bytes", keySize);
 	byte testKey[keySize];
 	key.get(testKey);
-//	printhex(testKey, keySize, "16 Byte Key Disk Access Test");	
-//	cout << "Assuming that randomly generated key will never be all zeros." << endl;
+	printhex(testKey, keySize, "16 Byte Key Disk Access Test");	
+	cout << "Assuming that randomly generated key will never be all zeros." << endl;
 	byte zeroVector[keySize];
 	memset(zeroVector, 0, keySize);
 
@@ -43,10 +43,15 @@ TEST(KeyAccess, KeySize20) {
 	Key key("KeyTest20Bytes", keySize);
 	byte testKey[keySize];
 	key.get(testKey);
-//	printhex(testKey, keySize, "20 Byte Key Disk Access Test");
-//	cout << "Assuming that randomly generated key will never be all zeros." << endl;
+	printhex(testKey, keySize, "20 Byte Key Disk Access Test");
+	cout << "Assuming that randomly generated key will never be all zeros." << endl;
 	byte zeroVector[keySize];
 	memset(zeroVector, 0, keySize);
 
 	EXPECT_FALSE( 0 == std::memcmp(testKey, zeroVector, keySize));
+}
+
+int main(int argc, char **argv) {
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }

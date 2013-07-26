@@ -18,6 +18,8 @@ using std::endl;
 using std::string;
 
 #include <stdio.h>
+
+#include <cstring>
 using std::memset;
 
 #include "AES.h"

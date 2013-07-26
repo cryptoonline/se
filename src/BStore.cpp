@@ -70,9 +70,11 @@ void BStore::add(string filename, byte fileBytes[], size_t size){
 void BStore::finalize(){
 	T.finalize(D);
 	D.encryptEmptyBlocks();
-
+	
+	clock_t startTime = clock();
 	D.writeToDisk();
 	T.writeToDisk();
+	cout << "Disk Writing took " << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
 }
 
 void BStore::readFileNamesFromDirectory(string path, vector<string>& filesList){

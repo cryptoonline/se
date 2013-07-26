@@ -29,7 +29,7 @@ typedef uint32_t criSize_t;
 const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 #define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)
 
-#define TTOTAL_BLOCKS (256*256)
+#define TTOTAL_BLOCKS (1024*1024)
 //const uint32_t BIT_MASK = 0x0000000F;
 #define TBLOCK_SIZE 10
 
@@ -56,7 +56,7 @@ const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 
 const uint16_t MAX_NO_OF_COLLISIONS = 1024;
 
-const uint16_t BLOW_UP = 4;
+const uint16_t BLOW_UP = 8;
 
 const int16_t KEY_SIZE = 16;
 

@@ -4,6 +4,8 @@
 //
 // Test Vector http://tools.ietf.org/html/rfc4231
 
+#include <cstring>
+
 #include "gtest/gtest.h"
 #include "./../src/HashMAC.h"
 #include "./../src/parameters.h"

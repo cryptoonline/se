@@ -5,6 +5,8 @@
 
 #include "gtest/gtest.h"
 
+#include <cstring>
+
 #include "./../src/helper.h"
 #include "./../src/DataBlock.h"
 #include "./../src/fileID.h"

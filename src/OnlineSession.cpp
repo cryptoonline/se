@@ -238,14 +238,16 @@ void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t upda
 		blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
 	}
 	
-	writeD(blockIndices, filePRSubset.getSize(), blocksBytes);
 	
 	byte tBlockBytes[TBLOCK_SIZE];
 	tBlock.getEncrypted(tBlockBytes);
+	
+	clock_t startTime = clock();
 	writeT(fid.getHigherID(), tBlockBytes);
-
+	writeD(blockIndices, filePRSubset.getSize(), blocksBytes);
+	cout << "Disk writing took in " << __PRETTY_FUNCTION__ << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
 	writeCRI();	
-
+	
 //	dcomm.writeToDisk();
 }
 
@@ -339,12 +341,14 @@ void OnlineSession::write(string filename, byte contents[], size_t size){
 		blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
 	}
 	
-	writeD(blockIndices, filePRSubset.getSize(), blocksBytes);
 	
 	byte tBlockBytes[TBLOCK_SIZE];
 	tBlock.getEncrypted(tBlockBytes);
+	
+	clock_t startTime = clock();
 	writeT(fid.getHigherID(), tBlockBytes);
-
+	writeD(blockIndices, filePRSubset.getSize(), blocksBytes);
+	cout << "Disk writing took in " << __PRETTY_FUNCTION__ << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
 	writeCRI();	
 
 //	dcomm.writeToDisk();
@@ -387,12 +391,14 @@ void OnlineSession::remove(string filename){
 		b_index_t blockIndices[filePRSubset.getSize()];
 		filePRSubset.get(blockIndices, filePRSubset.getSize());
 
-		writeD(blockIndices, filePRSubset.getSize(), blockBytes);
 
 		byte tBlockBytes[TBLOCK_SIZE];
 		tBlock.getEncrypted(tBlockBytes);
+		
+		clock_t startTime = clock();
 		writeT(fid.getHigherID(), tBlockBytes);
-
+		writeD(blockIndices, filePRSubset.getSize(), blockBytes);
+		cout << "Disk writing took in " << __PRETTY_FUNCTION__ << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
 		writeCRI();
 //		dcomm.writeToDisk();
 	}
@@ -492,5 +498,7 @@ void OnlineSession::writeCRI(){
 		criBlocks[i].updateVersion();
 	criBlocks[i].getEncrypted(&encryptedBlocks[i*BLOCK_SIZE]);
 
+	clock_t startTime = clock();
 	writeD(criBlocksIndices, criPRSubset.getSize(), encryptedBlocks);
+	cout << "Disk writing took in " << __PRETTY_FUNCTION__ << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
 }

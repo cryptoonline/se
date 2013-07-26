@@ -5,6 +5,8 @@
 
 #include <stdlib.h>
 
+#include <cstring>
+
 #include "gtest/gtest.h"
 #include "./../src/parameters.h"
 #include "./../src/fileID.h"

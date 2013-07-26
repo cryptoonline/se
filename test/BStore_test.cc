@@ -10,7 +10,7 @@
 using std::string;
 
 TEST(PreprocessingTest, Test1){
-	string directoryPath = "/Users/naveed/BStore/datasets/testdir";
+	string directoryPath = "datasets/testdir";
 	BStore* store = new BStore(directoryPath);
 	delete store;
 }

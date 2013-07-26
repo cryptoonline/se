@@ -40,7 +40,8 @@ DiskCommunicator::~DiskCommunicator(){
 
 void DiskCommunicator::dPut(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks){
 	boost::iostreams::mapped_file_sink file;
-	file.open(D_FILE, TOTAL_BLOCKS*BLOCK_SIZE);
+	size_t DSize = (size_t)(TOTAL_BLOCKS*BLOCK_SIZE);
+	file.open(D_FILE, DSize);
 
 	if(file.is_open()){
 		byte* D = (byte*)file.data();
@@ -65,7 +66,9 @@ void DiskCommunicator::dPut(b_index_t* blockLocations, b_index_t numBlocks, byte
 
 void DiskCommunicator::dGet(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks){
 	boost::iostreams::mapped_file_source file;
-	file.open(D_FILE, TOTAL_BLOCKS*BLOCK_SIZE);
+	size_t DSize = (size_t)(TOTAL_BLOCKS*BLOCK_SIZE);
+
+	file.open(D_FILE, DSize);
 
 	if(file.is_open()){
 		byte* D = (byte*)file.data();

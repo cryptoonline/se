@@ -5,6 +5,8 @@
 
 #include "gtest/gtest.h"
 
+#include <cstring>
+
 #include "./../src/CRIBlock.h"
 #include "./../src/parameters.h"
 #include "./../src/Debug.h"

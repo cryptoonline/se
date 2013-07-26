@@ -11,6 +11,8 @@ using std::cout;
 using std::endl;
 using std::string;
 
+#include <stdio.h>
+
 #include <vector>
 using std::vector;
 

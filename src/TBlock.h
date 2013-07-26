@@ -7,6 +7,8 @@
 #define __BlindStorage__TBlock__
 
 #include <iostream>
+
+#include <cstring>
 using std::memcpy;
 using std::memset;
 
