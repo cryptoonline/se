@@ -28,10 +28,19 @@ PRSubset::PRSubset(prSubsetSize_t size, prSubsetSeed_t seed){
 }
 
 void PRSubset::make(b_index_t subset[]){
-	srand(seed);
-	for(int i = 0; i < size; i++){
-		subset[i] = rand() % TOTAL_BLOCKS;
-	}
+//	srand(seed);
+//	for(int i = 0; i < size; i++){
+//		subset[i] = rand() % TOTAL_BLOCKS;
+//	}
+
+	typedef boost::mt19937 RNGType;
+	RNGType rng(seed);
+	boost::uniform_int<> urandDevice(0, TOTAL_BLOCKS-1);
+	boost::variate_generator< RNGType, boost::uniform_int<> >
+		urand(rng, urandDevice);
+
+	for(prSubsetSize_t i = 0; i < size; i++)
+		subset[i] = urand();
 }
 
 void PRSubset::get(b_index_t subset[], b_index_t size){
@@ -51,8 +60,17 @@ prSubsetSeed_t PRSubset::getSeed() const{
 }
 
 void PRSubset::generateSeed(){
-	srand(clock());
-	this->seed = rand();
+//	srand(clock());
+//	srand(time(NULL));
+//	this->seed = rand();
+
+//	srand(rdtsc());
+//	seed = rand();
+
+//	int randomData = open("/dev/random", O_RDONLY); //To get large randomness
+	int randomData = open("/dev/random", O_RDONLY);
+	read(randomData, &seed, sizeof(prSubsetSeed_t));
+	close(randomData);
 	
 //	uint32_t seed[1];
 //	if(1)

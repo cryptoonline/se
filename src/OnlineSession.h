@@ -23,6 +23,7 @@ using std::max;
 #include "Debug.h"
 #include "Cri.h"
 #include "DiskCommunicator.h"
+#include "LZO.h"
 
 class OnlineSession {
 private:
@@ -59,6 +60,9 @@ private:
 	int retrieveCRIBlock();
 	size_t retrieveDBlocks(b_index_t numBlocksToWrite = 0);
 	void extractFileBlocks();
+
+	static double diskAccessTime;
+
 	
 
 public:
@@ -71,6 +75,9 @@ public:
 	void remove(string filename);
 	/*! Use homorphic encryption to support this */
 	void rename();
+	
+	double getDiskAccessTime();
+	void resetDiskAccessTime();
 };
 
 #endif /* defined(__BlindStorage__Dfile__) */

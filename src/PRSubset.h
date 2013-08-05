@@ -15,8 +15,16 @@
 using std::endl;
 using std::cerr;
 
+#include <fcntl.h>
+
+#include "boost/random.hpp"
+#include "boost/generator_iterator.hpp"
+
 #include "parameters.h"
 #include <fstream>
+
+#include "rdtsc.h"
+#include <stdio.h>
 
 class PRSubset {
 private:

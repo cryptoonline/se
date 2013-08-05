@@ -6,6 +6,7 @@
 #include "Ddisk.h"
 
 Ddisk::Ddisk(b_index_t numBlocks){
+	numOccupiedBlocks = 0;
 	this->numBlocks = numBlocks;
 	usedBlocks = 0;
 
@@ -29,6 +30,9 @@ Ddisk::~Ddisk(){
 void Ddisk::makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>& emptyBlocks, bool isCRI){
 // Bytes in this function should be interleaved for the amount of bytes needed by DataBlock trailer
 	b_index_t requiredNumBlocks = (b_index_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
+	numOccupiedBlocks += requiredNumBlocks;
+
+	cout << "Number of blocks occupied are " << numOccupiedBlocks << endl;
 
 	int32_t counter = 0;
 	for(; counter < requiredNumBlocks - 1; counter++){
@@ -54,12 +58,12 @@ void Ddisk::getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks){
 void Ddisk::addFile(byte bytes[], size_t size, fileID fid, PRSubset prSubset, bool isCRI){
 	vector<b_index_t> emptyBlocks;
 	getEmptyBlocks(prSubset, emptyBlocks);
-	if(emptyBlocks.size()*MAX_BLOCK_DATA_SIZE < size){
+	if(emptyBlocks.size() < (uint32_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE)){
 		cerr << "Not enough empty blocks." << endl;
 		exit(1);
 	}
 	makeBlocks(bytes, size, fid, emptyBlocks, isCRI);
-	usedBlocks += (b_index_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
+//	usedBlocks += (b_index_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
 }
 
 void Ddisk::getBlock(b_index_t index, DataBlock& block){
@@ -92,4 +96,8 @@ void Ddisk::writeToDisk(){
 //		printhex(encryptedBlock, BLOCK_SIZE, __PRETTY_FUNCTION__);
 	}
 	cout << endl;
+}
+
+b_index_t Ddisk::getNumOccupiedBlocks(){
+	return numOccupiedBlocks;
 }

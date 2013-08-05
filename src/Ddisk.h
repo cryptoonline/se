@@ -27,6 +27,7 @@ private:
 //	byte* zeroBytes;
 	void makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>& emptyBlocks, bool isCRI);
 	void getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks);
+	b_index_t numOccupiedBlocks;
 
 public:
 	Ddisk(b_index_t numBlocks = TOTAL_BLOCKS);
@@ -35,6 +36,7 @@ public:
 	void encryptEmptyBlocks();
 	void getBlock(b_index_t index, DataBlock& block);
 	void writeToDisk();
+	b_index_t getNumOccupiedBlocks();
 };
 
 #endif /* defined(__BlindStorage__Ddisk__) */

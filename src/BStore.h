@@ -14,6 +14,7 @@
 #include "Communicator.h"
 #include "OnlineSession.h"
 #include "Tdisk.h"
+#include "LZO.h"
 #include "boost/filesystem.hpp"
 
 //#include "tr1/unordered_map"
@@ -40,6 +41,8 @@ private:
 	size_t readFileSize(string path);
 	Ddisk D;
 	Tdisk T;
+
+	size_t compressionAdvntage;
 };
 
 #endif /* defined(__BlindStorge__BStore__) */

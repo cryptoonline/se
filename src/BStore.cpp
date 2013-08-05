@@ -7,6 +7,7 @@
 
 BStore::BStore():D(TOTAL_BLOCKS){
 	totalFileBlocks = 0;
+	compressionAdvntage = 0;
 }
 
 BStore::~BStore(){
@@ -15,6 +16,7 @@ BStore::~BStore(){
 
 BStore::BStore(string directoryPath): D(TOTAL_BLOCKS){
 	totalFileBlocks = 0;
+	compressionAdvntage = 0;
 	vector<string> filesList;
 	readFileNamesFromDirectory(directoryPath, filesList);
 //	allFileBytes = new byte[totalFileBlocks*BLOCK_SIZE]();
@@ -60,11 +62,31 @@ BStore::BStore(string directoryPath): D(TOTAL_BLOCKS){
 }
 
 void BStore::add(string filename, byte fileBytes[], size_t size){
+//	LZO compressor;
+//	byte* compressedFileBytes = new byte[2*size+COMPRESSION_HEADER_SIZE];
+//	size_t compressedSize = 0;
+	
+//	if( size > MAX_BLOCK_DATA_SIZE && ((int32_t)size - (int32_t)compressedSize) > 0){
+//	compressor.addHeader(compressedFileBytes, size);
+//	compressor.compress(&fileBytes[0], (size_t)size, &compressedFileBytes[0], compressedSize);
+//		cout << filename << endl;
+//		compressedFileBytes[0] = 1;
+//		compressionAdvntage += ((int32_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE) - (int32_t)ceil((double)compressedSize/(double)MAX_BLOCK_DATA_SIZE));
+//		cout << "Compression reduced filesize by: " << (int32_t)size - (int32_t)compressedSize << endl;
+//	}
+//	else{
+//		compressedFileBytes[0] = 0;
+//	}
+
 	b_index_t numBlocks = (b_index_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
+//	b_index_t numBlocks = (b_index_t)ceil((double)compressedSize/(double)MAX_BLOCK_DATA_SIZE);
 	fileID fid(filename);
 	PRSubset prSubset(numBlocks*BLOW_UP);
 	T.addFile(fid, size, prSubset);
+
 	D.addFile(fileBytes, size, fid, prSubset); 
+//	D.addFile(compressedFileBytes, compressedSize, fid, prSubset);
+//	delete[] compressedFileBytes;
 }
 
 void BStore::finalize(){
@@ -75,6 +97,7 @@ void BStore::finalize(){
 	D.writeToDisk();
 	T.writeToDisk();
 	cout << "Disk Writing took " << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
+	cout << "Compression reduced size by " << compressionAdvntage << endl;
 }
 
 void BStore::readFileNamesFromDirectory(string path, vector<string>& filesList){

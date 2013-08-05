@@ -66,8 +66,8 @@ public:
 	SSE();
 	~SSE();
 	void indexgen(string directoryPath);
-	void remove(string docName);
-	void add(string docName);
+	void remove(docid_t docName);
+	void add(docid_t docName, string docFileName);
 	bool search(string keyword, vector<docid_t>& docIDs);
 
 private:
@@ -83,7 +83,7 @@ private:
 
 	void genPlainIndex(string directoryPath);
 	
-	docid_t getDocNameHash(string docname);
+	uint64_t getDocNameHash(string docname);
 
 	bool retrieveIndex0(string keyword, vector<docid_t>& docIDs);
 	bool retrieveIndex1(string keywords, vector<docid_t>& docIDs);
@@ -93,7 +93,7 @@ private:
 	void addDocID(byte*& docIDs, size_t size, docid_t docID);
 	void deleteDocID(byte* docIDs, size_t size, uint32_t docIDIndex);
 
-	void storefile(string filename, docid_t docID);
+	void storefile(string filename, docid_t docID, double& cryptoduration);
 	
 	void setupKey();
 //	map from keywords to fileNames

@@ -6,7 +6,7 @@
 #include "SSE.h"
 
 SSE::SSE(){
-	setupKey();	
+	setupKey();
 }
 
 SSE::~SSE(){
@@ -44,7 +44,7 @@ void SSE::indexgen(string directoryPath){
 	cout << "indexgen took " << duration << " second." << endl;
 }
 
-docid_t SSE::getDocNameHash(string docname){
+uint64_t SSE::getDocNameHash(string docname){
 	byte hashMacBytes[SSE_DIGEST_SIZE];
 	hashMac.doFinal(docname, hashMacBytes);
 	return *(uint64_t*)hashMacBytes;
@@ -61,32 +61,59 @@ void SSE::genPlainIndex(string directoryPath) {
 		}
 	}
 
+	double SKETime = 0;
+	double filestoreTime = 0;
+	double plainIndexTime = 0;
+
+	clock_t startTime = clock();
 	for(boost::filesystem::recursive_directory_iterator end, dir(directoryPath); dir != end; ++dir) {
 //		string fileName = boost::filesystem::canonical(dir->path()).string();
+		
 		string fileName = dir->path().string();
+
+
+		if((dir->path().filename()).compare(".DS_Store") == 0){
+			cout << "Ignoring file " << dir->path().filename() << endl;
+			continue;
+		}
+
 		if(boost::filesystem::is_regular(dir->status())) {
 //			cout << "[FILE] " << fileName << endl;
 			fileCount++;
-			docid_t docID = getDocNameHash(fileName);
-			CLEAR_BIT(docID, 0);
+//			uint64_t docID = getDocNameHash(fileName);
+			
+//			CLEAR_BIT(docID, 0);
 			
 			/* Put file contents, FileStore is responsible for enryption and decryption of data files*/
-			storefile(fileName, docID);
+
+			clock_t startTime = clock();
+			double cryptoduration = 0;
+			storefile(fileName, fileCount, cryptoduration);
+			SKETime += cryptoduration;
+			filestoreTime += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC;
 
 			ifstream input(fileName.c_str());
 
+//			char charsToRemove[] = "~!@#$%^&*()_+-=[]{};:'\"\\|?/<>,.";
+
+			boost::char_separator<char> sep(" ~!#$%^&*()+=[]{};:'\"\\|?/<>,");
 			string getcontent;
-			boost::tokenizer<> tok(getcontent);
+			boost::tokenizer<boost::char_separator<char> > tok(getcontent);
 			while(getline(input, getcontent)) {
+//				cout << getcontent << endl;
+//				for(unsigned int i = 0; i < strlen(charsToRemove); i++)
+//					getcontent.erase(std::remove(getcontent.begin(), getcontent.end(), charsToRemove[i]), getcontent.end());
+//				cout << getcontent << endl;
 				tok.assign(getcontent.begin(), getcontent.end());
-				for(boost::tokenizer<>::iterator beg = tok.begin(); beg != tok.end(); ++beg) {
+				for(boost::tokenizer<boost::char_separator<char> >::iterator beg = tok.begin(); beg != tok.end(); ++beg) {
 					string keyword(*beg);
 					// OPTIONAL: convert keywords to lower case
 					std::transform(keyword.begin(), keyword.end(), keyword.begin(), ::tolower);
 //					cout << "[KWRD] " << keyword << endl;
 					// Possible optimization: memorize docID of fileName
 					// add keyword --> fileName to the map
-					map[keyword].insert(docID);
+//					map[keyword].insert(docID);
+					map[keyword].insert(fileCount);
 				}
 			}
 			input.close();
@@ -96,6 +123,10 @@ void SSE::genPlainIndex(string directoryPath) {
 		}
 	}
 	cout << "[DONE] Number of keywords: " << map.size() << std::endl;
+
+	plainIndexTime = (double)(clock()-startTime)/(double)CLOCKS_PER_SEC - filestoreTime;
+	cout << "Plain index gen took " << plainIndexTime << " seconds." << endl;
+	cout << "SKE took " << SKETime << " seconds." << endl;
 
 	// OPTIONAL: Estimate map size
 	uint64_t mapSize = 0;
@@ -113,11 +144,14 @@ void SSE::genPlainIndex(string directoryPath) {
 	// TODO: copy all documents to DocumentStore, rename each file to its docId
 }
 
-void SSE::remove(string docName){
+void SSE::remove(docid_t docName){
 //	docName = "/Users/naveed/BStore/datasets/testdir/" + docName + ".";
-	docid_t docHash = getDocNameHash(docName);
-	docid_t docID0 = docHash;	CLEAR_BIT(docID0, 0);
-	docid_t docID1 = docHash;	SET_BIT(docID1, 0);
+	uint64_t docHash = getDocNameHash(boost::lexical_cast<string>(docName));
+	uint64_t docID0 = docHash;	CLEAR_BIT(docID0, 0);
+	uint64_t docID1 = docHash;	SET_BIT(docID1, 0);
+
+	OnlineSession session;
+	session.resetDiskAccessTime();
 
 	cout << "DocID0 is " << docID0 << " and DocID1 is " << docID1  << endl; 
 	if(fstore.isFilePresent(boost::lexical_cast<string>(docID0))){
@@ -127,7 +161,10 @@ void SSE::remove(string docName){
 	else if (fstore.isFilePresent(boost::lexical_cast<string>(docID1))){
 //	else if (fstore.isFilePresent(boost::lexical_cast<string>(docID))){
 		byte* doc;
-		size_t size = fstore.get(docName, doc);
+		double SKETime = 0;
+		size_t size = fstore.get(boost::lexical_cast<string>(docID1), doc, SKETime);
+		cout << "SKE took " << SKETime << " seconds." << endl;
+
 		cout << "File size is " << size << endl;
 //		printhex(doc, size, "DOC");
 
@@ -141,7 +178,8 @@ void SSE::remove(string docName){
 			size_t size = session.updateRead(keyword, docIDs, -sizeof(docid_t));
 //			cout << "Updating keyword " << keyword << endl;
 //			cout << "Number of files containing keyword \"" << keyword << "\" are " << size << endl << " " << size - sizeof(docid_t) << endl;
-			uint32_t docIDtoRemove = findDocID(docIDs, size, docID1);
+//			uint32_t docIDtoRemove = findDocID(docIDs, size, docID1);
+			uint32_t docIDtoRemove = findDocID(docIDs, size, docName);
 			if(docIDtoRemove == 0){
 				std::cerr << "File present in filestore but is not present in BStore." << endl;
 				std::cerr << "This is probably due to the files stored from previoius runs. Try again after deleting files from previous runs." << endl;
@@ -154,7 +192,9 @@ void SSE::remove(string docName){
 			session.updateWrite(keyword, docIDs, size);
 			delete[] docIDs;
 		}
-		
+	
+		cout << "Disk operations took " << session.getDiskAccessTime() << " seconds." << endl;
+		cout << "Disk access took " << session.getDiskAccessTime() << " seconds." << endl;
 		fstore.remove(boost::lexical_cast<string>(docID1));
 
 		delete[] doc;
@@ -165,27 +205,32 @@ void SSE::remove(string docName){
 	// TODO: delete docNameHash(document) from DocumentStore
 }
 
-void SSE::add(string docName){
-	docid_t docID = getDocNameHash(docName);
+void SSE::add(docid_t docName, string docFileName){
+	uint64_t docID = getDocNameHash(boost::lexical_cast<string>(docName));
 	SET_BIT(docID, 0);
 
 	cout << "Adding file " << docName << " with docID " << docID << endl;
 	byte* doc;
-	size_t size = fstore.get(docName, doc);
 
-//	printchars(doc, size, "File being added");
+	size_t size = fstore.getNew(docFileName, doc);
+
+	printchars(doc, size, "File being added");
 
 	unordered_set<string, stringhash> keywords;
 	getKeywords(doc, size, keywords);
 
 	remove(docName);
+	
+	OnlineSession session;
+	session.resetDiskAccessTime();
 
 //	cout << "Adding keywords " << endl;
 	for(unordered_set<string, stringhash>::iterator it = keywords.begin(); it != keywords.end(); ++it){
 		string keyword = boost::lexical_cast<string>(1) + *it;
 
-//		cout << "Add " << keyword << endl;
+	//	cout << "Add " << keyword << endl;
 		OnlineSession session;
+		
 		byte* docIDs;
 		size_t size = session.updateRead(keyword, docIDs, sizeof(docid_t));
 //		cout << "Size is " << size << endl;
@@ -193,18 +238,26 @@ void SSE::add(string docName){
 //		printhex(docIDs, size, "BEFORE");
 		byte updatedDocIDs[size+sizeof(docid_t)];
 		memcpy(updatedDocIDs, docIDs, size);
-		memcpy(&updatedDocIDs[size], static_cast<byte*>(static_cast<void*>(&docID)), sizeof(docid_t));
+		memcpy(&updatedDocIDs[size], static_cast<byte*>(static_cast<void*>(&docName)), sizeof(docid_t));
 //		printhex(updatedDocIDs, size+sizeof(docid_t), "AFTER");
 		session.updateWrite(keyword, updatedDocIDs, size + sizeof(docid_t));
 		delete[] docIDs;
 	}
 
-	fstore.put(boost::lexical_cast<string>(docID), doc, size);
+//	cout << "Disk operations took " << session.getDiskAccessTime() << " seconds." << endl;
+	cout << "Disk Access took " << session.getDiskAccessTime() << " seconds." << endl;
+	
+	double SKETime = 0;
+	fstore.put(boost::lexical_cast<string>(docID), doc, size, SKETime);
+	cout << "SKE took write" << SKETime << " seconds." << endl;
 
 	delete[] doc;
 }
 
 bool SSE::search(string keyword, vector<docid_t>& docIDs){
+	
+	OnlineSession session;
+	session.resetDiskAccessTime();
 
 	bool docsFound = false;
 
@@ -212,6 +265,8 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs){
 	
 	bool docsFoundUpdate = retrieveIndex1(boost::lexical_cast<string>(1)+keyword, docIDs);
 
+	cout << "Disk Access took " << session.getDiskAccessTime() << " seconds." << endl;
+	
 	if(docsFoundInitial || docsFoundUpdate)
 		return true;
 }
@@ -231,7 +286,7 @@ bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 	int32_t j = 0;
 	for(int32_t i = 0; i < size/sizeof(docid_t); i++){
 		docid_t docID = *(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]);
-		if(fstore.isFilePresent(boost::lexical_cast<string>(docID))){
+		if(fstore.isFilePresent(boost::lexical_cast<string>(getDocNameHash(boost::lexical_cast<string>(docID))))){
 			docIDs.push_back(docID);
 			memcpy(&updatedDocIDsBytes[j*sizeof(docid_t)], &docIDsBytes[i*sizeof(docid_t)], sizeof(docid_t));
 			j++;
@@ -239,7 +294,6 @@ bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 	}
 
 	session.updateWrite(keyword, updatedDocIDsBytes, size);
-
 	delete[] docIDsBytes;
 
 	return true;
@@ -247,6 +301,7 @@ bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 
 bool SSE::retrieveIndex1(string keyword, vector<docid_t>& docIDs){
 	OnlineSession session;
+	session.resetDiskAccessTime();
 	byte* docIDsBytes;
 	size_t size = session.read(keyword, docIDsBytes);
 
@@ -262,6 +317,7 @@ bool SSE::retrieveIndex1(string keyword, vector<docid_t>& docIDs){
 }
 
 void SSE::getKeywords(byte docBytes[], size_t size, unordered_set<string, stringhash>& keywords){
+	clock_t startTime = clock();
 	string content(reinterpret_cast<char*>(docBytes), size);
 //	cout << "Content is " << content << endl;
 	boost::tokenizer<> tok(content);
@@ -269,9 +325,11 @@ void SSE::getKeywords(byte docBytes[], size_t size, unordered_set<string, string
 	tok.assign(content.begin(), content.end());
 	for(boost::tokenizer<>::iterator it = tok.begin(); it != tok.end(); ++it){
 		string keyword(*it);
+		cout << keyword << endl;
 		std::transform(keyword.begin(), keyword.end(), keyword.begin(), ::tolower);
 		keywords.insert(keyword);
 	}
+	cout << "Keyword generation took " << ((double)(clock() - startTime)/(double)CLOCKS_PER_SEC) << endl;;
 }
 
 uint32_t SSE::findDocID(byte* docIDs, size_t size, docid_t docID){
@@ -298,10 +356,10 @@ void SSE::deleteDocID(byte* docIDs, size_t size, uint32_t docIDIndex){
 	memset(&docIDs[i], 0, sizeof(docid_t));
 }
 
-void SSE::storefile(string filename, docid_t docID){
+void SSE::storefile(string filename, docid_t docID, double& cryptoduration){
 	size_t filesize = readFileSize(filename);
 	byte* docBytes = new byte[filesize];
 	readFile(filename, docBytes, filesize);
-	fstore.put(boost::lexical_cast<string>(docID), docBytes, filesize);
+	fstore.put(boost::lexical_cast<string>(getDocNameHash(boost::lexical_cast<string>(docID))), docBytes, filesize, cryptoduration);
 	delete[] docBytes;
 }

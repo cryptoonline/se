@@ -5,10 +5,14 @@
 
 #include "OnlineSession.h"
 
+double OnlineSession::diskAccessTime = 0;
+
 OnlineSession::OnlineSession(){
 	numBlocks = 0;
 	previousCriSize = 0;
+	clock_t startTime = clock();
 	Key key(T_KEYFILE, AES_KEY_SIZE);
+	diskAccessTime += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC;
 	byte keyBytes[AES_KEY_SIZE];
 	key.get(keyBytes);
 	tBlock.setKey(keyBytes);
@@ -99,18 +103,33 @@ size_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToRe
 	retrieveTBlock();
 	retrieveCRIBlock();
 	
-	size_t filesize = retrieveDBlocks();
+	size_t compFilesize = retrieveDBlocks();
 	
-	file = new byte[filesize];
-	memset(file, 0, filesize);
+	byte* compFile = new byte[compFilesize];
+
+	memset(compFile, 0, compFilesize);
 	for(int i = 0; i < fileBlocks.size(); i++){
 		byte block[BLOCK_SIZE];
 		memset(block, 0, BLOCK_SIZE);
 		fileBlocks[i].getDecrypted(block);
-		memcpy(&file[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
+		memcpy(&compFile[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
 	}
 
-	return filesize;
+//	if(compFile[0] == 1){
+//	LZO decompressor;
+//	uint32_t decompressedSize = *(uint32_t*)(compFile); 
+//	cout << "Decompressed Size is " << decompressedSize << endl;
+//	file = new byte[decompressedSize];
+//	size_t decompressedSizeFromLZO;
+
+//	decompressor.decompress(compFile, compFilesize, file, decompressedSizeFromLZO);
+//	delete[] compFile;
+//	return decompressedSize;
+//	}
+//	else{
+		file = compFile;
+		return compFilesize;
+//	}
 }
 
 size_t OnlineSession::updateRead(string filename, byte*& file, int64_t bytesToAdd){
@@ -242,10 +261,8 @@ void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t upda
 	byte tBlockBytes[TBLOCK_SIZE];
 	tBlock.getEncrypted(tBlockBytes);
 	
-	clock_t startTime = clock();
 	writeT(fid.getHigherID(), tBlockBytes);
 	writeD(blockIndices, filePRSubset.getSize(), blocksBytes);
-	cout << "Disk writing took in " << __PRETTY_FUNCTION__ << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
 	writeCRI();	
 	
 //	dcomm.writeToDisk();
@@ -345,10 +362,8 @@ void OnlineSession::write(string filename, byte contents[], size_t size){
 	byte tBlockBytes[TBLOCK_SIZE];
 	tBlock.getEncrypted(tBlockBytes);
 	
-	clock_t startTime = clock();
 	writeT(fid.getHigherID(), tBlockBytes);
 	writeD(blockIndices, filePRSubset.getSize(), blocksBytes);
-	cout << "Disk writing took in " << __PRETTY_FUNCTION__ << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
 	writeCRI();	
 
 //	dcomm.writeToDisk();
@@ -395,29 +410,35 @@ void OnlineSession::remove(string filename){
 		byte tBlockBytes[TBLOCK_SIZE];
 		tBlock.getEncrypted(tBlockBytes);
 		
-		clock_t startTime = clock();
 		writeT(fid.getHigherID(), tBlockBytes);
 		writeD(blockIndices, filePRSubset.getSize(), blockBytes);
-		cout << "Disk writing took in " << __PRETTY_FUNCTION__ << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
 		writeCRI();
 //		dcomm.writeToDisk();
 	}
 }
 
 void OnlineSession::readT(t_index_t TRecordIndex, byte block[]){
+	clock_t startTime = clock();
 	dcomm.tGet(TRecordIndex, block);
+	diskAccessTime += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC;
 }
 
 void OnlineSession::writeT(t_index_t TRecordIndex, byte block[]){
+	clock_t startTime = clock();
 	dcomm.tPut(TRecordIndex, block);
+	diskAccessTime += (double)(clock() - startTime)/(double)CLOCKS_PER_SEC;
 }
 
 void OnlineSession::readD(b_index_t blockIndices[], b_index_t numBlocks, byte blocks[]){
+	clock_t startTime = clock();
 	dcomm.dGet(blockIndices, numBlocks, blocks);
+	diskAccessTime += (double)(clock() - startTime)/(double)CLOCKS_PER_SEC;
 }
 
 void OnlineSession::writeD(b_index_t blockIndices[], b_index_t numBlocks, byte blocks[]){
+	clock_t startTime = clock();
 	dcomm.dPut(blockIndices, numBlocks, blocks);
+	diskAccessTime += (double)(clock() - startTime)/(double)CLOCKS_PER_SEC;
 }
 
 void OnlineSession::readCRI(PRSubset& prSubset, CRI& cri){
@@ -498,7 +519,13 @@ void OnlineSession::writeCRI(){
 		criBlocks[i].updateVersion();
 	criBlocks[i].getEncrypted(&encryptedBlocks[i*BLOCK_SIZE]);
 
-	clock_t startTime = clock();
 	writeD(criBlocksIndices, criPRSubset.getSize(), encryptedBlocks);
-	cout << "Disk writing took in " << __PRETTY_FUNCTION__ << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
+}
+
+void OnlineSession::resetDiskAccessTime(){
+	diskAccessTime = 0;
+}
+
+double OnlineSession::getDiskAccessTime(){
+	return diskAccessTime;
 }

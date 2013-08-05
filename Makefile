@@ -1,9 +1,9 @@
 CC=g++
 RM=rm
 
-CFLAGS=-c -g -O0
-LDFLAGS=-lcryptopp -lboost_system-mt -lboost_filesystem-mt -lboost_iostreams-mt -L/usr/local/Cellar/boost/1.53.0/lib -I/usr/local/Cellar/boost/1.53.0/include -I /Users/naveed/BStore/test/framework/gtest-1.6.0/include/ /Users/naveed/BStore/test/*.cc /Users/naveed/BStore/test/framework/gtest_build/libgtest.a
-SOURCES=AES.cpp BStore.cpp CRIBlock.cpp CRI.cpp DataBlock.cpp Ddisk.cpp DiskCommunicator.cpp TBlock.cpp Tdisk.cpp HashMAC.cpp PRF.cpp PRSubset.cpp fileID.cpp TruncAES.cpp Key.cpp OnlineSession.cpp Debug.cpp helper.cpp SSE.cpp FileStore.cpp
+CFLAGS=-c -ggdb
+LDFLAGS=-lcryptopp -lboost_system-mt -lboost_filesystem-mt -lboost_iostreams-mt -L/usr/local/Cellar/boost/1.53.0/lib -I/usr/local/Cellar/boost/1.53.0/include -I /Users/naveed/BStore/test/framework/gtest-1.6.0/include/ /Users/naveed/BStore/test/*.cc /Users/naveed/BStore/test/framework/gtest_build/libgtest.a -llzo -L/usr/local/lib -I/usr/local/include
+SOURCES=AES.cpp BStore.cpp CRIBlock.cpp CRI.cpp DataBlock.cpp Ddisk.cpp DiskCommunicator.cpp TBlock.cpp Tdisk.cpp HashMAC.cpp PRF.cpp PRSubset.cpp fileID.cpp TruncAES.cpp Key.cpp OnlineSession.cpp Debug.cpp helper.cpp SSE.cpp FileStore.cpp LZO.cpp
 # Blowfish.cpp Communicator.cpp Cri.cpp DataBlock.cpp DataStructures.cpp Ddisk.cpp Debug.cpp PRF.cpp OnlineSession.cpp PRSubset.cpp SHA256bit.cpp SSE.cpp TBlock.cpp Tdisk.cpp Tfile.cpp fileID.cpp BStore.cpp Key.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=blindStorage
