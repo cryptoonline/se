@@ -89,14 +89,19 @@ void BStore::add(string filename, byte fileBytes[], size_t size){
 //	delete[] compressedFileBytes;
 }
 
-void BStore::finalize(){
+void BStore::finalize(double& execTime){
+	clock_t startTime = clock();
+	cout << "Total number of blocks occupied before CRIs are " << D.getNumOccupiedBlocks() << endl;
 	T.finalize(D);
+	cout << "Total number of blocks occupied are " << D.getNumOccupiedBlocks() << endl;
 	D.encryptEmptyBlocks();
 	
-	clock_t startTime = clock();
+	execTime += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC;
+
+	clock_t writeStartTime = clock();
 	D.writeToDisk();
 	T.writeToDisk();
-	cout << "Disk Writing took " << ((double)(clock()-startTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
+	cout << "Disk Writing took " << ((double)(clock()-writeStartTime)/(double)CLOCKS_PER_SEC) << " seconds." << endl;
 	cout << "Compression reduced size by " << compressionAdvntage << endl;
 }
 

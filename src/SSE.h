@@ -65,10 +65,10 @@ class SSE{
 public:
 	SSE();
 	~SSE();
-	void indexgen(string directoryPath);
-	void remove(docid_t docName);
-	void add(docid_t docName, string docFileName);
-	bool search(string keyword, vector<docid_t>& docIDs);
+	void indexgen(string directoryPath, double& execTime);
+	void remove(docid_t docName, double& execTime);
+	void add(docid_t docName, string docFileName, double& execTime);
+	bool search(string keyword, vector<docid_t>& docIDs, double& execTime);
 
 private:
 	unordered_map<string, unordered_set<docid_t>, stringhash> map;
@@ -89,11 +89,11 @@ private:
 	bool retrieveIndex1(string keywords, vector<docid_t>& docIDs);
 
 	void getKeywords(byte docBytes[], size_t size, unordered_set<string, stringhash>& keywords);
-	uint32_t findDocID(byte* docIDs, size_t size, docid_t docID);
+	int32_t findDocID(byte* docIDs, size_t size, docid_t docID);
 	void addDocID(byte*& docIDs, size_t size, docid_t docID);
 	void deleteDocID(byte* docIDs, size_t size, uint32_t docIDIndex);
 
-	void storefile(string filename, docid_t docID, double& cryptoduration);
+	void storefile(string filename, uint64_t docID, double& cryptoduration);
 	
 	void setupKey();
 //	map from keywords to fileNames

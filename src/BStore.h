@@ -30,7 +30,7 @@ public:
 	BStore();
 	BStore(string directoryPath);
 	void add(string filename, byte fileBytes[], size_t size);
-	void finalize();
+	void finalize(double& execTime);
 	~BStore();
 
 private:

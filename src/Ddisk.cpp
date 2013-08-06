@@ -32,7 +32,7 @@ void Ddisk::makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>&
 	b_index_t requiredNumBlocks = (b_index_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
 	numOccupiedBlocks += requiredNumBlocks;
 
-	cout << "Number of blocks occupied are " << numOccupiedBlocks << endl;
+//	cout << "Number of blocks occupied are " << numOccupiedBlocks << endl;
 
 	int32_t counter = 0;
 	for(; counter < requiredNumBlocks - 1; counter++){

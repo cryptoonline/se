@@ -68,7 +68,7 @@ void PRSubset::generateSeed(){
 //	seed = rand();
 
 //	int randomData = open("/dev/random", O_RDONLY); //To get large randomness
-	int randomData = open("/dev/random", O_RDONLY);
+	int randomData = open("/dev/urandom", O_RDONLY);
 	read(randomData, &seed, sizeof(prSubsetSeed_t));
 	close(randomData);
 	
