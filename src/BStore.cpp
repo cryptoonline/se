@@ -40,7 +40,9 @@ BStore::BStore(string directoryPath): D(TOTAL_BLOCKS){
 
 		cout << "Writing " << filesList[i] << endl;
 		fileID fid(filesList[i]);
-		PRSubset prSubset(numBlocks*BLOW_UP);
+
+		PRSubset prSubset;
+		prSubset.init(numBlocks*BLOW_UP);	
 
 		T.addFile(fid, size, prSubset);
 		D.addFile(fileBytes, size, fid, prSubset);
@@ -81,7 +83,9 @@ void BStore::add(string filename, byte fileBytes[], size_t size){
 	b_index_t numBlocks = (b_index_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
 //	b_index_t numBlocks = (b_index_t)ceil((double)compressedSize/(double)MAX_BLOCK_DATA_SIZE);
 	fileID fid(filename);
-	PRSubset prSubset(numBlocks*BLOW_UP);
+	
+	PRSubset prSubset;
+	prSubset.init(numBlocks*BLOW_UP);
 	T.addFile(fid, size, prSubset);
 
 	D.addFile(fileBytes, size, fid, prSubset); 

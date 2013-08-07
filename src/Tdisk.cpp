@@ -49,7 +49,9 @@ void Tdisk::finalize(Ddisk &D){
 		fileID fid(fidBytes);
 
 		b_index_t numBlocks = ((int)ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
-		PRSubset prSubset(numBlocks);
+//		PRSubset prSubset(numBlocks);
+		PRSubset prSubset;
+		prSubset.init(numBlocks);
 		b_index_t blockIndices[prSubset.getSize()];
 		prSubset.get(blockIndices, prSubset.getSize());
 		
