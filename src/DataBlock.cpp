@@ -123,14 +123,28 @@ void DataBlock::clear(){
 void DataBlock::encrypt(){
 	AES cipher;
 	makeIV();
-	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+	byte plaintext[BLOCK_SIZE+1000];
+	byte ciphertext[BLOCK_SIZE-sizeof(version_t)+1000];
+	memcpy(plaintext, this->block, BLOCK_SIZE);
+	
+	cipher.ENC_CTR(plaintext, ciphertext, BLOCK_SIZE-sizeof(version_t), key, iv);
+	memcpy(this->block, ciphertext, BLOCK_SIZE-sizeof(version_t));	
+//	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = true;
 }
 
 void DataBlock::decrypt(){
 	AES cipher;
 	makeIV();
-	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+	byte plaintext[BLOCK_SIZE+1000];
+	byte ciphertext[BLOCK_SIZE+1000];
+
+	memcpy(ciphertext, this->block, BLOCK_SIZE);
+
+	cipher.DEC_CTR(ciphertext, plaintext, BLOCK_SIZE-sizeof(version_t), key, iv);
+	memcpy(this->block, plaintext, BLOCK_SIZE-sizeof(version_t));
+
+//	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = false;
 }
 

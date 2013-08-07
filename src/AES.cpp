@@ -9,7 +9,7 @@
 #include "AES.h"
 
 AES::AES(){
-	KEYLENGTH = CryptoPP::AES::DEFAULT_KEYLENGTH;
+	KEYLENGTH = AES_KEY_SIZE;//CryptoPP::AES::DEFAULT_KEYLENGTH;
 }
     
 AES::~AES(){

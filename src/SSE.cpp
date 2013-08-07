@@ -192,7 +192,8 @@ void SSE::remove(docid_t docName, double& duration){
 			deleteDocID(docIDs, size, docIDtoRemove);
 //			cout << "DocID to remove " << docIDtoRemove << endl;
 			session.updateWrite(keyword, docIDs, size);
-			delete[] docIDs;
+			//if(docIDs!=NULL)
+			//	delete[] docIDs;
 			docIDs = NULL;
 		}
 	
@@ -282,7 +283,7 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs, double& duration){
 
 bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 	OnlineSession session;
-	byte* docIDsBytes;
+	byte* docIDsBytes = NULL;
 
 	size_t size = session.updateRead(keyword, docIDsBytes, 0);
 
@@ -305,7 +306,8 @@ bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 	}
 
 	session.updateWrite(keyword, updatedDocIDsBytes, size);
-	delete[] docIDsBytes;
+	if(docIDsBytes != NULL)
+		delete[] docIDsBytes;
 
 	return true;
 }
@@ -322,7 +324,8 @@ bool SSE::retrieveIndex1(string keyword, vector<docid_t>& docIDs){
 	for(int32_t i = 0; i < size/sizeof(docid_t); i++)
 		docIDs.push_back(*(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]));
 
-	delete[] docIDsBytes;
+	if(docIDsBytes != NULL)
+		delete[] docIDsBytes;
 
 	return true;
 }

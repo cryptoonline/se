@@ -220,6 +220,7 @@ size_t OnlineSession::updateRead(string filename, byte*& file, int64_t bytesToAd
 }
 
 void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t updatedFileSize){
+	int canary = 0;
 	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)updatedFileSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 
 	b_index_t blockIndices[filePRSubset.getSize()];	
