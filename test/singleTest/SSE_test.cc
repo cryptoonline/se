@@ -40,42 +40,55 @@ TEST(SSEReadTest, Test1){
 		if(directoryName.compare("q") == 0)
 			break;
 
-		string directoryPath = "/Users/naveed/BStore/datasets/" + directoryName + "/";
-		double execTime = 0;
-		sse.indexgen(directoryPath, execTime);
-		cout << "indexgen took " << execTime << " seconds." << endl;
+		for(int i = 0; i < 1; i++){
+			string directoryPath = "/Users/naveed/BStore/datasets/email/test/" + directoryName + "/";
+			double execTime = 0;
+			sse.indexgen(directoryPath, execTime);
+			cout << "indexgen took " << execTime << " seconds." << endl;
+		}
+
+		for(int i = 0; i < 15; i++)	
+			readDocs();
+
 		
-		readDocs();
+//		cout << "********************Add Test********************" << endl;
+//		string filepath2;
+//		cout << "Enter path of the file to add: ";
+//		cin >> filepath2;
+//		docid_t fileIDToRemove1;
+//		cout << "Enter Doc id: ";
+//		cin >> fileIDToRemove1;
+//		add(filepath2, fileIDToRemove1);
+//		
+//		readDocs();
+//		cout << "********************Remove Test********************" << endl;
+//		remove(fileIDToRemove1);
+	
+		for(int i = 0; i < 15; i++){
+			cout << "********************Lazy Remove Test********************" << endl;
+			remove(i);
+
+			cout << "********************Search with Lazy Delete Test********************" << endl;
+			readDocs();
+		}
 
 		
 		cout << "********************Add Test********************" << endl;
-		string filepath2;
-		cout << "Enter path of the file to add: ";
-		cin >> filepath2;
-		docid_t fileIDToRemove1;
-		cout << "Enter Doc id: ";
-		cin >> fileIDToRemove1;
-		add(filepath2, fileIDToRemove1);
 		
-		readDocs();
-		cout << "********************Remove Test********************" << endl;
-		remove(fileIDToRemove1);
-		
-		cout << "********************Lazy Remove Test********************" << endl;
-		docid_t fileIDToRemove;
-		cout << "Enter id of the file to be removed: ";
-		cin >> fileIDToRemove;
-		remove(fileIDToRemove);
-
-		cout << "********************Search with Lazy Delete Test********************" << endl;
-		readDocs();
-
-		cout << "********************Add Test after lazy delete********************" << endl;
-		string filepath;
-		cout << "Enter path of the file just deleted to add it back again: ";
-		cin >> filepath;
-		add(filepath, fileIDToRemove);
-		readDocs();
+		for(int i = 0; i < 15; i++){
+			string filepath;
+			filepath = "/Users/naveed/BStore/datasets/email/test256MB/test128MB/test64MB/beck-s/notes_inbox/143.";
+			add(filepath, 200000);
+			
+			filepath = "/Users/naveed/BStore/datasets/email/test256MB/hernandez-j/all_documents/283.";
+			add(filepath, 200000);
+			
+			filepath = "/Users/naveed/BStore/datasets/email/test256MB/kitchen-l/_americas/sec_media/67.";
+			add(filepath, 200000);
+			
+			filepath = "/Users/naveed/BStore/datasets/email/test256MB/test128MB/test64MB/test32MB/forney-j/sent_items/158.";
+			add(filepath, 200000);
+		}
 
 	}
 
@@ -86,6 +99,7 @@ void add(string filepath, docid_t docID){
 	SSE sse;
 	double execTime = 0;
 
+	cout << "Adding file " << filepath << endl;
 	sse.add(docID, filepath, execTime);
 	cout << "Add took " << execTime*1000 << " millseconds." << endl;
 	
@@ -174,16 +188,15 @@ void deletefile(string file)
 }
 
 void readDocs(){
-	while(1){
-		string keyword;
-		cout << "Enter keyword to search for (Enter q to quit): ";
-		cin >> keyword;
-		if(keyword.compare("q") == 0)
-			break;
+//	while(1){
+		string keyword = "the";
+//		cout << "Enter keyword to search for (Enter q to quit): ";
+//		cin >> keyword;
+//		if(keyword.compare("q") == 0)
+//			break;
 		
 		SSE sse;
-		vector<docid_t> docIDs;
-		docIDs.reserve(10000);
+		vector<docid_t> docIDs(10000);
 		double execTime = 0;
 		if(sse.search(keyword, docIDs, execTime)){
 			cout << "Number of documents with keyword " << keyword << " are " << docIDs.size() << endl;
@@ -191,13 +204,13 @@ void readDocs(){
 			cout << "Search took " << execTime*1000 << " milliseconds." << endl;
 
 
-			cout << "*************************************************docIDs***************************************************" << endl; 
-			for(int i = 0; i < docIDs.size(); i++)
-				cout << docIDs[i] << "\t";
-			cout << endl;
-			cout << "*************************************************docIDs***************************************************" << endl; 
+//			cout << "*************************************************docIDs***************************************************" << endl; 
+//			for(int i = 0; i < docIDs.size(); i++)
+//				cout << docIDs[i] << "\t";
+//			cout << endl;
+//			cout << "*************************************************docIDs***************************************************" << endl; 
 		}
 		else
 			cout << "No files with keyword " << keyword << " found." << endl;
-	}
+
 }

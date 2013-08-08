@@ -38,8 +38,8 @@ private:
     
 public:
 	PRSubset();
-	void init(prSubsetSize_t size);
-	void init(prSubsetSize_t size, prSubsetSeed_t seed);
+	PRSubset(prSubsetSize_t size);
+	PRSubset(prSubsetSize_t size, prSubsetSeed_t seed);
 	
 	prSubsetSize_t getSize() const;
 	prSubsetSeed_t getSeed() const;

@@ -16,7 +16,13 @@ OnlineSession::OnlineSession(){
 	byte keyBytes[AES_KEY_SIZE];
 	key.get(keyBytes);
 	tBlock.setKey(keyBytes);
-	
+
+//	Key dkey(D_KEYFILE, AES_KEY_SIZE);
+//	byte DKeyBytes[AES_KEY_SIZE];
+//	dkey.get(DKeyBytes);
+//	blocks[0].setKey(DKeyBytes);
+//	fileBlocks[0].setKey(DKeyBytes);
+
 	blocks.reserve(128);
 	fileBlocks.reserve(32);
 	updatedFileBlocksIndices.reserve(32);
@@ -48,9 +54,8 @@ size_t OnlineSession::retrieveDBlocks(b_index_t numBlocksToWrite){
 
 	numFileBlocks = numBlocks / BLOW_UP;
 	
-	filePRSubset.init(numBlocks, criBlock.getSeed());
-//	PRSubset filePRSubset(numBlocks, criBlock.getSeed());
-//	this->filePRSubset = filePRSubset;
+	PRSubset filePRSubset(numBlocks, criBlock.getSeed());
+	this->filePRSubset = filePRSubset;
 	b_index_t blockIndices[filePRSubset.getSize()];
 	filePRSubset.get(blockIndices, filePRSubset.getSize());
 
@@ -78,9 +83,8 @@ void extractFileBlocks(){
 }
 
 int OnlineSession::retrieveCRIBlock(){
-	criPRSubset.init(tBlock.getSize(), tBlock.getSeed());
-//	PRSubset criPRSubset(tBlock.getSize(), tBlock.getSeed());
-//	this->criPRSubset = criPRSubset;
+	PRSubset criPRSubset(tBlock.getSize(), tBlock.getSeed());
+	this->criPRSubset = criPRSubset;
 	
 	readCRI(criPRSubset, cri);
 	
@@ -105,18 +109,19 @@ size_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToRe
 	retrieveTBlock();
 	retrieveCRIBlock();
 	
-	size_t compFilesize = retrieveDBlocks();
+	size_t filesize = retrieveDBlocks();
 	
-	byte* compFile = new byte[compFilesize];
+	file = new byte[filesize];
 
-	memset(compFile, 0, compFilesize);
+	memset(file, 0, filesize);
 	for(int i = 0; i < fileBlocks.size(); i++){
 		byte block[BLOCK_SIZE];
 		memset(block, 0, BLOCK_SIZE);
 		fileBlocks[i].getDecrypted(block);
-		memcpy(&compFile[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
+		memcpy(&file[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
 	}
 
+	return filesize;
 //	if(compFile[0] == 1){
 //	LZO decompressor;
 //	uint32_t decompressedSize = *(uint32_t*)(compFile); 
@@ -129,8 +134,8 @@ size_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToRe
 //	return decompressedSize;
 //	}
 //	else{
-		file = compFile;
-		return compFilesize;
+//		file = compFile;
+//		return compFilesize;
 //	}
 }
 
@@ -154,13 +159,11 @@ size_t OnlineSession::updateRead(string filename, byte*& file, int64_t bytesToAd
 			exit(1);
 		}
 
-		filePRSubset.init(numBlocksToWrite);
-	//	PRSubset filePRSubset(numBlocksToWrite);
-	//	this->filePRSubset = filePRSubset;
+		PRSubset filePRSubset(numBlocksToWrite);
+		this->filePRSubset = filePRSubset;
 
-		criPRSubset.init(1*BLOW_UP);
-//		PRSubset criPRSubset(1*BLOW_UP);
-//		this->criPRSubset = criPRSubset;
+		PRSubset criPRSubset(1*BLOW_UP);
+		this->criPRSubset = criPRSubset;
 
 		readCRI(this->criPRSubset, this->cri);
 		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), bytesToAdd, lowerFid);	
@@ -178,16 +181,14 @@ size_t OnlineSession::updateRead(string filename, byte*& file, int64_t bytesToAd
 			exit(1);
 		}
 
-		filePRSubset.init(numBlocksToWrite);
-//		PRSubset filePRSubset(numBlocksToWrite);
-//		this->filePRSubset = filePRSubset;
+		PRSubset filePRSubset(numBlocksToWrite);
+		this->filePRSubset = filePRSubset;
 		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), bytesToAdd, lowerFid);
 		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), bytesToAdd, lowerFid);
 		b_index_t criNumBlocks = (b_index_t)(ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 		if(criNumBlocks > criPRSubset.getSize()){	
-//			PRSubset criPRSubset(criNumBlocks, this->criPRSubset.getSeed());		
-//			this->criPRSubset = criPRSubset;
-			criPRSubset.init(criNumBlocks, this->criPRSubset.getSeed());
+			PRSubset criPRSubset(criNumBlocks, this->criPRSubset.getSeed());
+			this->criPRSubset = criPRSubset;
 			tBlock.update(this->criPRSubset.getSize(), this->criPRSubset.getSeed());
 		}
 		else
@@ -203,9 +204,8 @@ size_t OnlineSession::updateRead(string filename, byte*& file, int64_t bytesToAd
 		else
 			numBlocksToWrite = (b_index_t)(ceil((double)updatedFileSize/(double)MAX_BLOCK_DATA_SIZE))*BLOW_UP;
 
-		filePRSubset.init(numBlocksToWrite, criBlock.getSeed());
-//		PRSubset filePRSubset(numBlocksToWrite, criBlock.getSeed());
-//		this->filePRSubset = filePRSubset;
+		PRSubset filePRSubset(numBlocksToWrite, criBlock.getSeed());
+		this->filePRSubset = filePRSubset;
 		cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), updatedFileSize, criBlockIndex);
 		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), updatedFileSize, lowerFid);
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());
@@ -227,7 +227,6 @@ size_t OnlineSession::updateRead(string filename, byte*& file, int64_t bytesToAd
 }
 
 void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t updatedFileSize){
-	int canary = 0;
 	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)updatedFileSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 
 	b_index_t blockIndices[filePRSubset.getSize()];	
@@ -286,13 +285,11 @@ void OnlineSession::write(string filename, byte contents[], size_t size){
 	this->fid.getLowerID(lowerFid);
 
 	if(retrieveTBlock() == 0){
-	filePRSubset.init(numBlocksToWrite);
-//PRSubset filePRSubset(numBlocksToWrite);
-//		this->filePRSubset = filePRSubset;
+		PRSubset filePRSubset(numBlocksToWrite);
+		this->filePRSubset = filePRSubset;
 
-		criPRSubset.init(1*BLOW_UP);
-//		PRSubset criPRSubset(1*BLOW_UP);
-//		this->criPRSubset = criPRSubset;
+		PRSubset criPRSubset(1*BLOW_UP);
+		this->criPRSubset = criPRSubset;
 
 		readCRI(this->criPRSubset, this->cri);
 		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), size, lowerFid);	
@@ -305,16 +302,14 @@ void OnlineSession::write(string filename, byte contents[], size_t size){
 		retrieveDBlocks(filePRSubset.getSize());
 	}
 	else if(retrieveCRIBlock() == 0){
-		filePRSubset.init(numBlocksToWrite);
-//PRSubset filePRSubset(numBlocksToWrite);
-//		this->filePRSubset = filePRSubset;
+		PRSubset filePRSubset(numBlocksToWrite);
+		this->filePRSubset = filePRSubset;
 		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), size, lowerFid);
 		cri.addFile(filePRSubset.getSize(), filePRSubset.getSeed(), size, lowerFid);
 		b_index_t criNumBlocks = (b_index_t)(ceil((double)cri.size()/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
 		if(criNumBlocks > criPRSubset.getSize()){	
-			criPRSubset.init(criNumBlocks, this->criPRSubset.getSeed());
-//			PRSubset criPRSubset(criNumBlocks, this->criPRSubset.getSeed());
-//			this->criPRSubset = criPRSubset;
+			PRSubset criPRSubset(criNumBlocks, this->criPRSubset.getSeed());
+			this->criPRSubset = criPRSubset;
 			tBlock.update(this->criPRSubset.getSize(), this->criPRSubset.getSeed());
 		}
 		else
@@ -323,9 +318,8 @@ void OnlineSession::write(string filename, byte contents[], size_t size){
 	}
 	else{
 		b_index_t maxNumBlocks = max(numBlocksToWrite, criBlock.getSize());
-//		PRSubset filePRSubset(maxNumBlocks, criBlock.getSeed());
-//		this->filePRSubset = filePRSubset;
-		filePRSubset.init(maxNumBlocks, criBlock.getSeed());
+		PRSubset filePRSubset(maxNumBlocks, criBlock.getSeed());
+		this->filePRSubset = filePRSubset;
 		cri.updateFile(filePRSubset.getSize(), filePRSubset.getSeed(), size, criBlockIndex);
 		criBlock.make(filePRSubset.getSize(), filePRSubset.getSeed(), size, lowerFid);
 		tBlock.update(criPRSubset.getSize(), criPRSubset.getSeed());

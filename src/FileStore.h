@@ -16,6 +16,8 @@ using std::cout;
 using std::ifstream;
 using std::ofstream;
 
+#include <unistd.h>
+
 #include <cstdio>
 
 #include <sys/stat.h>

@@ -13,14 +13,14 @@ PRSubset::PRSubset(){
 	seed = 0;
 }
 
-void PRSubset::init(prSubsetSize_t size){
+PRSubset::PRSubset(prSubsetSize_t size){
 	if(size < PRSUBSET_SIZE_LOWER_BOUND)
 		size = PRSUBSET_SIZE_LOWER_BOUND;
 	this->size = size;
 	generateSeed();
 }
 
-void PRSubset::init(prSubsetSize_t size, prSubsetSeed_t seed){
+PRSubset::PRSubset(prSubsetSize_t size, prSubsetSeed_t seed){
 	if(size < PRSUBSET_SIZE_LOWER_BOUND)
 		size = PRSUBSET_SIZE_LOWER_BOUND;
 	this->size = size;

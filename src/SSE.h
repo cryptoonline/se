@@ -73,7 +73,7 @@ public:
 private:
 	unordered_map<string, unordered_set<docid_t>, stringhash> map;
 
-	BStore store;
+//	BStore* store;
 	FileStore fstore;
 	
 	bool hashKeyGenerated;

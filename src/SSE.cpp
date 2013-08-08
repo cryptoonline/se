@@ -7,6 +7,7 @@
 
 SSE::SSE(){
 	setupKey();
+//	store = new BStore();
 }
 
 SSE::~SSE(){
@@ -20,6 +21,7 @@ void SSE::setupKey(){
 
 void SSE::indexgen(string directoryPath, double& execTime){
 
+	BStore store;
 	genPlainIndex(directoryPath);
 	for(unordered_map<string, unordered_set<docid_t>, stringhash >::iterator itmap = map.begin(); itmap != map.end(); ++itmap){
 		const string& keyword = itmap->first; //filename in BStore
@@ -69,13 +71,13 @@ void SSE::genPlainIndex(string directoryPath) {
 
 
 		if((dir->path().filename()).compare(".DS_Store") == 0){
-			cout << "Ignoring file " << dir->path().filename() << endl;
+//			cout << "Ignoring file " << dir->path().filename() << endl;
 			continue;
 		}
 
 		if(boost::filesystem::is_regular(dir->status())) {
 			fileCount++;
-			cout << "[FILE] " << fileName << "--->" << fileCount << endl;
+	//		cout << "[FILE] " << fileName << "--->" << fileCount << endl;
 			uint64_t docID = getDocNameHash(boost::lexical_cast<string>(fileCount));
 			
 			CLEAR_BIT(docID, 0);
@@ -113,10 +115,11 @@ void SSE::genPlainIndex(string directoryPath) {
 				}
 			}
 			input.close();
-		} else {
-			// it's a directory
-			cout << "[DIR] [" << (int)((double)fileCount/(double)fileSum*100) << "%] " << fileName << endl;
 		}
+//		else {
+//			// it's a directory
+//			cout << "[DIR] [" << (int)((double)fileCount/(double)fileSum*100) << "%] " << fileName << endl;
+//		}
 	}
 	cout << "[DONE] Number of keywords: " << map.size() << std::endl;
 
@@ -150,6 +153,8 @@ void SSE::remove(docid_t docName, double& duration){
 	uint64_t docID0 = docHash;	CLEAR_BIT(docID0, 0);
 	uint64_t docID1 = docHash;	SET_BIT(docID1, 0);
 
+	duration += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC;
+
 	OnlineSession session;
 	session.resetDiskAccessTime();
 
@@ -157,7 +162,6 @@ void SSE::remove(docid_t docName, double& duration){
 	if(fstore.isFilePresent(boost::lexical_cast<string>(docID0))){
 		fstore.remove(boost::lexical_cast<string>(docID0));
 //		duration -= (double)(clock()-ignoredStartTime)/(double)CLOCKS_PER_SEC;
-//		duration += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC;
 		/* Entries from Index will be delete using lazy delete*/
 	}
 	else if (fstore.isFilePresent(boost::lexical_cast<string>(docID1))){
@@ -175,7 +179,6 @@ void SSE::remove(docid_t docName, double& duration){
 		
 		for(unordered_set<string, stringhash>::iterator it = keywords.begin(); it != keywords.end(); ++it){
 			string keyword = boost::lexical_cast<string>(1) + *it;
-			cout << keyword << endl;
 			OnlineSession session;
 			byte* docIDs = NULL;
 			size_t size = session.updateRead(keyword, docIDs, -sizeof(docid_t));
@@ -192,8 +195,7 @@ void SSE::remove(docid_t docName, double& duration){
 			deleteDocID(docIDs, size, docIDtoRemove);
 //			cout << "DocID to remove " << docIDtoRemove << endl;
 			session.updateWrite(keyword, docIDs, size);
-			//if(docIDs!=NULL)
-			//	delete[] docIDs;
+			delete[] docIDs;
 			docIDs = NULL;
 		}
 	
@@ -235,7 +237,6 @@ void SSE::add(docid_t docName, string docFileName, double& duration){
 	for(unordered_set<string, stringhash>::iterator it = keywords.begin(); it != keywords.end(); ++it){
 		string keyword = boost::lexical_cast<string>(1) + *it;
 		
-		cout << "Add " << keyword << endl;
 		OnlineSession session;
 		
 		byte* docIDs;
@@ -283,7 +284,7 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs, double& duration){
 
 bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 	OnlineSession session;
-	byte* docIDsBytes = NULL;
+	byte* docIDsBytes;
 
 	size_t size = session.updateRead(keyword, docIDsBytes, 0);
 
@@ -306,8 +307,7 @@ bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 	}
 
 	session.updateWrite(keyword, updatedDocIDsBytes, size);
-	if(docIDsBytes != NULL)
-		delete[] docIDsBytes;
+	delete[] docIDsBytes;
 
 	return true;
 }
@@ -324,8 +324,7 @@ bool SSE::retrieveIndex1(string keyword, vector<docid_t>& docIDs){
 	for(int32_t i = 0; i < size/sizeof(docid_t); i++)
 		docIDs.push_back(*(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]));
 
-	if(docIDsBytes != NULL)
-		delete[] docIDsBytes;
+	delete[] docIDsBytes;
 
 	return true;
 }

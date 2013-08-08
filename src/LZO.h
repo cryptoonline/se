@@ -10,6 +10,8 @@
 using std::cout;
 using std::endl;
 
+#include <cstring>
+
 #include "lzo/lzoconf.h"
 #include "lzo/lzodefs.h"
 #include "lzo/lzo1x.h"

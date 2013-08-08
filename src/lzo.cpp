@@ -9,7 +9,7 @@ LZO::LZO(){
 }
 
 void LZO::addHeader(byte* data, uint32_t size){
-	memcpy(data, static_cast<byte*>(static_cast<void*>(&size)), sizeof(uint32_t));
+	std::memcpy(data, static_cast<byte*>(static_cast<void*>(&size)), sizeof(uint32_t));
 }
 
 uint32_t LZO::getSizeFromHeader(byte* data){
