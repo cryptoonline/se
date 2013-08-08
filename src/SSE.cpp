@@ -182,7 +182,6 @@ void SSE::remove(docid_t docName, double& duration){
 			OnlineSession session;
 			byte* docIDs = NULL;
 			size_t size = session.updateRead(keyword, docIDs, -sizeof(docid_t));
-			printhex(docIDs, size, "DOC IDS");
 //			cout << "Updating keyword " << keyword << endl;
 //			cout << "Number of files containing keyword \"" << keyword << "\" are " << size << endl << " " << size - sizeof(docid_t) << endl;
 //			uint32_t docIDtoRemove = findDocID(docIDs, size, docID1);
@@ -363,7 +362,6 @@ void SSE::addDocID(byte*& docIDs, size_t size, docid_t docID){
 void SSE::deleteDocID(byte* docIDs, size_t size, uint32_t docIDIndex){
 //	std::copy(docIDs + docIDIndex, docIDs + size, docIDs + docIDIndex - sizeof(docid_t));
 	uint32_t i = docIDIndex;
-	cout << "Size is " << size << endl;
 	for(; i < size-sizeof(docid_t); i++)
 		docIDs[i] = docIDs[i+sizeof(docid_t)];
 	memset(&docIDs[i], 0, sizeof(docid_t));

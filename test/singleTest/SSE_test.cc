@@ -16,6 +16,10 @@
 void readDocs();
 void add(string filepath, docid_t docID);
 void remove(docid_t docID);
+void genIndex(string directoryPath, double& execTime){
+	SSE sse;
+	sse.indexgen(directoryPath, execTime);
+}
 
 void deletefile(string file);
 
@@ -31,7 +35,6 @@ TEST(SSEReadTest, Test1){
 	cout << "Fresh filestore created." << endl;
 
 	while(1){
-		SSE sse;
 
 		cout << "Enter directory path (Enter q to quit): ";
 		string directoryName;
@@ -40,10 +43,10 @@ TEST(SSEReadTest, Test1){
 		if(directoryName.compare("q") == 0)
 			break;
 
-		for(int i = 0; i < 1; i++){
+		for(int i = 0; i < 12; i++){
 			string directoryPath = "/Users/naveed/BStore/datasets/email/test/" + directoryName + "/";
 			double execTime = 0;
-			sse.indexgen(directoryPath, execTime);
+			genIndex(directoryPath, execTime);
 			cout << "indexgen took " << execTime << " seconds." << endl;
 		}
 
@@ -74,7 +77,7 @@ TEST(SSEReadTest, Test1){
 
 		
 		cout << "********************Add Test********************" << endl;
-		
+/*		
 		for(int i = 0; i < 15; i++){
 			string filepath;
 			filepath = "/Users/naveed/BStore/datasets/email/test256MB/test128MB/test64MB/beck-s/notes_inbox/143.";
@@ -90,8 +93,8 @@ TEST(SSEReadTest, Test1){
 			add(filepath, 200000);
 		}
 
+*/
 	}
-
  
 }
 
