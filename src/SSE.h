@@ -34,11 +34,11 @@ using std::ifstream;
 #include <boost/lexical_cast.hpp>
 #include <boost/cstdint.hpp>
 
-#include <tr1/unordered_map>
-using std::tr1::unordered_map;
+#include <unordered_map>
+using std::unordered_map;
 
-#include <tr1/unordered_set>
-using std::tr1::unordered_set;
+#include <unordered_set>
+using std::unordered_set;
 
 #include "sse_parameters.h"
 

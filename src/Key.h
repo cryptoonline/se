@@ -16,7 +16,7 @@ using std::cerr;
 #include <vector>
 using std::vector;
 
-#include "cryptopp562/osrng.h"
+#include "cryptopp/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
 
 using std::ifstream;

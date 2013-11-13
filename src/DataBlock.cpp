@@ -123,6 +123,8 @@ void DataBlock::clear(){
 void DataBlock::encrypt(){
 	AES cipher;
 	makeIV();
+	byte dummyblock[BLOCK_SIZE-sizeof(version_t)];
+	cipher.ENC_CTR(dummyblock, dummyblock, BLOCK_SIZE-sizeof(version_t), key, iv);
 	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = true;
 }
@@ -130,6 +132,8 @@ void DataBlock::encrypt(){
 void DataBlock::decrypt(){
 	AES cipher;
 	makeIV();
+	byte dummyblock[BLOCK_SIZE-sizeof(version_t)];
+	cipher.DEC_CTR(dummyblock, dummyblock, BLOCK_SIZE-sizeof(version_t), key, iv);
 	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = false;
 }

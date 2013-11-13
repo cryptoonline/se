@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <math.h>
 
-#include "cryptopp562/osrng.h"
+#include "cryptopp/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
 
 #include <iostream>
@@ -27,21 +27,21 @@ using std::string;
 #include <cstdlib>
 using std::exit;
 
-#include "cryptopp562/cryptlib.h"
+#include "cryptopp/cryptlib.h"
 using CryptoPP::Exception;
 
-#include "cryptopp562/hex.h"
+#include "cryptopp/hex.h"
 using CryptoPP::HexEncoder;
 using CryptoPP::HexDecoder;
 
-#include "cryptopp562/filters.h"
+#include "cryptopp/filters.h"
 using CryptoPP::StringSink;
 using CryptoPP::StringSource;
 using CryptoPP::StreamTransformationFilter;
 
-#include "cryptopp562/aes.h"
+#include "cryptopp/aes.h"
 
-#include "cryptopp562/ccm.h"
+#include "cryptopp/ccm.h"
 using CryptoPP::CTR_Mode;
 
 #include "assert.h"

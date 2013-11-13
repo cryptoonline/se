@@ -76,5 +76,7 @@ const int16_t T_RECORD_BITS = 24;
 #define FID_PRF_KEYFILE "data/keys/PRF.KEY"
 #define D_FILE "data/D"
 #define T_FILE "data/T" 
+#define OT_FILE "data/OT"
+#define OT_KEYFILE "data/keys/OT.KEY"
 
 #endif /* defined(__BlindStorage__parameters__) */

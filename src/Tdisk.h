@@ -15,14 +15,14 @@
 #include "fileID.h"
 #include "PRSubset.h"
 #include "PRF.h"
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <vector>
 #include "Ddisk.h"
 #include "Debug.h"
-#include <tr1/memory>
+//#include <tr1/memory>
 
-using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using std::shared_ptr;
+using std::unordered_map;
 
 class Tdisk{
 private:

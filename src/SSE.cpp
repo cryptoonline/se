@@ -340,6 +340,7 @@ void SSE::getKeywords(byte docBytes[], size_t size, unordered_set<string, string
 		std::transform(keyword.begin(), keyword.end(), keyword.begin(), ::tolower);
 		keywords.insert(keyword);
 	}
+	cout << "Number of keywords " << keywords.size() << endl; 
 	cout << "Keyword generation took " << ((double)(clock() - startTime)/(double)CLOCKS_PER_SEC) << endl;;
 }
 

@@ -17,14 +17,15 @@ using std::cerr;
 
 #include <fcntl.h>
 
-#include "boost/random.hpp"
-#include "boost/generator_iterator.hpp"
-
 #include "parameters.h"
 #include <fstream>
 
 #include "rdtsc.h"
 #include <stdio.h>
+
+#include "boost/generator_iterator.hpp"
+#include "boost/random.hpp"
+
 
 class PRSubset {
 private:

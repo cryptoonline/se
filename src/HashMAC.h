@@ -14,7 +14,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-#include "cryptopp562/osrng.h"
+#include "cryptopp/osrng.h"
 using CryptoPP::AutoSeededRandomPool;
 
 #include <string>
@@ -23,26 +23,26 @@ using std::string;
 #include <cstdlib>
 using std::exit;
 
-#include "cryptopp562/cryptlib.h"
+#include "cryptopp/cryptlib.h"
 using CryptoPP::Exception;
 
-#include "cryptopp562/hmac.h"
+#include "cryptopp/hmac.h"
 using CryptoPP::HMAC;
 
-#include "cryptopp562/sha.h"
+#include "cryptopp/sha.h"
 using CryptoPP::SHA256;
 
-#include "cryptopp562/hex.h"
+#include "cryptopp/hex.h"
 using CryptoPP::HexEncoder;
 using CryptoPP::HexDecoder;
 
-#include "cryptopp562/filters.h"
+#include "cryptopp/filters.h"
 using CryptoPP::StringSink;
 using CryptoPP::StringSource;
 using CryptoPP::HashFilter;
 using CryptoPP::HashVerificationFilter;
 
-#include "cryptopp562/secblock.h"
+#include "cryptopp/secblock.h"
 using CryptoPP::SecByteBlock;
 
 #include "parameters.h"

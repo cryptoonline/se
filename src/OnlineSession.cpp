@@ -30,9 +30,15 @@ OnlineSession::OnlineSession(){
 	criBlocks.reserve(128);
 	fileCriBlocks.reserve(32);
 	updatedCriFileBlocksIndices.reserve(32);
+
+	Key localTKey(OT_KEYFILE, HMAC_KEY_SIZE);
+	byte localTKeyBytes[HMAC_KEY_SIZE];
+	key.get(localTKeyBytes);
+	localTHash.setKey(localTKeyBytes);
 }
 
 OnlineSession::~OnlineSession(){
+	writeLocalTBack();
 }
 
 int OnlineSession::retrieveTBlock(){
@@ -137,6 +143,68 @@ size_t OnlineSession::read(string filename, byte*& file, b_index_t numBlocksToRe
 //		file = compFile;
 //		return compFilesize;
 //	}
+}
+
+size_t OnlineSession::updateReadWithLocalT(string filename, byte*& file, size_t updatedFileSize){
+	bool file_present = readOT(filename, this->filePRSubset);
+
+	if(!file_present){
+		PRSubset filePRSubset(updatedFileSize);
+		this->filePRSubset = filePRSubset;
+	}
+
+	b_index_t blockIndices[filePRSubset.getSize()];
+	filePRSubset.get(blockIndices, filePRSubset.getSize());
+
+	byte dataBlocksBytes[filePRSubset.getSize()*BLOCK_SIZE];
+	readD(blockIndices, filePRSubset.getSize(), dataBlocksBytes);
+
+	uint32_t numBlocks = filePRSubset.getSize();
+
+	size_t filesize = 0;
+	for(int i = 0; i < numBlocks; i++){
+		/* After reading the final file block i.e. one that have data less than MAX_BLOCK_DATA_SIZE the loop can be broken
+		 * but only for read. For update we need to process all the blocks */
+		DataBlock block(blockIndices[i]);
+		block.parse(&dataBlocksBytes[i*BLOCK_SIZE]);
+		blocks.push_back(block);
+		if(block.fidMatchCheck(fid)){
+			fileBlocks.push_back(block);
+			updatedFileBlocksIndices.push_back(i);
+			filesize += block.getDataSize();
+			}
+		}
+	return filesize;	
+}
+
+void OnlineSession::updateWriteWithLocalT(string filename, byte updatedFile[], size_t updatedFileSize){
+	b_index_t numBlocksToWrite = (b_index_t)(ceil((double)updatedFileSize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+	dataSize_t sizeOfLastBlock = (dataSize_t)(updatedFileSize - (updatedFileSize/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE);
+
+	
+	b_index_t blockIndices[filePRSubset.getSize()];	
+	filePRSubset.get(blockIndices, filePRSubset.getSize());
+
+	byte blocksBytes[filePRSubset.getSize()*BLOCK_SIZE];
+	memset(blocksBytes, 0, filePRSubset.getSize()*BLOCK_SIZE);
+
+	int j = 0;
+	for(int i = 0; i < blocks.size(); ++i){
+		
+		if(i == updatedFileBlocksIndices[j]){
+			if(j < (numBlocksToWrite/BLOW_UP) - 1)
+				blocks[i].update(fid, &updatedFile[j*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
+			else if( j == numBlocksToWrite/BLOW_UP - 1)
+				blocks[i].update(fid, &updatedFile[j*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);				
+			j++;
+		}
+		else
+			blocks[i].updateVersion();
+		blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
+	}
+	
+	writeOT(filename, filePRSubset);
+	writeD(blockIndices, filePRSubset.getSize(), blocksBytes);
 }
 
 size_t OnlineSession::updateRead(string filename, byte*& file, int64_t bytesToAdd){
@@ -430,10 +498,37 @@ void OnlineSession::readT(t_index_t TRecordIndex, byte block[]){
 	diskAccessTime += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC;
 }
 
+bool OnlineSession::readOT(string filename, PRSubset &prSubset){
+	byte mac[SHA_BLOCK_SIZE];
+	localTHash.doFinal(filename, mac);
+	
+	uint64_t pairkey = *(uint64_t*)mac;
+
+	std::unordered_map<uint64_t, PRSubset>::const_iterator got = localT.find(pairkey);
+
+	if(got == localT.end())
+		return false;
+	else{
+		prSubset = got->second;
+		return true;
+	}
+
+//	prSubset = localT.at(pairkey);
+}
+
 void OnlineSession::writeT(t_index_t TRecordIndex, byte block[]){
 	clock_t startTime = clock();
 	dcomm.tPut(TRecordIndex, block);
 	diskAccessTime += (double)(clock() - startTime)/(double)CLOCKS_PER_SEC;
+}
+
+void OnlineSession::writeOT(string filename, PRSubset prSubset){
+	byte mac[SHA_BLOCK_SIZE];
+	localTHash.doFinal(filename, mac);
+
+	uint64_t pairkey = *(uint64_t*)mac;
+
+	localT.insert(std::make_pair<uint64_t, PRSubset>(pairkey, prSubset));
 }
 
 void OnlineSession::readD(b_index_t blockIndices[], b_index_t numBlocks, byte blocks[]){
@@ -535,4 +630,43 @@ void OnlineSession::resetDiskAccessTime(){
 
 double OnlineSession::getDiskAccessTime(){
 	return diskAccessTime;
+}
+
+void OnlineSession::loadLocalT(){
+	int buffersize = sizeof(uint64_t)+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t);
+	char buffer[buffersize];
+
+	size_t localTSize = readFileSize(OT_FILE);
+
+	byte* localTBytes = new byte[localTSize];
+	readFile(OT_FILE, localTBytes,localTSize);
+	
+	for(int i = 0; i < localTSize/buffersize; i++){
+		uint64_t pairkey = *(uint64_t*)(localTBytes+i*buffersize);		prSubsetSize_t size = *(prSubsetSize_t*)(localTBytes+i*buffersize+sizeof(uint64_t));
+		prSubsetSeed_t seed = *(prSubsetSeed_t*)(localTBytes+i*buffersize+sizeof(uint64_t)+sizeof(prSubsetSize_t));
+
+		PRSubset prSubset(size, seed);
+		localT.insert(std::make_pair<uint64_t, PRSubset>(pairkey, prSubset));
+	}
+
+	delete[] localTBytes;
+}
+
+void OnlineSession::writeLocalTBack(){
+	ofstream file(OT_FILE, std::ios::out | std::ios::binary);
+	char buffer[sizeof(uint64_t)+sizeof(prSubsetSize_t)+sizeof(prSubsetSeed_t)];
+	cout << "Writing back T to local disk. Please wait!" << endl;
+	for(unordered_map<uint64_t, PRSubset>::iterator iter=localT.begin(); iter!=localT.end(); ++iter){
+		uint64_t key = iter->first;
+		PRSubset prSubset = iter->second;
+
+		prSubsetSize_t size = prSubset.getSize();
+		prSubsetSeed_t seed = prSubset.getSeed();
+
+		file.write(reinterpret_cast<char*>(&key), sizeof(uint16_t));
+		file.write(reinterpret_cast<char*>(&size), sizeof(prSubsetSize_t));
+		file.write(reinterpret_cast<char*>(&seed), sizeof(prSubsetSeed_t));
+	}
+	file.close();
+	cout << "T written back to local disk." << endl;
 }

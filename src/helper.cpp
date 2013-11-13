@@ -54,7 +54,7 @@ size_t readFileSize(string path){
 }
 
 void readFile(string path, byte fileBytes[], size_t size){
-	ifstream file(path.c_str());
+	ifstream file(path.c_str(), std::ios::binary);
 	file.seekg(0, std::ios::beg);
 	file.read(reinterpret_cast<char*>(fileBytes), size);
 	file.close();

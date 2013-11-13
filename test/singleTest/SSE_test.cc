@@ -12,6 +12,9 @@
 #include "./../../src/SSE.h"
 #include "./../../src/sse_parameters.h"
 #include <fstream>
+#include "./../../src/FileStore.h"
+#include "./../../src/helper.h"
+
 
 void readDocs();
 void add(string filepath, docid_t docID);
@@ -19,6 +22,29 @@ void remove(docid_t docID);
 void genIndex(string directoryPath, double& execTime){
 	SSE sse;
 	sse.indexgen(directoryPath, execTime);
+}
+
+void encryptFiles(string path){
+	FileStore fstore;
+	double execTime = 0;
+	for(boost::filesystem::recursive_directory_iterator end, dir(path); dir!=end; ++dir){
+		if(boost::filesystem::is_regular(dir->status())) {
+		string docName = dir->path().string();
+
+		size_t size = readFileSize(docName);
+		byte* docBytes = new byte[size];
+		readFile(docName, docBytes, size);
+//		fstore.put(docName, docBytes, size, execTime);
+		byte key[16] = {0};
+		byte iv[16] = {0};
+		AES cipher;
+		clock_t startTime = clock();
+		cipher.ENC_CTR(docBytes, docBytes, size, key, iv);
+		execTime += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC;
+		delete[] docBytes;
+		}	
+	}
+	cout << "Docs Encryption took " << execTime << " seconds." << endl;
 }
 
 void deletefile(string file);
@@ -40,17 +66,21 @@ TEST(SSEReadTest, Test1){
 		string directoryName;
 		cin >> directoryName;
 
-		if(directoryName.compare("q") == 0)
+			string docDirectoryPath = "/Users/naveed/BStore/datasets/documents/test/dir" + directoryName + "/";
+			
+			encryptFiles(docDirectoryPath);
+			
+			if(directoryName.compare("q") == 0)
 			break;
 
-		for(int i = 0; i < 12; i++){
-			string directoryPath = "/Users/naveed/BStore/datasets/email/test/" + directoryName + "/";
+		for(int i = 0; i < 1; i++){
+			string directoryPath = "/Users/naveed/BStore/datasets/documents/test/text" + directoryName + "/";
 			double execTime = 0;
 			genIndex(directoryPath, execTime);
 			cout << "indexgen took " << execTime << " seconds." << endl;
 		}
 
-		for(int i = 0; i < 15; i++)	
+//		for(int i = 0; i < 15; i++)	
 			readDocs();
 
 		
@@ -77,23 +107,55 @@ TEST(SSEReadTest, Test1){
 
 		
 		cout << "********************Add Test********************" << endl;
-/*		
+		FileStore fstore;
 		for(int i = 0; i < 15; i++){
 			string filepath;
+//			filepath = "/Users/naveed/BStore/datasets/email/test256MB/test128MB/test64MB/beck-s/notes_inbox/143.";
+//			filepath = "/Users/naveed/BStore/datasets/documents/archive/Directories/Directory7/Directory6/SITM.pdf";
+//			string textpath = "/Users/naveed/BStore/datasets/documents/archive/Text/Directory7/Directory6/SITM.txt";
+//			filepath = "/Users/naveed/BStore/datasets/documents/archive/Directories/Directory7/pricing_your_food_product.ppt";
+//			string textpath = "/Users/naveed/BStore/datasets/documents/archive/Text/Directory7/pricing_your_food_product.txt";
+
+//			filepath = "/Users/naveed/BStore/datasets/documents/archive/Directories/Directory7/SP800-145.pdf";
+//			string textpath = "/Users/naveed/BStore/datasets/documents/archive/Text/Directory7/SP800-145.txt";
+
+//			filepath = "/Users/naveed/BStore/datasets/documents/archive/Directories/Directory7/Where_is_the_Universe.ppt";
+//				string textpath = "/Users/naveed/BStore/datasets/documents/archive/Text/Directory7/WhereistheUniverse.txt";
+			double execTime;
+			size_t size = readFileSize(filepath);
+			byte* bytes = new byte[size];
+			readFile(filepath, bytes, size);
+	//		fstore.put(filepath, bytes, size, execTime);
+
+		byte key[16] = {0};
+		byte iv[16] = {0};
+		AES cipher;
+		clock_t startTime = clock();
+		cipher.ENC_CTR(bytes, bytes, size, key, iv);
+		execTime += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC;
+
+//		cout << "Encryption time for adding doc is " << execTime << endl;
+//			add(textpath, 200000+i);
+//			remove(200000+i);
+
 			filepath = "/Users/naveed/BStore/datasets/email/test256MB/test128MB/test64MB/beck-s/notes_inbox/143.";
-			add(filepath, 200000);
-			
-			filepath = "/Users/naveed/BStore/datasets/email/test256MB/hernandez-j/all_documents/283.";
-			add(filepath, 200000);
-			
-			filepath = "/Users/naveed/BStore/datasets/email/test256MB/kitchen-l/_americas/sec_media/67.";
-			add(filepath, 200000);
-			
-			filepath = "/Users/naveed/BStore/datasets/email/test256MB/test128MB/test64MB/test32MB/forney-j/sent_items/158.";
-			add(filepath, 200000);
+			add(filepath, 200000+i+4);
+			remove(200000+i+4);
+
+//			filepath = "/Users/naveed/BStore/datasets/email/test256MB/hernandez-j/all_documents/283.";
+//			add(filepath, 200000+i+1);
+//			remove(200000+i+1);
+//			
+//			filepath = "/Users/naveed/BStore/datasets/email/test256MB/kitchen-l/_americas/sec_media/67.";
+//			add(filepath, 200000+i+2);
+//			remove(200000+i+2);
+//			
+	//		filepath = "/Users/naveed/BStore/datasets/email/test256MB/test128MB/test64MB/test32MB/forney-j/sent_items/158.";
+//			add(filepath, 200000+i+4);
+//			remove(200000+i+4);
 		}
 
-*/
+
 	}
  
 }
@@ -199,7 +261,8 @@ void readDocs(){
 //			break;
 		
 		SSE sse;
-		vector<docid_t> docIDs(10000);
+		vector<docid_t> docIDs;
+//		docIDs.re(10000);
 		double execTime = 0;
 		if(sse.search(keyword, docIDs, execTime)){
 			cout << "Number of documents with keyword " << keyword << " are " << docIDs.size() << endl;
