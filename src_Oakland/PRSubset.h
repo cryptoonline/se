@@ -26,6 +26,8 @@ using std::cerr;
 #include "boost/generator_iterator.hpp"
 #include "boost/random.hpp"
 
+#include "HashMAC.h"
+#include "Key.h"
 
 class PRSubset {
 private:
@@ -33,15 +35,17 @@ private:
 	prSubsetSeed_t seed;
 	
 	prSubsetSeed_t getRDRAND();
-	void generateSeed();
+	void generateSeed(string filename);
 	
 	void make(b_index_t subset[]);
+
+	HashMAC hash;
     
 public:
 	PRSubset();
-	PRSubset(prSubsetSize_t size);
+//	PRSubset(prSubsetSize_t size);
 	PRSubset(prSubsetSize_t size, prSubsetSeed_t seed);
-	
+	PRSubset(prSubsetSize_t size, string filename);	
 	prSubsetSize_t getSize() const;
 	prSubsetSeed_t getSeed() const;
 	

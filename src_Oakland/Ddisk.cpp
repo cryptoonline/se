@@ -36,18 +36,21 @@ void Ddisk::makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>&
 
 	byte sizef[MAX_BLOCK_DATA_SIZE];
 	memset(sizef, 0, BLOCK_SIZE);
-	memcpy(sizef, reinterpret_cast<byte*>(size), sizeof(size_t));
+	memcpy(sizef, static_cast<byte*>(static_cast<void*>(&size)), sizeof(size_t));
 	
 	D[emptyBlocks[0]]->make(fid, sizef, MAX_BLOCK_DATA_SIZE);
 	
 	int32_t counter = 1;
-	for(; counter < requiredNumBlocks - 1; counter++){
-		D[emptyBlocks[counter]]->make(fid, &bytes[counter*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
+	for(; counter < requiredNumBlocks; counter++){
+		D[emptyBlocks[counter]]->make(fid, &bytes[(counter-1)*MAX_BLOCK_DATA_SIZE], MAX_BLOCK_DATA_SIZE);
 	}
 
 	dataSize_t sizeOfLastBlock = (dataSize_t)(size - (size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE);
 //	dataSize_t sizeOfLastBlock = (dataSize_t)size - (dataSize_t)(size/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE;
-	D[emptyBlocks[counter]]->make(fid, &bytes[counter*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock); 
+	cout << "Empty " << emptyBlocks[counter] << "       " << counter << endl;
+	D[emptyBlocks[counter]]->make(fid, &bytes[(counter-1)*MAX_BLOCK_DATA_SIZE], sizeOfLastBlock);
+	
+	cout << " Value is " << (counter-1)*MAX_BLOCK_DATA_SIZE << endl << "  " << sizeOfLastBlock << endl;
 }
 
 void Ddisk::getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks){
@@ -55,6 +58,7 @@ void Ddisk::getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks){
 	b_index_t subset[size];
 	prSubset.get(subset, size);
 
+	printdec(subset, size, "PRSUBSET");
 	for(int i = 0; i < size; i++){
 		if(!(D[subset[i]]->isOccupied()))
 			emptyBlocks.push_back(subset[i]);
@@ -64,6 +68,7 @@ void Ddisk::getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks){
 void Ddisk::addFile(byte bytes[], size_t size, fileID fid, PRSubset prSubset){
 	vector<b_index_t> emptyBlocks;
 	getEmptyBlocks(prSubset, emptyBlocks);
+	printdec(emptyBlocks.data(), emptyBlocks.size(), "empty");
 	if(emptyBlocks.size() < (uint32_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE)){
 		cerr << "Not enough empty blocks." << endl;
 		exit(1);

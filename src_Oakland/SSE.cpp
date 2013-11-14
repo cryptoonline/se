@@ -28,7 +28,8 @@ void SSE::indexgen(string directoryPath, double& execTime){
 		unordered_set<docid_t>& set = itmap->second;
 		
 		byte docList[set.size()*sizeof(docid_t)];
-		
+		cout << "Byte array size is " << set.size()*sizeof(docid_t) << endl;
+
 		uint32_t counter = 0;
 		for(unordered_set<docid_t>::iterator itset = set.begin(); itset != set.end(); ++itset){
 			docid_t documentID = *itset;
@@ -279,6 +280,8 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs, double& duration){
 	
 	if(docsFoundInitial || docsFoundUpdate)
 		return true;
+
+	return false;
 }
 
 bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
@@ -315,7 +318,7 @@ bool SSE::retrieveIndex1(string keyword, vector<docid_t>& docIDs){
 	OnlineSession session;
 	session.resetDiskAccessTime();
 	byte* docIDsBytes;
-	size_t size = session.read(keyword, docIDsBytes);
+	size_t size = session.updateRead(keyword, docIDsBytes, 0);
 
 	if(size == 0)
 		return false;

@@ -1,0 +1,2 @@
+/Users/naveed/BStore/test/framework/gtest-1.7.0_build/CMakeFiles/gtest.dir
+/Users/naveed/BStore/test/framework/gtest-1.7.0_build/CMakeFiles/gtest_main.dir

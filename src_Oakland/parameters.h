@@ -18,7 +18,7 @@ typedef uint32_t t_index_t;
 typedef uint16_t version_t;
 typedef uint32_t higherfid_t;
 typedef uint32_t prSubsetSize_t;
-typedef uint32_t prSubsetSeed_t;
+typedef uint64_t prSubsetSeed_t;
 typedef uint32_t dataSize_t;
 typedef uint32_t criSize_t;
 
@@ -52,6 +52,7 @@ const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 #define CRI_BLOCK_SIZE 44
 #define CRI_PER_BLOCK (MAX_BLOCK_DATA_SIZE / CRI_BLOCK_SIZE)
 #define PRSUBSET_SIZE_LOWER_BOUND 80
+#define SIZE_MIN 80
 
 #define COMPRESSION_HEADER_SIZE 4
 
@@ -77,5 +78,6 @@ const int16_t T_RECORD_BITS = 24;
 #define T_FILE "data/T" 
 #define OT_FILE "data/OT"
 #define OT_KEYFILE "data/keys/OT.KEY"
+#define PRSUBSET_KEY "data/ID.KEY"
 
 #endif /* defined(__BlindStorage__parameters__) */
