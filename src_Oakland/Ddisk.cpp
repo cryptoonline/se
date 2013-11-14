@@ -30,15 +30,16 @@ Ddisk::~Ddisk(){
 void Ddisk::makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>& emptyBlocks){
 // Bytes in this function should be interleaved for the amount of bytes needed by DataBlock trailer
 	b_index_t requiredNumBlocks = (b_index_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE);
+	cout << "Size is " << size << " and required number of blocks are " << requiredNumBlocks << endl;
 	numOccupiedBlocks += requiredNumBlocks;
 
 //	cout << "Number of blocks occupied are " << numOccupiedBlocks << endl;
 
-	byte sizef[MAX_BLOCK_DATA_SIZE];
-	memset(sizef, 0, BLOCK_SIZE);
+	byte sizef[sizeof(size_t)];
+	memset(sizef, 0, sizeof(size_t));
 	memcpy(sizef, static_cast<byte*>(static_cast<void*>(&size)), sizeof(size_t));
 	
-	D[emptyBlocks[0]]->make(fid, sizef, MAX_BLOCK_DATA_SIZE);
+	D[emptyBlocks[0]]->make(fid, sizef, sizeof(size_t));
 	
 	int32_t counter = 1;
 	for(; counter < requiredNumBlocks; counter++){
@@ -67,8 +68,9 @@ void Ddisk::getEmptyBlocks(PRSubset prSubset, vector<b_index_t>& emptyBlocks){
 
 void Ddisk::addFile(byte bytes[], size_t size, fileID fid, PRSubset prSubset){
 	vector<b_index_t> emptyBlocks;
+//	emptyBlocks.reserve(64);
+
 	getEmptyBlocks(prSubset, emptyBlocks);
-	printdec(emptyBlocks.data(), emptyBlocks.size(), "empty");
 	if(emptyBlocks.size() < (uint32_t)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE)){
 		cerr << "Not enough empty blocks." << endl;
 		exit(1);

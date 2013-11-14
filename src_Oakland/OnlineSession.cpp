@@ -21,9 +21,9 @@ OnlineSession::OnlineSession(){
 //	blocks[0].setKey(DKeyBytes);
 //	fileBlocks[0].setKey(DKeyBytes);
 
-	blocks.reserve(128);
-	fileBlocks.reserve(32);
-	updatedFileBlocksIndices.reserve(32);
+	blocks.reserve(128*256);
+	fileBlocks.reserve(32*256);
+	updatedFileBlocksIndices.reserve(32*256);
 
 	filesize = 0;
 	numBlocks = 0;
@@ -43,8 +43,12 @@ void OnlineSession::firstDAccess(string filename){
 	b_index_t blockIndices[SIZE_MIN];
 	prSubset.get(blockIndices, SIZE_MIN);
 
+	printdec(blockIndices, SIZE_MIN, "BLOCK INDICES");
+	
 	byte dataBlocksBytes[SIZE_MIN*BLOCK_SIZE];
 	readD(blockIndices, SIZE_MIN, dataBlocksBytes);
+
+//	printhex(dataBlocksBytes, SIZE_MIN*BLOCK_SIZE, "DATA BYTES");
 
 	size_t filesize;
 
@@ -58,8 +62,10 @@ void OnlineSession::firstDAccess(string filename){
 		blocks.push_back(block);
 		if(block.fidMatchCheck(fid)){
 			if(!fileBlockExists){
+				printhex(&dataBlocksBytes[i*BLOCK_SIZE], BLOCK_SIZE, "FIRST BLOCK");
 				filesize = *(size_t*)(&dataBlocksBytes[i*BLOCK_SIZE]);
-				numBlocks = (b_index_t)(ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
+				cout << "Filesize is " << filesize << endl;
+				numBlocks = (b_index_t)(ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE));
 				fileBlockExists = true;
 			}
 			fileBlocks.push_back(block);
@@ -70,23 +76,25 @@ void OnlineSession::firstDAccess(string filename){
 
 void OnlineSession::secondDAccess(string filename){
 
+	cout << "Number of blocks in " << __FUNCTION__ << " are " << numBlocks << endl;
+
 	b_index_t blockIndices[numBlocks*BLOW_UP];
 	prSubset.get(blockIndices, numBlocks*BLOW_UP);
 
-	byte dataBlocksBytes[numBlocks*BLOCK_SIZE];
-	readD(blockIndices, numBlocks, dataBlocksBytes);
+	byte dataBlocksBytes[numBlocks*BLOW_UP*BLOCK_SIZE];
+	readD(blockIndices, numBlocks*BLOW_UP, dataBlocksBytes);
 
 	size_t filesize;
 
-	for(int i = SIZE_MIN; i < numBlocks; i++){
+	for(int i = 0; i < numBlocks*BLOW_UP - SIZE_MIN; i++){
 		/* After reading the final file block i.e. one that have data less than MAX_BLOCK_DATA_SIZE the loop can be broken
 		 * but only for read. For update we need to process all the blocks */
-		DataBlock block(blockIndices[i]);
-		block.parse(&dataBlocksBytes[i*BLOCK_SIZE]);
+		DataBlock block(blockIndices[i+SIZE_MIN]);
+		block.parse(&dataBlocksBytes[(i+SIZE_MIN)*BLOCK_SIZE]);
 		blocks.push_back(block);
 		if(block.fidMatchCheck(fid)){
 			fileBlocks.push_back(block);
-			updatedFileBlocksIndices.push_back(i);
+			updatedFileBlocksIndices.push_back(i+SIZE_MIN);
 			}
 		}
 }
@@ -163,14 +171,16 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t bytesToAdd
 
 	byte lowerFid[LOWERFID_SIZE];
 	this->fid.getLowerID(lowerFid);
+	printhex(lowerFid, LOWERFID_SIZE, "LOWER FID");
 
 	PRSubset prSubset(SIZE_MIN, filename);
 	this->prSubset = prSubset;
 
 	firstDAccess(filename);
-	b_index_t numBlocksAfterUpdate = (b_index_t)(ceil((double)(filesize+bytesToAdd)/(double)MAX_BLOCK_DATA_SIZE)*BLOW_UP);
-	if(numBlocks > SIZE_MIN){
-		numBlocks = max(numBlocks, numBlocksAfterUpdate);
+	b_index_t numBlocksAfterUpdate = (b_index_t)(ceil((double)(filesize+bytesToAdd)/(double)MAX_BLOCK_DATA_SIZE));
+	numBlocks = max(numBlocks, numBlocksAfterUpdate);
+	cout << "After fist Access " << numBlocks*BLOW_UP << endl;
+	if(numBlocks*BLOW_UP > SIZE_MIN){
 		secondDAccess(filename);
 	}
 	else
@@ -178,11 +188,14 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t bytesToAdd
 
 	file = new byte[filesize];
 	memset(file, 0, filesize);
-	for(int i = 0; i < fileBlocks.size(); i++){
+//	cout << "Number of fileBlocks " << fileBlocks.size() << endl;
+	for(int i = 1; i < fileBlocks.size(); i++){
 		byte block[BLOCK_SIZE];
 		memset(block, 0, BLOCK_SIZE);
 		fileBlocks[i].getDecrypted(block);
-		memcpy(&file[i*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
+		memcpy(&file[(i-1)*MAX_BLOCK_DATA_SIZE], block, fileBlocks[i].getDataSize());
+//		cout << "Amount of data is " << fileBlocks[i].getDataSize() << endl;
+	printchars(&file[(i-1)*MAX_BLOCK_DATA_SIZE], fileBlocks[i].getDataSize(), "FILE BLOCK");
 	}
 
 	return filesize;
@@ -205,17 +218,19 @@ void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t size
 		exit(1);
 	}
 
-	byte sizef[MAX_BLOCK_DATA_SIZE];
-	memset(sizef, 0, BLOCK_SIZE);
-	memcpy(sizef, reinterpret_cast<byte*>(max(filesize, sizeAfterUpdate)), sizeof(size_t));
+	byte sizef[sizeof(size_t)];
+	memset(sizef, 0, sizeof(size_t));
+//	size_t maxsize = max(filesize, sizeAfterUpdate);
+	memcpy(sizef, reinterpret_cast<byte*>(&sizeAfterUpdate), sizeof(size_t));
 	
-	blocks[0].make(fid, sizef, MAX_BLOCK_DATA_SIZE);
+	blocks[0].make(fid, sizef, sizeof(size_t));
 
 	int i = 1, j = 1;
 
-	byte blocksBytes[numBlocks];
+	byte blocksBytes[numBlocks*BLOW_UP*BLOCK_SIZE];
 
 	dataSize_t sizeOfLastBlock = (dataSize_t)(sizeAfterUpdate - (sizeAfterUpdate/MAX_BLOCK_DATA_SIZE)*MAX_BLOCK_DATA_SIZE);
+	cout << "Blocks size is " << blocks.size() << " Numblocks is " << numBlocks*BLOW_UP << endl;
 	for(; i < blocks.size(); ++i){
 		
 		if(i == updatedFileBlocksIndices[j]){
@@ -230,7 +245,7 @@ void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t size
 		blocks[i].getEncrypted(&blocksBytes[i*BLOCK_SIZE]);
 	}
 	
-	writeD(blockIndices, numBlocks*BLOW_UP, blocksBytes);
+	writeD(blockIndices, numBlocks, blocksBytes);
 	
 //	dcomm.writeToDisk();
 }

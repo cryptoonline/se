@@ -44,13 +44,14 @@ TEST(OnlineSessionReadwithFileBStore, Test1){
 	for(int i = 0; i < numFiles; i++){
 		string filename = directoryPath + filenumbers[i] + ".";
 		size_t size = readFileSize(filename);
+		cout << "Size of the file is " << size << endl;
 		byte fileBytes[size];
 		readFile(filename, fileBytes, size);
 		store->add(filename, fileBytes, size);
 	}
 	double execTime;
 	store->finalize(execTime);
-/*
+
 	while(true){
 		cout << "Enter filenumber (Enter q to quit): ";
 		string filenumber;
@@ -63,12 +64,12 @@ TEST(OnlineSessionReadwithFileBStore, Test1){
 		cout << "Reading file: " << filename << endl;
 		OnlineSession session;
 		byte* file;
-		size_t filesize = session.read(filename, file);
-		printchars(file, filesize, "FILE");
-		delete[] file;
+		size_t filesize = session.updateRead(filename, file, 0);
+	//	printchars(file, filesize, "FILE");
+	//	delete[] file;
 		}
-		*/
-	delete store;	
+		
+//	delete store;	
 }
 
 /*
@@ -121,7 +122,7 @@ TEST(OnlineSessionWrite, Test1){
 		string filename = directoryPath + filenumber + ".";
 		OnlineSession* readSession = new OnlineSession();
 		byte* file;
-		size_t filesize = readSession->read(filename, file);
+		size_t filesize = readSession->updateRead(filename, file, 0);
 		printchars(file, filesize, "UPDATED FILE");
 		delete[] file;
 		delete readSession;
@@ -194,11 +195,12 @@ TEST(OnlineSessionUpdate, Test1){
 		string filename = directoryPath + filenumber + ".";
 		OnlineSession* readSession = new OnlineSession();
 		byte* file;
-		size_t filesize = readSession->read(filename, file);
+		size_t filesize = readSession->updateRead(filename, file, 0);
 		printchars(file, filesize, "UPDATED FILE");
 		delete[] file;
 		delete readSession;
 	}
+	
 }
 */
 /*

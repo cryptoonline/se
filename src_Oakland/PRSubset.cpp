@@ -13,9 +13,10 @@ PRSubset::PRSubset(){
 	seed = 0;
 
 	byte keyBytes[HMAC_KEY_SIZE];
-	Key key(PRSUBSET_KEY, HMAC_KEY_SIZE);
-	key.get(keyBytes);
+	memset(keyBytes, 0, HMAC_KEY_SIZE);
 	hash.setKey(keyBytes);
+//	Key key(PRSUBSET_KEY, HMAC_KEY_SIZE);
+//	key.get(keyBytes);
 }
 
 //PRSubset::PRSubset(prSubsetSize_t size){
@@ -33,6 +34,11 @@ PRSubset::PRSubset(prSubsetSize_t size, prSubsetSeed_t seed){
 }
 
 PRSubset::PRSubset(prSubsetSize_t size, string filename){
+	
+	byte keyBytes[HMAC_KEY_SIZE];
+	memset(keyBytes, 0, HMAC_KEY_SIZE);
+	hash.setKey(keyBytes);
+
 	if(size < PRSUBSET_SIZE_LOWER_BOUND)
 		size = PRSUBSET_SIZE_LOWER_BOUND;
 

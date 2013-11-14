@@ -118,7 +118,7 @@ void DataBlock::encrypt(){
 	makeIV();
 	byte dummyblock[BLOCK_SIZE-sizeof(version_t)];
 	cipher.ENC_CTR(dummyblock, dummyblock, BLOCK_SIZE-sizeof(version_t), key, iv);
-	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+//	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = true;
 }
 
@@ -127,7 +127,7 @@ void DataBlock::decrypt(){
 	makeIV();
 	byte dummyblock[BLOCK_SIZE-sizeof(version_t)];
 	cipher.DEC_CTR(dummyblock, dummyblock, BLOCK_SIZE-sizeof(version_t), key, iv);
-	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+//	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = false;
 }
 

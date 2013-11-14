@@ -36,10 +36,10 @@ public:
 
 	void setKey(byte key[]);
 
-	void make(fileID fid, byte block[], dataSize_t dataSize = MAX_BLOCK_DATA_SIZE, version_t version = 0);
+	void make(fileID fid, byte block[], dataSize_t dataSize, version_t version = 0);
 	
 	void parse(byte block[]);
-	void update(fileID fid, byte block[], dataSize_t dataSize = MAX_BLOCK_DATA_SIZE);
+	void update(fileID fid, byte block[], dataSize_t dataSize);
 	void updateVersion();
 	void clear();
 
