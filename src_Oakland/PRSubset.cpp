@@ -60,9 +60,13 @@ void PRSubset::make(b_index_t subset[]){
 
 	for(prSubsetSize_t i = 0; i < size; i++)
 		subset[i] = urand();
+	
+	
+
 }
 
 void PRSubset::get(b_index_t subset[], b_index_t size){
+	this->size = size;
 	if(size < PRSUBSET_SIZE_LOWER_BOUND){
 		std::cerr << "PRSubset size is lower than the lower bound. Exiting!" << endl;
 		exit(1);
