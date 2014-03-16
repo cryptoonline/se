@@ -58,8 +58,16 @@ void PRSubset::make(b_index_t subset[]){
 	boost::variate_generator< RNGType, boost::uniform_int<> >
 		urand(rng, urandDevice);
 
-	for(prSubsetSize_t i = 0; i < size; i++)
-		subset[i] = urand();
+	unordered_set<b_index_t> set;
+	for(prSubsetSize_t i = 0; i < size; i++){
+			subset[i] = urand();
+//		b_index_t rand_int = urand();
+//		if(!set.count(rand_int)){
+//			set.insert(rand_int);
+//			subset[i] = rand_int;
+//			i++;
+//		}
+	}
 	
 	
 

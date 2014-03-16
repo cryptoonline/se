@@ -36,7 +36,9 @@ void Ddisk::makeBlocks(byte bytes[], size_t size, fileID fid, vector<b_index_t>&
 	byte sizef[sizeof(size_t)];
 	memset(sizef, 0, sizeof(size_t));
 	memcpy(sizef, static_cast<byte*>(static_cast<void*>(&size)), sizeof(size_t));
-	
+//	cout << "sizef is " << size << " " << (int)sizef[0] << " " << (int)sizef[1] << " " << (int)sizef[2] << " " << (int)sizef[3] << endl;
+//	cout << *(size_t*)sizef << endl;
+
 	D[emptyBlocks[0]]->make(fid, sizef, sizeof(size_t));
 	
 	int32_t counter = 1;

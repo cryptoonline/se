@@ -38,14 +38,15 @@ OnlineSession::~OnlineSession(){
 }
 
 
-void OnlineSession::firstDAccess(string filename){
+void OnlineSession::firstDAccess(string filename, double& diskTime){
 	
 	b_index_t blockIndices[SIZE_MIN];
 	prSubset.get(blockIndices, SIZE_MIN);
 
 	byte dataBlocksBytes[SIZE_MIN*BLOCK_SIZE];
+	clock_t start = clock();
 	readD(blockIndices, SIZE_MIN, dataBlocksBytes);
-
+	diskTime += (double)(clock()-start)/CLOCKS_PER_SEC;
 //	printhex(dataBlocksBytes, SIZE_MIN*BLOCK_SIZE, "DATA BYTES");
 
 //	size_t filesize;
@@ -60,7 +61,7 @@ void OnlineSession::firstDAccess(string filename){
 		blocks.push_back(block);
 		if(block.fidMatchCheck(fid)){
 			if(!fileBlockExists){
-//				printhex(&dataBlocksBytes[i*BLOCK_SIZE], BLOCK_SIZE, "FIRST BLOCK");
+			//	printhex(&dataBlocksBytes[i*BLOCK_SIZE], BLOCK_SIZE, "FIRST BLOCK");
 				filesize = *(size_t*)(&dataBlocksBytes[i*BLOCK_SIZE]);
 				numBlocks = (b_index_t)(ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE));
 				fileBlockExists = true;
@@ -69,16 +70,21 @@ void OnlineSession::firstDAccess(string filename){
 			updatedFileBlocksIndices.push_back(i);
 			}
 		}
+//	cout << "Filesize is " << filesize << endl;
+//	cout << "numBlocks x BLOW_UP " << numBlocks*BLOW_UP << endl;
+//	cout << "SIZE_MIN " << SIZE_MIN << endl;
 }
 
-void OnlineSession::secondDAccess(string filename){
+void OnlineSession::secondDAccess(string filename, double& diskTime){
 
 
 	b_index_t* blockIndices = new b_index_t[numBlocks*BLOW_UP];
 	prSubset.get(blockIndices, numBlocks*BLOW_UP);
 
 	byte* dataBlocksBytes = new byte[numBlocks*BLOW_UP*BLOCK_SIZE];
+	clock_t start = clock();
 	readD(blockIndices, numBlocks*BLOW_UP, dataBlocksBytes);
+	diskTime += (double)(clock()-start)/CLOCKS_PER_SEC;
 
 //	size_t filesize;
 
@@ -96,6 +102,36 @@ void OnlineSession::secondDAccess(string filename){
 
 	delete[] blockIndices;
 	delete[] dataBlocksBytes;
+}
+
+void OnlineSession::updateAccess(string filename, double& diskTime){
+	b_index_t blockIndices[SIZE_MIN];
+	prSubset.get(blockIndices, SIZE_MIN);
+
+	byte firstBlock[BLOCK_SIZE];
+	clock_t start = clock();
+	readD(blockIndices, 1, firstBlock);
+	diskTime += (double)(clock()-start)/CLOCKS_PER_SEC;
+//	printhex(dataBlocksBytes, SIZE_MIN*BLOCK_SIZE, "DATA BYTES");
+
+//	size_t filesize;
+
+	bool fileBlockExists = false;
+
+		DataBlock block(blockIndices[0]);
+		block.parse(&firstBlock);
+		blocks.push_back(block);
+		if(block.fidMatchCheck(fid)){
+			if(!fileBlockExists){
+			//	printhex(&dataBlocksBytes[i*BLOCK_SIZE], BLOCK_SIZE, "FIRST BLOCK");
+				filesize = *(size_t*)(&dataBlocksBytes[i*BLOCK_SIZE]);
+				numBlocks = (b_index_t)(ceil((double)filesize/(double)MAX_BLOCK_DATA_SIZE));
+				fileBlockExists = true;
+			}
+			fileBlocks.push_back(block);
+			updatedFileBlocksIndices.push_back(i);
+			}
+		}
 }
 
 /*
@@ -162,7 +198,7 @@ void OnlineSession::updateWriteWithLocalT(string filename, byte updatedFile[], s
 }
 */
 
-size_t OnlineSession::updateRead(string filename, byte*& file, size_t bytesToAdd){
+size_t OnlineSession::updateRead(string filename, byte*& file, size_t bytesToAdd, double& diskTime){
 	
 	this->filename = filename;
 	fileID fid(filename);
@@ -175,11 +211,11 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t bytesToAdd
 	PRSubset prSubset(SIZE_MIN, filename);
 	this->prSubset = prSubset;
 
-	firstDAccess(filename);
+	firstDAccess(filename, diskTime);
 	b_index_t numBlocksAfterUpdate = (b_index_t)(ceil((double)(filesize+bytesToAdd)/(double)MAX_BLOCK_DATA_SIZE));
 	numBlocks = max(numBlocks, numBlocksAfterUpdate);
 	if(numBlocks*BLOW_UP > SIZE_MIN){
-		secondDAccess(filename);
+		secondDAccess(filename, diskTime);
 	}
 	else
 		numBlocks = SIZE_MIN;
@@ -196,7 +232,7 @@ size_t OnlineSession::updateRead(string filename, byte*& file, size_t bytesToAdd
 	return filesize;
 }
 
-void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t sizeAfterUpdate){
+void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t sizeAfterUpdate, double& diskTime){
 	b_index_t* blockIndices = new b_index_t[numBlocks*BLOW_UP];	
 	prSubset.get(blockIndices, numBlocks*BLOW_UP);
 
@@ -204,11 +240,12 @@ void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t size
 		for(int i = numBlocks; i < updatedFileBlocksIndices.size(); i++)
 			blocks[updatedFileBlocksIndices[i]].clear();
 
-	for(int i = 0; i < blocks.size() && updatedFileBlocksIndices.size() < numBlocks; i++)
+
+	for(int i = 0; (i < blocks.size()) && ((updatedFileBlocksIndices.size()*MAX_BLOCK_DATA_SIZE) < sizeAfterUpdate); i++)
 		if(!(blocks[i].isOccupied()))
 			updatedFileBlocksIndices.push_back(i);
 
-	if(updatedFileBlocksIndices.size() < numBlocks){
+	if(updatedFileBlocksIndices.size()*MAX_BLOCK_DATA_SIZE < sizeAfterUpdate){
 		cerr << "Update unsuccessful: Not enought blocks available." << endl;
 		exit(1);
 	}
@@ -244,10 +281,12 @@ void OnlineSession::updateWrite(string filename, byte updatedFile[], size_t size
 	}
 
 //	printhex(blocksBytes, numBlocks*BLOW_UP*BLOCK_SIZE, "CHARS");
-	writeD(blockIndices, numBlocks, blocksBytes);
+//	clock_t start = clock();
+//	writeD(blockIndices, numBlocks*BLOW_UP, blocksBytes);
+//	diskTime += (double)(clock()-start)/CLOCKS_PER_SEC;
 	
-	delete[] blocksBytes;	
-	delete[] blockIndices;
+//	delete[] blocksBytes;	
+//	delete[] blockIndices;
 //	dcomm.writeToDisk();
 }
 

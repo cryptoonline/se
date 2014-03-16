@@ -14,9 +14,12 @@ SSE::~SSE(){
 }
 
 void SSE::setupKey(){
-	Key hmacKey(SSE_HMAC_KEYFILE, HMAC_KEY_SIZE);
-	hmacKey.get(docHashKey);
+//	Key hmacKey(SSE_HMAC_KEYFILE, HMAC_KEY_SIZE);
+//	hmacKey.get(docHashKey);
+	byte* docHashKey = new byte[HMAC_KEY_SIZE];
+	memset(docHashKey, 1, HMAC_KEY_SIZE);
 	hashMac.setKey(docHashKey);
+	delete[] docHashKey;
 }
 
 void SSE::indexgen(string directoryPath, double& execTime){
@@ -28,7 +31,6 @@ void SSE::indexgen(string directoryPath, double& execTime){
 		unordered_set<docid_t>& set = itmap->second;
 		
 		byte docList[set.size()*sizeof(docid_t)];
-		cout << "Byte array size is " << set.size()*sizeof(docid_t) << endl;
 
 		uint32_t counter = 0;
 		for(unordered_set<docid_t>::iterator itset = set.begin(); itset != set.end(); ++itset){
@@ -44,9 +46,10 @@ void SSE::indexgen(string directoryPath, double& execTime){
 }
 
 uint64_t SSE::getDocNameHash(string docname){
-	byte hashMacBytes[SSE_DIGEST_SIZE];
+	byte* hashMacBytes = new byte[SSE_DIGEST_SIZE];
 	hashMac.doFinal(docname, hashMacBytes);
 	return *(uint64_t*)hashMacBytes;
+	delete[] hashMacBytes;
 }
 
 void SSE::genPlainIndex(string directoryPath) {
@@ -78,7 +81,7 @@ void SSE::genPlainIndex(string directoryPath) {
 
 		if(boost::filesystem::is_regular(dir->status())) {
 			fileCount++;
-	//		cout << "[FILE] " << fileName << "--->" << fileCount << endl;
+//		cout << "[FILE] " << fileName << "--->" << fileCount << endl;
 			uint64_t docID = getDocNameHash(boost::lexical_cast<string>(fileCount));
 			
 			CLEAR_BIT(docID, 0);
@@ -117,10 +120,10 @@ void SSE::genPlainIndex(string directoryPath) {
 			}
 			input.close();
 		}
-//		else {
+		else {
 //			// it's a directory
-//			cout << "[DIR] [" << (int)((double)fileCount/(double)fileSum*100) << "%] " << fileName << endl;
-//		}
+			cout << "[DIR] [" << (int)((double)fileCount/(double)fileSum*100) << "%] " << fileName << endl;
+		}
 	}
 	cout << "[DONE] Number of keywords: " << map.size() << std::endl;
 
@@ -148,7 +151,7 @@ void SSE::genPlainIndex(string directoryPath) {
 
 void SSE::remove(docid_t docName, double& duration){
 //	docName = "/Users/naveed/BStore/datasets/testdir/" + docName + ".";
-	
+	double diskTime = 0;
 	clock_t startTime = clock();
 	uint64_t docHash = getDocNameHash(boost::lexical_cast<string>(docName));
 	uint64_t docID0 = docHash;	CLEAR_BIT(docID0, 0);
@@ -182,7 +185,7 @@ void SSE::remove(docid_t docName, double& duration){
 			string keyword = boost::lexical_cast<string>(1) + *it;
 			OnlineSession session;
 			byte* docIDs = NULL;
-			size_t size = session.updateRead(keyword, docIDs, -sizeof(docid_t));
+			size_t size = session.updateRead(keyword, docIDs, -sizeof(docid_t), diskTime);
 //			cout << "Updating keyword " << keyword << endl;
 //			cout << "Number of files containing keyword \"" << keyword << "\" are " << size << endl << " " << size - sizeof(docid_t) << endl;
 //			uint32_t docIDtoRemove = findDocID(docIDs, size, docID1);
@@ -194,14 +197,14 @@ void SSE::remove(docid_t docName, double& duration){
 			}
 			deleteDocID(docIDs, size, docIDtoRemove);
 //			cout << "DocID to remove " << docIDtoRemove << endl;
-			session.updateWrite(keyword, docIDs, size);
+			session.updateWrite(keyword, docIDs, size, diskTime);
 			delete[] docIDs;
 			docIDs = NULL;
 		}
 	
 		delete[] doc;
 
-		duration += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC - session.getDiskAccessTime();
+		duration += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC - diskTime;
 
 		cout << "Disk operations took " << session.getDiskAccessTime() << " seconds." << endl;
 		fstore.remove(boost::lexical_cast<string>(docID1));
@@ -214,6 +217,7 @@ void SSE::remove(docid_t docName, double& duration){
 }
 
 void SSE::add(docid_t docName, string docFileName, double& duration){
+	double diskTime = 0;
 	clock_t startTime = clock();
 	uint64_t docID = getDocNameHash(boost::lexical_cast<string>(docName));
 	SET_BIT(docID, 0);
@@ -234,32 +238,41 @@ void SSE::add(docid_t docName, string docFileName, double& duration){
 	session.resetDiskAccessTime();
 
 //	cout << "Adding keywords " << endl;
+	size_t partialIndexDownloadSize = 0;
 	for(unordered_set<string, stringhash>::iterator it = keywords.begin(); it != keywords.end(); ++it){
-		string keyword = boost::lexical_cast<string>(1) + *it;
+	//	string keyword = boost::lexical_cast<string>(1) + *it;
+		string keyword = boost::lexical_cast<string>(0) + *it; //Changed to 0 just for computing data when data added is too much
 		
 		OnlineSession session;
 		
 		byte* docIDs;
-		size_t size = session.updateRead(keyword, docIDs, sizeof(docid_t));
-//		cout << "Size is " << size << endl;
+		size_t size = session.updateRead(keyword, docIDs, sizeof(docid_t), diskTime);
+		if(size <= SIZE_MIN * MAX_BLOCK_DATA_SIZE)
+			partialIndexDownloadSize += SIZE_MIN*BLOCK_SIZE;
+		else
+			partialIndexDownloadSize += (int)ceil((double)size/(double)MAX_BLOCK_DATA_SIZE)*BLOCK_SIZE*BLOW_UP;
+	//	cout << "Data downloaded is " << partialIndexDownloadSize << endl;
+	//	cout << "Size is " << size << endl;
 //		addDocID(docIDs, size, docID);
 //		printhex(docIDs, size, "BEFORE");
 		byte updatedDocIDs[size+sizeof(docid_t)];
 		memcpy(updatedDocIDs, docIDs, size);
 		memcpy(&updatedDocIDs[size], static_cast<byte*>(static_cast<void*>(&docName)), sizeof(docid_t));
 //		printhex(updatedDocIDs, size+sizeof(docid_t), "AFTER");
-		session.updateWrite(keyword, updatedDocIDs, size + sizeof(docid_t));
+		session.updateWrite(keyword, updatedDocIDs, size + sizeof(docid_t), diskTime);
 		delete[] docIDs;
 	}
 
 //	cout << "Disk operations took " << session.getDiskAccessTime() << " seconds." << endl;
-	
-	duration += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC - session.getDiskAccessTime();
+
+	cout << "Total data downloaded is " << partialIndexDownloadSize << endl;
+
+	duration += (double)(clock()-startTime)/(double)CLOCKS_PER_SEC - diskTime;
 
 	cout << "Disk Access took " << session.getDiskAccessTime() << " seconds." << endl;
 	
 	double SKETime = 0;
-	fstore.put(boost::lexical_cast<string>(docID), doc, size, SKETime);
+//	fstore.put(boost::lexical_cast<string>(docID), doc, size, SKETime);
 	cout << "SKE took write" << SKETime << " seconds." << endl;
 	delete[] doc;
 }
@@ -267,16 +280,16 @@ void SSE::add(docid_t docName, string docFileName, double& duration){
 bool SSE::search(string keyword, vector<docid_t>& docIDs, double& duration){
 	clock_t startTime = clock();
 	OnlineSession session;
-	session.resetDiskAccessTime();
+//	session.resetDiskAccessTime();
 
+	double diskTime = 0;
 	bool docsFound = false;
 
-	bool docsFoundInitial = retrieveIndex0(boost::lexical_cast<string>(0)+keyword, docIDs);
+	bool docsFoundInitial = retrieveIndex0(boost::lexical_cast<string>(0)+keyword, docIDs, diskTime);
 	
-	bool docsFoundUpdate = retrieveIndex1(boost::lexical_cast<string>(1)+keyword, docIDs);
+	bool docsFoundUpdate = retrieveIndex1(boost::lexical_cast<string>(1)+keyword, docIDs, diskTime);
 
-	duration = (double)(clock()-startTime)/(double)CLOCKS_PER_SEC - session.getDiskAccessTime();
-	cout << "Disk Access took " << session.getDiskAccessTime() << " seconds." << endl;
+	duration = (double)(clock()-startTime)/(double)CLOCKS_PER_SEC - diskTime;
 	
 	if(docsFoundInitial || docsFoundUpdate)
 		return true;
@@ -284,48 +297,65 @@ bool SSE::search(string keyword, vector<docid_t>& docIDs, double& duration){
 	return false;
 }
 
-bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
+bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs, double& diskTime){
 	OnlineSession session;
 	byte* docIDsBytes;
 
-	size_t size = session.updateRead(keyword, docIDsBytes, 0);
+	size_t size = session.updateRead(keyword, docIDsBytes, 0, diskTime);
 
+	cout << "Index0: Number of bytes retrieved are " << size << endl;
 	if(size == 0)
 		return false;
 
-	byte updatedDocIDsBytes[size];
-	memset(updatedDocIDsBytes, 0, size);
+	cout << "Size is " << size << endl;
+//	byte* updatedDocIDsBytes = new byte[size];
+//	memset(updatedDocIDsBytes, 0, size);
 
+	long totalDataDownloaded = 0;
 	int32_t j = 0;
 	for(int32_t i = 0; i < size/sizeof(docid_t); i++){
 		docid_t docID = *(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]);
 		uint64_t docIDonDisk = getDocNameHash(boost::lexical_cast<string>(docID));
 		CLEAR_BIT(docIDonDisk, 0);
-		if(fstore.isFilePresent(boost::lexical_cast<string>(docIDonDisk))){
+		clock_t start = clock();
+		bool filepresent = fstore.isFilePresent(boost::lexical_cast<string>(docIDonDisk));
+		totalDataDownloaded += readFileSize(FILESTORE_PATH + boost::lexical_cast<string>(docIDonDisk));
+		diskTime += (double)(clock()-start)/CLOCKS_PER_SEC;
+		
+		if(filepresent){
 			docIDs.push_back(docID);
-			memcpy(&updatedDocIDsBytes[j*sizeof(docid_t)], &docIDsBytes[i*sizeof(docid_t)], sizeof(docid_t));
+//			memcpy(&updatedDocIDsBytes[j*sizeof(docid_t)], &docIDsBytes[i*sizeof(docid_t)], sizeof(docid_t));
 			j++;
 		}
 	}
 
-	session.updateWrite(keyword, updatedDocIDsBytes, size);
-	delete[] docIDsBytes;
 
+	cout << "Index0: Total data downloaded is " << totalDataDownloaded << endl;
+	session.updateWrite(keyword, docIDsBytes, size, diskTime);
+	delete[] docIDsBytes;
 	return true;
 }
 
-bool SSE::retrieveIndex1(string keyword, vector<docid_t>& docIDs){
+bool SSE::retrieveIndex1(string keyword, vector<docid_t>& docIDs, double& diskTime){
 	OnlineSession session;
 	session.resetDiskAccessTime();
 	byte* docIDsBytes;
-	size_t size = session.updateRead(keyword, docIDsBytes, 0);
 
+	size_t size = session.updateRead(keyword, docIDsBytes, 0, diskTime);
+	cout << "Index1: Number of bytes retrieved are " << size << endl;
+
+	long totalDataDownloaded = 0;
 	if(size == 0)
 		return false;
 
-	for(int32_t i = 0; i < size/sizeof(docid_t); i++)
-		docIDs.push_back(*(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]));
+	for(int32_t i = 0; i < size/sizeof(docid_t); i++){
+		docid_t docID = *(docid_t*)(&docIDsBytes[i*sizeof(docid_t)]);
+		uint64_t docIDonDisk = getDocNameHash(boost::lexical_cast<string>(docID));
+		docIDs.push_back(docID);
+		totalDataDownloaded += readFileSize(boost::lexical_cast<string>(docIDonDisk));
+	}
 
+	cout << "Index1: Total data downloaded is " << totalDataDownloaded << endl;
 	delete[] docIDsBytes;
 
 	return true;

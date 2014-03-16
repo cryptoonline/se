@@ -286,6 +286,7 @@ bool SSE::retrieveIndex0(string keyword, vector<docid_t>& docIDs){
 	byte* docIDsBytes;
 
 	size_t size = session.updateRead(keyword, docIDsBytes, 0);
+	cout << "Index0 size retrieved is " << size << " bytes." << endl;
 
 	if(size == 0)
 		return false;
@@ -316,6 +317,7 @@ bool SSE::retrieveIndex1(string keyword, vector<docid_t>& docIDs){
 	session.resetDiskAccessTime();
 	byte* docIDsBytes;
 	size_t size = session.read(keyword, docIDsBytes);
+	cout << "Index1 size retrieved is " << size << " bytes." << endl;
 
 	if(size == 0)
 		return false;

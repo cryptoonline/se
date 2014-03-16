@@ -25,9 +25,12 @@ using std::cerr;
 
 #include "boost/generator_iterator.hpp"
 #include "boost/random.hpp"
+#include "unordered_set"
 
 #include "HashMAC.h"
 #include "Key.h"
+
+using std::unordered_set;
 
 class PRSubset {
 private:

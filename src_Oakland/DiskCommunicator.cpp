@@ -65,29 +65,29 @@ void DiskCommunicator::dPut(b_index_t* blockLocations, b_index_t numBlocks, byte
 }
 
 void DiskCommunicator::dGet(b_index_t* blockLocations, b_index_t numBlocks, byte* blocks){
-//	boost::iostreams::mapped_file_source file;
-//	size_t DSize = (size_t)(TOTAL_BLOCKS*BLOCK_SIZE);
-//
-//	file.open(D_FILE, DSize);
-//
-//	if(file.is_open()){
-//		byte* D = (byte*)file.data();
-//		
-//		for(int32_t i = 0; i < numBlocks; i++){
-//			memcpy(&blocks[i*BLOCK_SIZE], D+blockLocations[i]*BLOCK_SIZE, BLOCK_SIZE);
-//		}
-//		file.close();
-//	}
-//	else {
-//		cout << D_FILE << " could not be mapped." << endl;
-//	}
-	ifstream in(D_FILE, ios::in | ios::binary);
-	for(int i = 0; i < numBlocks; i++){
-//		memcpy(&blocks[i*BLOCK_SIZE], &D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE);
-		in.seekg(blockLocations[i]*BLOCK_SIZE);
-		in.read(reinterpret_cast<char*>(&blocks[i*BLOCK_SIZE]), BLOCK_SIZE);
+	boost::iostreams::mapped_file_source file;
+	size_t DSize = (size_t)(TOTAL_BLOCKS*BLOCK_SIZE);
+
+	file.open(D_FILE, DSize);
+
+	if(file.is_open()){
+		byte* D = (byte*)file.data();
+		
+		for(int32_t i = 0; i < numBlocks; i++){
+			memcpy(&blocks[i*BLOCK_SIZE], D+blockLocations[i]*BLOCK_SIZE, BLOCK_SIZE);
+		}
+		file.close();
 	}
-	in.close();
+	else {
+		cout << D_FILE << " could not be mapped." << endl;
+	}
+//	ifstream in(D_FILE, ios::in | ios::binary);
+//	for(int i = 0; i < numBlocks; i++){
+//		memcpy(&blocks[i*BLOCK_SIZE], &D[blockLocations[i]*BLOCK_SIZE], BLOCK_SIZE);
+//		in.seekg(blockLocations[i]*BLOCK_SIZE);
+//		in.read(reinterpret_cast<char*>(&blocks[i*BLOCK_SIZE]), BLOCK_SIZE);
+//	}
+//	in.close();
 }
 
 void DiskCommunicator::tPut(t_index_t index, byte* block){

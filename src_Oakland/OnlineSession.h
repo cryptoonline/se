@@ -23,7 +23,7 @@ using std::unordered_map;
 #include "PRF.h"
 #include "Debug.h"
 #include "DiskCommunicator.h"
-#include "LZO.h"
+//#include "LZO.h"
 #include "FileHandling.h"
 
 class OnlineSession {
@@ -52,8 +52,8 @@ private:
 
 	static double diskAccessTime;
 
-	void firstDAccess(string filename);
-	void secondDAccess(string filename);
+	void firstDAccess(string filename, double& diskTime);
+	void secondDAccess(string filename, double& diskTime);
 
 
 /*
@@ -65,8 +65,8 @@ private:
 public:
 	OnlineSession();
 	~OnlineSession();
-	size_t updateRead(string filename, byte*& file, size_t bytesToAdd);
-	void updateWrite(string filename, byte updatedFile[], size_t sizeAfterUpdate);
+	size_t updateRead(string filename, byte*& file, size_t bytesToAdd, double& diskTime);
+	void updateWrite(string filename, byte updatedFile[], size_t sizeAfterUpdate, double& diskTime);
 	/*! Use homorphic encryption to support this */
 	void rename();
 	
