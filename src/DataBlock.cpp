@@ -39,13 +39,10 @@ void DataBlock::setKey(byte key[]){
 	memcpy(this->key, key, AES_KEY_SIZE);
 }
 
-void DataBlock::make(fileID fid, byte block[], dataSize_t dataSize, bool isCRI, version_t version) {
-//	cout << "Datasize is " << dataSize << endl;
+void DataBlock::make(fileID fid, byte block[], dataSize_t dataSize, version_t version) {
 	this->fid = fid;
 	this->fid.get(fidBytes);
-	this->isCRI = isCRI;
 	this->version = version;
-//	this->block = block;
 	this->dataSize = dataSize;
 	memcpy(this->block, block, dataSize);
 	addTrailer();
@@ -58,11 +55,9 @@ void DataBlock::addTrailer(){
 	else
 		block[PADBYTE_LOC] = 1;
 
-	block[CRIBYTE_LOC] = isCRI;
-
 	fid.get(fidBytes);
 	memcpy(&block[FILEID_LOC], fidBytes, FILEID_SIZE);
-	memcpy(&block[VERSION_LOC], static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
+	memcpy(&block[VERSION_LOC], reinterpret_cast<byte*>(&version), sizeof(version_t));
 }
 
 void DataBlock::addPadding(){
@@ -91,12 +86,11 @@ void DataBlock::parse(byte block[]){
 	this->fid = fid;
 
 	removePadding(); //This will populate dataSize
-	isCRI = (bool)(this->block[CRIBYTE_LOC]);
 }
 
-void DataBlock::update(fileID fid, byte block[], dataSize_t dataSize, bool isCRI){
+void DataBlock::update(fileID fid, byte block[], dataSize_t dataSize){
 	version++;
-	make(fid, block, dataSize, isCRI, version);
+	make(fid, block, dataSize, version);
 	memset(this->block+dataSize+1, 0, MAX_BLOCK_DATA_SIZE-dataSize); //Zeros the bytes of the previous block
 }
 
@@ -112,7 +106,6 @@ void DataBlock::clear(){
 	fileID fid(zerofid);
 	this->fid = fid;
 	this->fid.get(fidBytes);
-	isCRI = false;
 	dataSize = 0;
 	memset(block, 0, BLOCK_SIZE-sizeof(version_t));
 //	memcpy(&block[VERSION_LOC], static_cast<byte*>(static_cast<void*>(&version)), sizeof(version_t));
@@ -125,8 +118,9 @@ void DataBlock::encrypt(){
 	makeIV();
 	byte dummyblock[BLOCK_SIZE-sizeof(version_t)];
 	cipher.ENC_CTR(dummyblock, dummyblock, BLOCK_SIZE-sizeof(version_t), key, iv);
-	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+//	cipher.ENC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = true;
+
 }
 
 void DataBlock::decrypt(){
@@ -134,8 +128,9 @@ void DataBlock::decrypt(){
 	makeIV();
 	byte dummyblock[BLOCK_SIZE-sizeof(version_t)];
 	cipher.DEC_CTR(dummyblock, dummyblock, BLOCK_SIZE-sizeof(version_t), key, iv);
-	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
+//	cipher.DEC_CTR(block, block, BLOCK_SIZE-sizeof(version_t), key, iv);
 	isBlockEncrypted = false;
+
 }
 
 void DataBlock::makeIV(){

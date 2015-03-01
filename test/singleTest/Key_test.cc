@@ -6,8 +6,8 @@
 #include <cstring>
 
 #include "gtest/gtest.h"
-#include "./../../src/Key.h"
-#include "./../../src/Debug.h"
+#include "./../../src_Oakland/Key.h"
+#include "./../../src_Oakland/Debug.h"
 
 using std::cout;
 

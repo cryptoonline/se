@@ -18,7 +18,7 @@ typedef uint32_t t_index_t;
 typedef uint16_t version_t;
 typedef uint32_t higherfid_t;
 typedef uint32_t prSubsetSize_t;
-typedef uint32_t prSubsetSeed_t;
+typedef uint64_t prSubsetSeed_t;
 typedef uint32_t dataSize_t;
 typedef uint32_t criSize_t;
 
@@ -26,7 +26,7 @@ typedef uint32_t criSize_t;
 #define BLOCK_SIZE 256
 // #define TRAILER_SIZE 34 //size of version is 2 bytes
 // #define MAX_BLOCK_DATA_SIZE (BLOCK_SIZE-TRAILER_SIZE)
-const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
+const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 1 - sizeof(version_t) - 32;
 #define TRAILER_SIZE (BLOCK_SIZE - MAX_BLOCK_DATA_SIZE)
 
 #define TTOTAL_BLOCKS (1024*1024)
@@ -37,9 +37,8 @@ const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 /* DATA + Padding Byte + CRI Byte + FID + VERSION */
 /* 			+ 1 					 + 1 		    + 32	+ 4				*/
 #define PADBYTE_LOC MAX_BLOCK_DATA_SIZE
-#define CRIBYTE_LOC (MAX_BLOCK_DATA_SIZE + 1)
-#define FILEID_LOC (MAX_BLOCK_DATA_SIZE + 2)
-#define VERSION_LOC (MAX_BLOCK_DATA_SIZE + 2 + 32)
+#define FILEID_LOC (MAX_BLOCK_DATA_SIZE + 1)
+#define VERSION_LOC (MAX_BLOCK_DATA_SIZE + 1 + 32)
 
 #define FILEID_SIZE 32
 #define HIGHERFID_SIZE 4
@@ -53,6 +52,7 @@ const uint32_t MAX_BLOCK_DATA_SIZE = BLOCK_SIZE - 2 - sizeof(version_t) - 32;
 #define CRI_BLOCK_SIZE 44
 #define CRI_PER_BLOCK (MAX_BLOCK_DATA_SIZE / CRI_BLOCK_SIZE)
 #define PRSUBSET_SIZE_LOWER_BOUND 80
+#define SIZE_MIN 80
 
 #define COMPRESSION_HEADER_SIZE 4
 
@@ -78,5 +78,6 @@ const int16_t T_RECORD_BITS = 24;
 #define T_FILE "data/T" 
 #define OT_FILE "data/OT"
 #define OT_KEYFILE "data/keys/OT.KEY"
+#define PRSUBSET_KEY "data/ID.KEY"
 
 #endif /* defined(__BlindStorage__parameters__) */

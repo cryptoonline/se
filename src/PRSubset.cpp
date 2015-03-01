@@ -11,20 +11,39 @@
 PRSubset::PRSubset(){
 	size = 0;
 	seed = 0;
+
+	byte keyBytes[HMAC_KEY_SIZE];
+	memset(keyBytes, 0, HMAC_KEY_SIZE);
+	hash.setKey(keyBytes);
+//	Key key(PRSUBSET_KEY, HMAC_KEY_SIZE);
+//	key.get(keyBytes);
 }
 
-PRSubset::PRSubset(prSubsetSize_t size){
-	if(size < PRSUBSET_SIZE_LOWER_BOUND)
-		size = PRSUBSET_SIZE_LOWER_BOUND;
-	this->size = size;
-	generateSeed();
-}
+//PRSubset::PRSubset(prSubsetSize_t size){
+//	if(size < PRSUBSET_SIZE_LOWER_BOUND)
+//		size = PRSUBSET_SIZE_LOWER_BOUND;
+//	this->size = size;
+//	generateSeed();
+//}
 
 PRSubset::PRSubset(prSubsetSize_t size, prSubsetSeed_t seed){
 	if(size < PRSUBSET_SIZE_LOWER_BOUND)
 		size = PRSUBSET_SIZE_LOWER_BOUND;
 	this->size = size;
 	this->seed = seed;
+}
+
+PRSubset::PRSubset(prSubsetSize_t size, string filename){
+	
+	byte keyBytes[HMAC_KEY_SIZE];
+	memset(keyBytes, 0, HMAC_KEY_SIZE);
+	hash.setKey(keyBytes);
+
+	if(size < PRSUBSET_SIZE_LOWER_BOUND)
+		size = PRSUBSET_SIZE_LOWER_BOUND;
+
+	this->size = size;
+	generateSeed(filename);
 }
 
 void PRSubset::make(b_index_t subset[]){
@@ -39,11 +58,23 @@ void PRSubset::make(b_index_t subset[]){
 	boost::variate_generator< RNGType, boost::uniform_int<> >
 		urand(rng, urandDevice);
 
-	for(prSubsetSize_t i = 0; i < size; i++)
-		subset[i] = urand();
+	unordered_set<b_index_t> set;
+	for(prSubsetSize_t i = 0; i < size; i++){
+			subset[i] = urand();
+//		b_index_t rand_int = urand();
+//		if(!set.count(rand_int)){
+//			set.insert(rand_int);
+//			subset[i] = rand_int;
+//			i++;
+//		}
+	}
+	
+	
+
 }
 
 void PRSubset::get(b_index_t subset[], b_index_t size){
+	this->size = size;
 	if(size < PRSUBSET_SIZE_LOWER_BOUND){
 		std::cerr << "PRSubset size is lower than the lower bound. Exiting!" << endl;
 		exit(1);
@@ -59,6 +90,12 @@ prSubsetSeed_t PRSubset::getSeed() const{
 	return seed;
 }
 
+void PRSubset::generateSeed(string filename){
+	byte mac[SHA_BLOCK_SIZE];
+	hash.doFinal(filename, mac);
+	seed = *(prSubsetSeed_t*)(mac);
+}
+/*
 void PRSubset::generateSeed(){
 //	srand(clock());
 //	srand(time(NULL));
@@ -78,6 +115,4 @@ void PRSubset::generateSeed(){
 //	else
 //		std::cerr << "RDRAND failed. It can be solved by changing the second parameter of rdrand_64 function to the number of required retries.";
 }
-
-
-
+*/

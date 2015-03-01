@@ -36,15 +36,14 @@ public:
 
 	void setKey(byte key[]);
 
-	void make(fileID fid, byte block[], dataSize_t dataSize = MAX_BLOCK_DATA_SIZE, bool isCRI = false, version_t version = 0);
+	void make(fileID fid, byte block[], dataSize_t dataSize, version_t version = 0);
 	
 	void parse(byte block[]);
-	void update(fileID fid, byte block[], dataSize_t dataSize = MAX_BLOCK_DATA_SIZE, bool isCRI = false);
+	void update(fileID fid, byte block[], dataSize_t dataSize);
 	void updateVersion();
 	void clear();
 
 	bool comparefileID(fileID fid);
-	bool isCRIBlock();
 
 	void getEncrypted(byte block[]);
 	void getDecrypted(byte block[]);
@@ -61,7 +60,6 @@ private:
 	version_t version;
 	fileID fid;
 	byte fidBytes[FILEID_SIZE];
-	bool isCRI;
 
 	bool isBlockEncrypted;
 
