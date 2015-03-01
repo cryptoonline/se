@@ -20,7 +20,6 @@ using std::cerr;
 #include "parameters.h"
 #include <fstream>
 
-#include "rdtsc.h"
 #include <stdio.h>
 
 #include "boost/generator_iterator.hpp"

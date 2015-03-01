@@ -10,7 +10,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "Communicator.h"
 #include "PRSubset.h"
 #include "fileID.h"
 #include "DataBlock.h"

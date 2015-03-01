@@ -17,13 +17,11 @@ using std::max;
 #include <unordered_map>
 using std::unordered_map;
 
-#include "Communicator.h"
 #include "PRSubset.h"
 #include "Ddisk.h"
 #include "PRF.h"
 #include "Debug.h"
 #include "DiskCommunicator.h"
-//#include "LZO.h"
 #include "FileHandling.h"
 
 class OnlineSession {

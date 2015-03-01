@@ -11,9 +11,7 @@
 #include <vector>
 #include <sys/stat.h>
 #include "Ddisk.h"
-#include "Communicator.h"
 #include "OnlineSession.h"
-//#include "LZO.h"
 #include "boost/filesystem.hpp"
 
 using namespace std;

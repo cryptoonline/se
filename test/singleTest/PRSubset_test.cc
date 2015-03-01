@@ -4,8 +4,8 @@
 //
 
 #include "gtest/gtest.h"
-#include "./../../src_Oakland/PRSubset.h"
-#include "./../../src_Oakland/Debug.h"
+#include "./../../src/PRSubset.h"
+#include "./../../src/Debug.h"
 
 TEST(PRSubsetTest, Test1){
 	PRSubset subset(1024, "test2");
