@@ -2,9 +2,9 @@ CC=g++
 RM=rm
 
 CFLAGS=-c -g
-LDFLAGS=-lcryptopp -lboost_system-mt -lboost_filesystem-mt -lboost_iostreams-mt -I /Users/naveed/BStore/test/framework/gtest-1.7.0/include/ /Users/naveed/BStore/test/singleTest/*.cc /Users/naveed/BStore/test/framework/gtest-1.7.0_build/libgtest.a -I/user/local/include
+LDFLAGS=-lcryptopp -lboost_system-mt -lboost_filesystem-mt -lboost_iostreams-mt -I/user/local/include
 
-SOURCES=AES.cpp BStore.cpp DataBlock.cpp Ddisk.cpp DiskCommunicator.cpp HashMAC.cpp PRF.cpp PRSubset.cpp fileID.cpp TruncAES.cpp Key.cpp OnlineSession.cpp Debug.cpp helper.cpp SSE.cpp FileStore.cpp 
+SOURCES=AES.cpp BStore.cpp DataBlock.cpp Ddisk.cpp DiskCommunicator.cpp HashMAC.cpp PRF.cpp PRSubset.cpp fileID.cpp TruncAES.cpp Key.cpp OnlineSession.cpp Debug.cpp helper.cpp SSE.cpp FileStore.cpp main.cpp 
 # Blowfish.cpp Communicator.cpp Cri.cpp DataBlock.cpp DataStructures.cpp Ddisk.cpp Debug.cpp PRF.cpp OnlineSession.cpp PRSubset.cpp SHA256bit.cpp SSE.cpp TBlock.cpp Tdisk.cpp Tfile.cpp fileID.cpp BStore.cpp Key.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=blindStorage
