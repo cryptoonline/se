@@ -5,7 +5,7 @@
 1. Install boost library (http://www.boost.org/)
 2. Install cryptopp library (https://www.cryptopp.com/)
 3. Compile the code using make
-4. Run the executable bin/blindStorage, you can change the main file to do other things.
+4. Run the executable bin/blindStorage
 
 Note: Replace the links in the main file where the data is stored on your computer. We used the [Enron dataset] (https://www.cs.cmu.edu/~./enron/) in the paper.
 
